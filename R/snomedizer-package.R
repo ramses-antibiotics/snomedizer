@@ -1,0 +1,59 @@
+
+#' @keywords internal
+#' @section SNOMED-CT licensing:
+#'
+#' In order to use SNOMED-CT, a licence is required which depends both on the country you are
+#' based in, and the purpose of your work. Although SNOMED International allows access to the
+#' SNOMED-CT terminology server hosted by IHSTO to anyone for reference purpose, uses for data
+#' analysis or health care production systems is subject to other licences.
+#'
+#' UK-based users can apply for such a licence free of charge on the
+#' \href{https://isd.digital.nhs.uk/trud3/user/guest/group/0/pack/26}{NHS TRUD website}.
+#'
+#' Residents of other Member Countries and low income countries are also eligible for
+#' licences free of costs. More information can be found on the
+#' \href{https://www.snomed.org/snomed-ct/get-snomed}{SNOMED International website}.
+#'
+#' @section Licensing for reference use:
+#'
+#' \code{snomedizer} contains examples and documentation that makes uses of an IHSTO public
+#' API endpoint restricted to reference uses such as testing or browsing the terminology.
+#' It is subject to the \href{https://browser.ihtsdotools.org/}{SNOMED International SNOMED CT Browser License Agreement} reproduced below:
+#'
+#' \enumerate{
+#' \item The meaning of the terms “Affiliate”, or “Data Analysis System”, “Data Creation System”,
+#' “Derivative”, “End User”, “Extension”, “Member”, “Non-Member Territory”, “SNOMED CT”
+#' and “SNOMED CT Content” are as defined in the SNOMED International Affiliate License Agreement
+#' (see \url{http://snomed.org/license-affiliate}).
+#'
+#' \item Information about Affiliate Licensing is available at \url{https://www.snomed.org/snomed-ct/get-snomed}.
+#' Individuals or organizations wishing to register as SNOMED International Affiliates can register at
+#' \url{mlds.ihtsdotools.org}, subject to acceptance of the Affiliate License Agreement (see
+#' \url{http://snomed.org/license-affiliate}).
+#'
+#' \item The current list of SNOMED International Member Territories can be viewed at \url{www.snomed.org/members}.
+#' Countries not included in that list are "Non-Member Territories".
+#'
+#' \item End Users, that do not hold an SNOMED International Affiliate License, may access SNOMED CT®
+#' using SNOMED International SNOMED CT Browser subject to acceptance of and adherence to the
+#' following sub-license limitations: \itemize{
+#'   \item a) The sub-licensee is only permitted to access SNOMED CT® using this software (or service) for the purpose of exploring and evaluating the terminology.
+#'   \item b) The sub-licensee is not permitted the use of this software as part of a system that constitutes a SNOMED CT "Data Creation System" or "Data Analysis System", as defined in the SNOMED International Affiliate License. This means that the sub-licensee must not use SNOMED International SNOMED CT Browser to add or copy SNOMED CT identifiers into any type of record system, database or document.
+#'   \item c) The sub-licensee is not permitted to translate or modify SNOMED CT Content or Derivatives.
+#'   \item d) The sub-licensee is not permitted to distribute or share SNOMED CT Content or Derivatives.
+#' }
+#'
+#' \item SNOMED International Affiliates may use SNOMED International SNOMED CT Browser as part of a
+#' "Data Creation System" or "Data Analysis System" subject to the following conditions: \itemize{
+#'   \item a) The SNOMED International Affiliate, using SNOMED International SNOMED CT Browser must accept full responsibility for any reporting and fees due for use or deployment of such a system in a Non-Member Territory.
+#'   \item b) The SNOMED International Affiliate must not use SNOMED International SNOMED CT Browser to access or interact with SNOMED CT in any way that is not permitted by the Affiliate License Agreement.
+#'   \item c) In the event of termination of the Affiliate License Agreement, the use of SNOMED International SNOMED CT Browser will be subject to the End User limitations noted in 4.
+#'   }
+#' }
+"_PACKAGE"
+
+# The following block is used by usethis to automatically manage
+# roxygen namespace tags. Modify with care!
+## usethis namespace: start
+## usethis namespace: end
+NULL

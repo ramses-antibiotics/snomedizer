@@ -1,0 +1,14 @@
+# R for travis: see documentation at https://docs.travis-ci.com/user/languages/r
+
+language: R
+cache: packages
+addons:
+  apt:
+    packages:
+      - libxml2-dev
+r:
+  - oldrel
+  - release
+  - devel
+after_success:
+    - Rscript -e 'covr::codecov()'

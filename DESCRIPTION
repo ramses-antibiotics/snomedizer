@@ -1,0 +1,30 @@
+Package: snomedizer
+Type: Package
+Title: R Interface to the SNOMED CT Terminology Server REST API
+Version: 0.1.0
+Authors@R: c(
+    person(given = "Peter",
+           family = "Dutey-Magni",
+           role = c("aut", "cre", "res"),
+           email = "p.dutey-magni@ucl.ac.uk",
+           comment = c(ORCID = "0000-0002-8942-9836")),
+    person("University College London", role = c("cph")))
+Description: >
+   A package to manipulate the SNOMED clinical ontology using the 
+   SNOMED CT Terminology Server REST API <https://github.com/IHTSDO/snowstorm>.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Imports: 
+    jsonlite,
+    curl,
+    purrr,
+    dplyr,
+    httr
+Suggests: 
+    testthat,
+    knitr,
+    rmarkdown,
+    covr
+RoxygenNote: 7.0.2
+VignetteBuilder: knitr

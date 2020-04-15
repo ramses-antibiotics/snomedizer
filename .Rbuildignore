@@ -1,0 +1,11 @@
+^.*\.Rproj$
+^\.Rproj\.user$
+^doc$
+^Meta$
+^LICENSE\.md$
+^vignettes/indication_classification\.Rmd$
+^data-raw$
+^CODE_OF_CONDUCT\.md$
+^README\.Rmd$
+^\.travis\.yml$
+^codecov\.yml$
