@@ -4,6 +4,11 @@
 \alias{api_operations}
 \alias{api_find_concept}
 \alias{api_find_concepts}
+\alias{api_all_branches}
+\alias{api_branch}
+\alias{api_branch_descendants}
+\alias{api_descriptions}
+\alias{api_version}
 \title{SNOMED CT Terminology Server REST API operations}
 \usage{
 api_find_concept(
@@ -26,9 +31,41 @@ api_find_concepts(
   catch404 = TRUE,
   ...
 )
+
+api_all_branches(
+  endpoint = snomedizer_options_get("endpoint"),
+  catch404 = TRUE
+)
+
+api_branch(
+  endpoint = snomedizer_options_get("endpoint"),
+  branch = snomedizer_options_get("branch"),
+  catch404 = TRUE,
+  ...
+)
+
+api_branch_descendants(
+  endpoint = snomedizer_options_get("endpoint"),
+  branch = snomedizer_options_get("branch"),
+  catch404 = TRUE,
+  ...
+)
+
+api_descriptions(
+  concept,
+  endpoint = snomedizer_options_get("endpoint"),
+  branch = snomedizer_options_get("branch"),
+  offset = 0,
+  limit = snomedizer_options_get("limit"),
+  catch404 = TRUE,
+  ...
+)
+
+api_version(endpoint = snomedizer_options_get("endpoint"), catch404 = TRUE)
 }
 \arguments{
-\item{conceptId}{a string}
+\item{conceptId}{character string of a SNOMED-CT concept id (for example:
+\code{"233604007"})}
 
 \item{endpoint}{the URL of a SNOMED CT Terminology Server REST API endpoint.
 See \code{\link{snomedizer_options}}.}
@@ -58,6 +95,9 @@ See \code{\link{snomedizer_options}}.}
 \item{offset}{an integer indicating the number of results to skip}
 
 \item{...}{other REST API parameters}
+
+\item{concept}{character string of a SNOMED-CT concept id (for example:
+\code{"233604007"})}
 }
 \value{
 An `httr` \code{\link[httr]{response}()} object.

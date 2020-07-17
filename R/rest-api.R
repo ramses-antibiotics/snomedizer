@@ -11,7 +11,10 @@
 #' }
 #' @param catch404 whether to display a warning if the API operation returns a
 #' '404 Not Found' status. Default is `TRUE`.
-#' @param conceptId a string
+#' @param concept character string of a SNOMED-CT concept id (for example:
+#' \code{"233604007"})
+#' @param conceptId character string of a SNOMED-CT concept id (for example:
+#' \code{"233604007"})
 #' @param conceptIds a character vector of SNOMED-CT concept ids (for example:
 #' \code{c("233604007", "68566005")})
 #' @param endpoint the URL of a SNOMED CT Terminology Server REST API endpoint.
@@ -118,12 +121,128 @@ api_find_concepts <- function(
   rest_result
 }
 
+#' @rdname api_operations
+#' @export
+api_all_branches <- function(endpoint = snomedizer_options_get("endpoint"),
+                             catch404 = TRUE) {
+  rest_url <- httr::parse_url(endpoint)
+  rest_url$path <- c(rest_url$path,
+                     "branches")
+  rest_result <- GET(rest_url)
 
-# api_browser_find_concept_children <- function(){
-#
-# }
+  if(catch404){
+    .catch404(rest_result)
+  }
+
+  rest_result
+}
+
+#' @rdname api_operations
+#' @export
+api_branch <- function(endpoint = snomedizer_options_get("endpoint"),
+                       branch = snomedizer_options_get("branch"),
+                       catch404 = TRUE,
+                       ...) {
+
+  rest_url <- httr::parse_url(endpoint)
+  rest_url$path <- c(rest_url$path,
+                     "branches",
+                     branch)
+  rest_url$query <- list(...)
+  if(any(sapply(rest_url$query, length) > 1)){
+    stop(paste0("The following arguments must have length <= 1: `",
+                paste(names(rest_url$query)[length(rest_url$query) > 1], collapse = "`, `"), "`"))
+  }
+  rest_url <- httr::build_url(rest_url)
+  rest_result <- GET(rest_url)
+
+  if(catch404){
+    .catch404(rest_result)
+  }
+
+  rest_result
+}
+
+#' @rdname api_operations
+#' @export
+api_branch_descendants <- function(
+  endpoint = snomedizer_options_get("endpoint"),
+  branch = snomedizer_options_get("branch"),
+  catch404 = TRUE,
+  ...) {
+
+  rest_url <- httr::parse_url(endpoint)
+  rest_url$path <- c(rest_url$path,
+                     "branches",
+                     branch,
+                     "children")
+  rest_url$query <- list(...)
+  if(any(sapply(rest_url$query, length) > 1)){
+    stop(paste0("The following arguments must have length <= 1: `",
+                paste(names(rest_url$query)[length(rest_url$query) > 1], collapse = "`, `"), "`"))
+  }
+  rest_url <- httr::build_url(rest_url)
+  rest_result <- GET(rest_url)
+
+  if(catch404){
+    .catch404(rest_result)
+  }
+
+  rest_result
+}
+
+#' @rdname api_operations
+#' @export
+api_descriptions <- function(
+  concept,
+  endpoint = snomedizer_options_get("endpoint"),
+  branch = snomedizer_options_get("branch"),
+  offset = 0,
+  limit = snomedizer_options_get("limit"),
+  catch404 = TRUE,
+  ...) {
+
+  rest_url <- httr::parse_url(endpoint)
+  rest_url$path <- c(rest_url$path,
+                     branch,
+                     "descriptions")
+  rest_url$query <- list(
+    concept = concept,
+    offset = offset,
+    limit = limit
+  )
+  rest_url$query <- append(rest_url$query, list(...))
+  if(any(sapply(rest_url$query, length) > 1)){
+    stop(paste0("The following arguments must have length <= 1: `",
+                paste(names(rest_url$query)[length(rest_url$query) > 1], collapse = "`, `"), "`"))
+  }
+  rest_url <- httr::build_url(rest_url)
+  rest_result <- GET(rest_url)
+
+  if(catch404){
+    .catch404(rest_result)
+  }
+
+  rest_result
+}
 
 
+#' @rdname api_operations
+#' @export
+api_version <- function(
+  endpoint = snomedizer_options_get("endpoint"),
+  catch404 = TRUE) {
 
+  rest_url <- httr::parse_url(endpoint)
+  rest_url$path <- c(rest_url$path,
+                     "version")
 
+  rest_result <- GET(rest_url)
+
+  if(catch404){
+    .catch404(rest_result)
+  }
+
+  rest_result
+}
 

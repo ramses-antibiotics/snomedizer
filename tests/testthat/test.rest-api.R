@@ -41,5 +41,29 @@ test_that("findConcepts", {
 
 
 
+test_that("api_all_branches", {
+  expect_equal(httr::content(api_all_branches())[[1]][["path"]],
+               "MAIN")
+})
 
+test_that("api_branch", {
+  expect_equal(httr::content(api_branch())[["path"]],
+               "MAIN")
+})
+
+test_that("api_branch_descendants", {
+  expect_true(exists("path", httr::content(api_branch_descendants())[[1]]))
+})
+
+
+test_that("api_descriptions", {
+  expect_equal(
+    httr::content(api_descriptions(concept = "233604007"))[["items"]][[1]][["conceptId"]],
+    "233604007"
+  )
+})
+
+test_that("api_version", {
+  expect_true(exists("version", httr::content(api_version())))
+})
 
