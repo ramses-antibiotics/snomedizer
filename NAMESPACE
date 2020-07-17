@@ -2,6 +2,10 @@
 
 export(api_find_concept)
 export(api_find_concepts)
+export(concepts_find)
+export(result_completeness)
+export(result_flatten)
+export(snomed_endpoint_test)
 export(snomed_public_endpoint_suggest)
 export(snomedizer_options_get)
 export(snomedizer_options_set)

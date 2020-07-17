@@ -8,21 +8,32 @@ test_that("default options load", {
   onLoadendpoint <- snomedizer_options_get("endpoint")
   expect_true(onLoadendpoint == "https://snowstorm.ihtsdotools.org/snowstorm/snomed-ct" |
                 onLoadendpoint == "https://browser.ihtsdotools.org/snowstorm/snomed-ct")
-
-
 })
 
 test_that("snomedizer_default_options", {
-
   expect_error(snomedizer_options_set())
   expect_error(snomedizer_options_set(endpoint = "https://URLWHICHDOESNOTEXIST"))
   expect_invisible(snomedizer_options_set(endpoint = snomed_public_endpoint_suggest()))
-  expect_error(snomedizer_options_set(endpoint = "http://detectportal.firefox.com/success.txt"))
-
-
+  expect_warning(
+    expect_error(snomedizer_options_set(endpoint = "http://detectportal.firefox.com/success.txt"))
+  )
 })
 
+test_that("result_flatten", {
+  pneumo <- result_flatten(
+    api_find_concepts(term = "pneumonia",
+                      activeFilter = TRUE,
+                      limit = 2))
+  expect_true(is.data.frame(pneumo))
+  expect_equal(dim(pneumo)[1], 2)
+})
 
+test_that("result_completeness", {
+  pneumo <- api_find_concepts(term = "pneumonia",
+                              activeFilter = TRUE,
+                              limit = 10)
+  expect_false(result_completeness(pneumo, silent = TRUE))
+})
 #
 # test_that("snowstorm_branch_info", {
 #   expect_named(
@@ -33,23 +44,5 @@ test_that("snomedizer_default_options", {
 #       "headTimestamp", "metadata", "versionsReplacedCounts"
 #     )
 #   )
-# })
-#
-#
-# test_that("snowstorm_search_term", {
-#   expect_warning(asthma_concepts <- snowstorm_search_term("asthma"))
-#   expect_true("195967001" %in% purrr::map_chr(asthma_concepts$items, "conceptId"))
-# })
-#
-#
-# test_that("snowstorm_fetch_concepts", {
-#   asthma_concepts <- snowstorm_fetch_concepts("195967001")
-#   expect_equal(asthma_concepts$items[[1]]$fsn$term, "Asthma (disorder)")
-# })
-#
-#
-# test_that("snowstorm_fetch_children", {
-#   expect_warning(asthma_concepts <- snowstorm_fetch_children(c("195967001")))
-#   expect_true("304527002" %in% asthma_concepts$conceptId)
 # })
 

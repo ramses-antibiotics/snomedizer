@@ -20,7 +20,8 @@ Imports:
     curl,
     purrr,
     dplyr,
-    httr
+    httr,
+    methods
 Suggests: 
     testthat,
     knitr,

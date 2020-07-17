@@ -1,0 +1,45 @@
+
+
+
+test_that("findConcept", {
+  expect_equal(httr::content(api_find_concept(conceptId = "233604007"))$fsn$term, "Pneumonia (disorder)")
+  expect_equal(
+    expect_warning(httr::content(api_find_concept(conceptId = "biduletruccestleurtruc")))$error,
+    "NOT_FOUND")
+  expect_warning(
+    api_find_concept(conceptId = c("233604007", "68566005"))
+  )
+})
+
+
+test_that("findConcepts", {
+  # by term
+  pneumo_term <- api_find_concepts(term = "pneumonia")
+  pneumo_term_codes <- sapply(httr::content(pneumo_term)[["items"]], function(X) X$conceptId)
+  expect_true("233604007" %in% pneumo_term_codes)
+
+  # one concept code
+  infection_id <- api_find_concepts(conceptIds = "233604007")
+  infection_id_code <- sapply(httr::content(infection_id)[["items"]], function(X) X$conceptId)
+  expect_equal(infection_id_code, "233604007")
+
+  # several concept codes
+  infections_id <- api_find_concepts(conceptIds = c("233604007", "68566005"))
+  infections_id_codes <- sapply(httr::content(infections_id)[["items"]], function(X) X$conceptId)
+  expect_setequal(infections_id_codes, c("233604007", "68566005"))
+
+  # additional arguments from `...`
+  # `Pneumonia` is a descendant of `Clinical finding`
+  infection_id <- api_find_concepts(conceptIds = "233604007", ecl = "<404684003|Clinical finding|")
+  infection_id_code <- sapply(httr::content(infection_id)[["items"]], function(X) X$conceptId)
+  expect_equal(infection_id_code, "233604007")
+  # `Pneumonia` is not an ancestor of `Clinical finding`
+  infection_id <- api_find_concepts(conceptIds = "233604007",  ecl = ">404684003|Clinical finding|")
+  infection_id_code <- sapply(httr::content(infection_id)[["items"]], function(X) X$conceptId)
+  expect_equal(infection_id_code, list())
+})
+
+
+
+
+

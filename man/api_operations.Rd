@@ -71,4 +71,7 @@ with the operations built in the \href{https://github.com/IHTSDO/snowstorm}{Snow
 api_find_concept(conceptId = "233604007")
 api_find_concepts(term = "pneumonia")
 api_find_concepts(conceptIds = c("233604007", "68566005"))
+
+# get the content of the server request
+httr::content(api_find_concepts(term = "pneumonia"))
 }
