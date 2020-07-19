@@ -19,7 +19,14 @@ nested server results from an \code{\link{api_operations}}
 }
 \examples{
 result_flatten(
-   api_find_concepts(term = "pneumonia",
+   api_concepts(term = "pneumonia",
    activeFilter = TRUE,
    limit = 10))
 }
+\seealso{
+Other utilities: 
+\code{\link{result_completeness}()},
+\code{\link{snomed_public_endpoint_suggest}()},
+\code{\link{snomedizer_options}}
+}
+\concept{utilities}

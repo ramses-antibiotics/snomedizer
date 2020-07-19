@@ -44,11 +44,19 @@ devtools::install_github("ramses-antibiotics/snomedizer")
 ```
 ## Example
 
-This is a basic example which shows you how to solve a common problem:
+Direct interfaces with the SNOMED-CT API exist, for instance [\code{GET /{branch}/concepts}]{https://snowstorm.ihtsdotools.org/snowstorm/snomed-ct/swagger-ui.html#!/Concepts/findConceptsUsingGET} is implemented in `api_concepts()`:
 
-```{r example}
+```{r api_concepts_pneumonia}
 library(snomedizer)
-api_find_concepts(term = "pneumonia", activeFilter = TRUE)
+api_concepts(term = "pneumonia", activeFilter = TRUE)
+```
+
+Wrapper functions provide simpler solutions for common operations and return outputs as data frames:
+
+```{r concepts_find_pneumonia, warning=TRUE}
+concepts_find(term = "pneumonia") %>% 
+  dplyr::select(conceptId, fsn.term, pt.term) %>% 
+  head()
 ```
 
 ## Code of conduct

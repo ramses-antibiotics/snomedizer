@@ -27,8 +27,7 @@
     list(
       snomedizer.endpoint = snomedizer_endpoint,
       snomedizer.branch = snomedizer_branch,
-      snomedizer.limit = snomedizer_limit,
-      snomedizer.language = "en-X-900000000000509007,en-X-900000000000508004,en"
+      snomedizer.limit = snomedizer_limit
       )
   )
 

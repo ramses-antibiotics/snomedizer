@@ -16,7 +16,7 @@
 #' @param ... other optional arguments listed in \code{\link{api_operations}}
 #' @return a data frame
 #' @export
-#'
+#' @family wrapper
 #' @examples
 #' # Free text search
 #' concepts_find("asthma")
@@ -44,7 +44,7 @@ concepts_find <- function(term = NULL,
     stop("At least `term` or `conceptIds` or `ecl` must be provided.")
   }
 
-  x <- api_find_concepts(
+  x <- api_concepts(
     term = term,
     conceptIds = conceptIds,
     ecl = ecl,
@@ -57,193 +57,6 @@ concepts_find <- function(term = NULL,
 }
 
 
-
-
-#' Check that results are complete
-#'
-#' @description Check whether the server request returned all the results,
-#' i.e. whether the `limit` < results `total`.
-#' @param x an `httr` \code{\link[httr]{response}()} object produce by an
-#' \code{\link{api_operations}} function.
-#' @param silent whether to display warnings (default is `FALSE`)
-#'
-#' @return a boolean indicating whether the set of results obtained is
-#' the complete set of results on the server.
-#' @export
-#'
-#' @examples
-#' result_completeness(api_find_concepts(term = "pneumonia", limit = 10))
-result_completeness <- function(x, silent = FALSE) {
-  stopifnot(methods::is(x, "response"))
-  complete <- httr::content(x)$total <= httr::content(x)$limit
-
-  if(!complete & !silent) {
-    warning(paste0(
-      "This server request returned just ", httr::content(x)$limit,
-      " of a total ", httr::content(x)$total, " results.\n",
-      "Please increase the server limit."
-    ))
-  }
-
-  complete
-}
-
-#' snowstorm_get <- function(query) {
-#'   x <- jsonlite::parse_json(curl::curl(query))
-#'
-#'   if (exists("limit", x) & x$limit < x$total) {
-#'     warning(paste(x$total, "concepts were found Increase limit to extract them all."))
-#'   }
-#'
-#'   x
-#' }
-#'
-#' snowstorm_base_url <- function() {
-#'   paste0(
-#'     "https://snowstorm.ihtsdotools.org/snowstorm/snomed-ct/",
-#'     utils::URLencode(getOption("snowstorm.branch"), reserved = T),
-#'     "/"
-#'   )
-#' }
-#'
-#' snowstorm_endpoint_test <- function()
-#'
-#' snowstorm_browser_url <- function() {
-#'   paste0(
-#'     "https://snowstorm.ihtsdotools.org/snowstorm/snomed-ct/browser/",
-#'     utils::URLencode(getOption("snowstorm.branch"), reserved = T),
-#'     "/"
-#'   )
-#' }
-#'
-#' choose_api_endpoint <- function() {
-#'
-#'   ""
-#' }
-#'
-#' snowstorm_branch_info <- function() {
-#'   query <- curl::curl(paste0(
-#'     "https://snowstorm.ihtsdotools.org/snowstorm/snomed-ct/branches/",
-#'     utils::URLencode(getOption("snowstorm.branch"), reserved = T),
-#'     "?includeInheritedMetadata=true"
-#'   ))
-#'
-#'   jsonlite::parse_json(query)
-#' }
-#'
-#' snowstorm_search_term <- function(term,
-#'                                   limit = getOption("snowstorm.limit")) {
-#'   query <- (paste0(
-#'     snowstorm_base_url(),
-#'     "concepts?activeFilter=true&term=",
-#'     utils::URLencode(tolower(term), reserved = T),
-#'     "&limit=",
-#'     limit
-#'   ))
-#'
-#'   snowstorm_get(query)
-#' }
-#'
-#'
-#' snowstorm_fetch_concepts <- function(concept_ids) {
-#'   concept_ids <- as.list(concept_ids)
-#'
-#'   query <- (paste0(
-#'     snowstorm_base_url(),
-#'     "concepts?",
-#'     paste(
-#'       paste0("conceptIds=", concept_ids, collapse = "&")
-#'     )
-#'   ))
-#'
-#'   snowstorm_get(query)
-#' }
-#'
-#'
-#' snowstorm_fetch_children <- function(concept_ids, direct = F,
-#'                                      limit = getOption("snowstorm.limit")){
-#'
-#'   if(length(concept_ids)==1){
-#'     snowstorm_fetch_children_single(concept_ids, direct = direct, limit = limit)
-#'   } else {
-#'     x <- purrr::map_df(concept_ids, function(X){
-#'       snowstorm_fetch_children_single(X, direct = direct, limit = limit) %>%
-#'         dplyr::mutate(parentId = as.character(X))
-#'     }) %>%
-#'       dplyr::bind_rows()
-#'   }
-#'
-#' }
-#'
-#'
-#' snowstorm_fetch_children_single <- function(concept_id, direct, limit) {
-#'   if (length(concept_id) > 1) {
-#'     stop()
-#'   }
-#'
-#'   if (direct) {
-#'     query <- (paste0(
-#'       snowstorm_browser_url(),
-#'       "concepts/", concept_id,
-#'       "/children?form=inferred&includeDescendantCount=true&limit=",
-#'       limit
-#'     ))
-#'   } else {
-#'     query <- (paste0(
-#'       snowstorm_base_url(),
-#'       "concepts/", concept_id,
-#'       "/descendants?stated=false&limit=",
-#'       limit
-#'     ))
-#'   }
-#'
-#'   snowstorm_get(query)$items %>%
-#'     purrr::map_df(., purrr::flatten) %>%
-#'     dplyr::bind_rows()
-#' }
-#'
-#'
-#' snowstorm_fetch_parent <- function(concept_id, direct = F,
-#'                                    limit = getOption("snowstorm.limit")) {
-#'   if (length(concept_id) > 1) {
-#'     stop("concept_id must be a character vector of length == 1")
-#'   }
-#'
-#'   if (direct) {
-#'     query <- (paste0(
-#'       snowstorm_browser_url(),
-#'       "concepts/", concept_id,
-#'       "/children?form=inferred&includeDescendantCount=true&limit=",
-#'       limit
-#'     ))
-#'   } else {
-#'     query <- (paste0(
-#'       snowstorm_base_url(),
-#'       "concepts/", concept_id,
-#'       "/descendants?stated=false&limit=",
-#'       limit
-#'     ))
-#'   }
-#'
-#'   snowstorm_get(query)
-#' }
-#'
-#'
-#' snowstorm_fetch_relationships <- function(concept_id, limit = getOption("snowstorm.limit")) {
-#'   if (length(concept_id) > 1) {
-#'     stop("concept_id must be a character vector of length == 1")
-#'   }
-#'
-#'   query <- paste0(
-#'     snowstorm_base_url(),
-#'     "relationships?active=true&module=900000000000207008&source=", concept_id,
-#'     "&limit=", limit
-#'   )
-#'
-#'   snowstorm_get(query)
-#' }
-#'
-#'
 #' #' Get all SNOMED-CT infection concepts
 #' #'
 #' #' @description Obtain all concepts belonging to the \rm{40733004 |Infectious disease (disorder)|}
@@ -272,27 +85,4 @@ result_completeness <- function(x, silent = FALSE) {
 #'   snowstorm_fetch_children("40733004", direct = F, limit = limit)
 #' }
 #'
-#'
-#' snowstorm_fetch_descriptions <- function(concept_ids) {
-#'   query <- paste0(
-#'     snowstorm_base_url(),
-#'     "descriptions?concept=",
-#'     concept_ids
-#'   )
-#'
-#'   query <- as.list(query)
-#'
-#'   inf_data <- purrr::map(query, function(X) snowstorm_get(X)$items)
-#'
-#'   inf_data <- purrr::map_df(inf_data, function(X) {
-#'     purrr::map_df(X, function(Y) {
-#'       purrr::flatten_df(Y)[, c(
-#'         "conceptId", "descriptionId", "term",
-#'         "type", "caseSignificance", "active"
-#'       )]
-#'     })
-#'   })
-#'
-#'   inf_data
-#' }
 #'

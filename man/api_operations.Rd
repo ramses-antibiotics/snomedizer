@@ -2,8 +2,10 @@
 % Please edit documentation in R/rest-api.R
 \name{api_operations}
 \alias{api_operations}
-\alias{api_find_concept}
-\alias{api_find_concepts}
+\alias{api_concept}
+\alias{api_concepts}
+\alias{api_concept_descendants}
+\alias{api_concept_descriptions}
 \alias{api_all_branches}
 \alias{api_branch}
 \alias{api_branch_descendants}
@@ -11,27 +13,46 @@
 \alias{api_version}
 \alias{api_browser_concepts}
 \alias{api_browser_concept_ancestors}
+\alias{api_browser_concept_children}
+\alias{api_browser_concept_parents}
+\alias{api_browser_concept_descriptions}
+\alias{api_descriptions_semantic_tags}
 \title{SNOMED CT Terminology Server REST API operations}
 \usage{
-api_find_concept(
+api_concept(
   conceptId,
   endpoint = snomedizer_options_get("endpoint"),
   branch = snomedizer_options_get("branch"),
-  accept_language = snomedizer_options_get("language"),
   catch404 = TRUE
 )
 
-api_find_concepts(
+api_concepts(
   term = NULL,
   conceptIds = NULL,
   activeFilter = NULL,
   endpoint = snomedizer_options_get("endpoint"),
   branch = snomedizer_options_get("branch"),
   limit = snomedizer_options_get("limit"),
-  accept_language = snomedizer_options_get("language"),
   offset = 0,
   catch404 = TRUE,
   ...
+)
+
+api_concept_descendants(
+  conceptId,
+  stated = FALSE,
+  limit = snomedizer_options_get("limit"),
+  offset = 0,
+  endpoint = snomedizer_options_get("endpoint"),
+  branch = snomedizer_options_get("branch"),
+  catch404 = TRUE
+)
+
+api_concept_descriptions(
+  conceptId,
+  endpoint = snomedizer_options_get("endpoint"),
+  branch = snomedizer_options_get("branch"),
+  catch404 = TRUE
 )
 
 api_all_branches(
@@ -70,16 +91,60 @@ api_browser_concepts(
   descendantCountForm = c(NULL, "inferred", "stated", "additional"),
   endpoint = snomedizer_options_get("endpoint"),
   branch = snomedizer_options_get("branch"),
-  accept_language = snomedizer_options_get("language"),
   catch404 = TRUE
 )
 
 api_browser_concept_ancestors(
   conceptId,
-  form = c("inferred", "stated", "additional"),
+  form = "inferred",
   endpoint = snomedizer_options_get("endpoint"),
   branch = snomedizer_options_get("branch"),
-  accept_language = snomedizer_options_get("language"),
+  catch404 = TRUE
+)
+
+api_browser_concept_children(
+  conceptId,
+  form = "inferred",
+  includeDescendantCount = FALSE,
+  endpoint = snomedizer_options_get("endpoint"),
+  branch = snomedizer_options_get("branch"),
+  catch404 = TRUE
+)
+
+api_browser_concept_parents(
+  conceptId,
+  form = "inferred",
+  includeDescendantCount = TRUE,
+  endpoint = snomedizer_options_get("endpoint"),
+  branch = snomedizer_options_get("branch"),
+  catch404 = TRUE
+)
+
+api_browser_concept_descriptions(
+  term,
+  active = NULL,
+  module = NULL,
+  language = NULL,
+  type = NULL,
+  semanticTag = NULL,
+  semanticTags = NULL,
+  preferredIn = NULL,
+  acceptableIn = NULL,
+  preferredOrAcceptableIn = NULL,
+  conceptActive = NULL,
+  conceptRefset = NULL,
+  groupByConcept = FALSE,
+  searchMode = "STANDARD",
+  limit = snomedizer_options_get("limit"),
+  offset = 0,
+  endpoint = snomedizer_options_get("endpoint"),
+  branch = snomedizer_options_get("branch"),
+  catch404 = TRUE
+)
+
+api_descriptions_semantic_tags(
+  endpoint = snomedizer_options_get("endpoint"),
+  branch = snomedizer_options_get("branch"),
   catch404 = TRUE
 )
 }
@@ -92,8 +157,6 @@ See \code{\link{snomedizer_options}}.}
 
 \item{branch}{a string for the name of the API endpoint branch to use (most
 commonly \code{"MAIN"}). See \code{\link{snomedizer_options}}.}
-
-\item{accept_language}{a string specifying acceptable result languages}
 
 \item{catch404}{whether to display a warning if the API operation returns a
 '404 Not Found' status. Default is \code{TRUE}.}
@@ -116,6 +179,9 @@ See \code{\link{snomedizer_options}}.}
 
 \item{...}{other REST API parameters}
 
+\item{stated}{a boolean indicating whether to limit search to descendants
+whose relationship is stated rather than inferred. Default is \code{FALSE}.}
+
 \item{concept}{character string of a SNOMED-CT concept id (for example:
 \code{"233604007"})}
 
@@ -124,9 +190,67 @@ the count of descendant concepts based on stated or inferred relationships.
 Must be one of \code{"inferred"}, \code{"stated"}, or \code{"additional"}.
 Default is \code{NULL} for no descendant count reported.}
 
-\item{form}{a character string indicating which ancestors/descendants to
-extract based on stated or inferred relationships. Must be one of
-\code{"inferred"} (default), \code{"stated"}, or \code{"additional"}.}
+\item{form}{a character string indicating which ancestors/parents or
+descendants/children to extract based on stated or inferred relationships.
+Must be one of \code{"inferred"} (default), \code{"stated"}, or \code{"additional"}.}
+
+\item{includeDescendantCount}{a boolean indicating whether a number of
+children/descendants counter should be included in the result}
+
+\item{active}{optional boolean: \itemize{
+    \item \code{TRUE} returns only active terminology
+    \item \code{FALSE} returns only inactive terminology
+    \item \code{NULL} (the default) returns both active and inactive terminology
+}}
+
+\item{module}{character vector of SNOMED-CT modules to include (example:
+\code{"900000000000207008"})}
+
+\item{language}{vector of two-character language codes to include
+(example: \code{c("en", "de")}).}
+
+\item{type}{character vector of description types to include. See
+\code{api_concept_descendants("900000000000446008")} for valid
+description type inputs.}
+
+\item{semanticTag}{character string of a description semantic tag
+to include (example: \code{"attribute"}). See
+\code{api_descriptions_semantic_tags()} for a list of valid
+description semantic tags.}
+
+\item{semanticTags}{character vector of description semantic tags
+to include (example: \code{c("attribute", "finding")}). See
+\code{api_descriptions_semantic_tags()} for a list of valid
+description semantic tags.}
+
+\item{preferredIn}{character vector of description language reference sets
+(example: \code{"900000000000509007"}).
+The description must be preferred in at least one of these to match.}
+
+\item{acceptableIn}{character vector of description language reference sets
+(example: \code{"900000000000509007"}).
+The description must be acceptable in at least one of these to match.}
+
+\item{preferredOrAcceptableIn}{character vector of description language reference sets
+(example: \code{"900000000000509007"}).
+The description must be preferred OR acceptable in at least one of these to match.}
+
+\item{conceptActive}{optional boolean: \itemize{
+    \item \code{TRUE} returns only active concepts
+    \item \code{FALSE} returns only inactive concepts
+    \item \code{NULL} (the default) returns both active and inactive concepts
+}}
+
+\item{conceptRefset}{character vector of reference sets concept ids
+to include (example: \code{"900000000000497000"} for CTV3 terminology).
+See \code{api_concept_descendants("900000000000455006")}
+for valid reference set concepts.}
+
+\item{groupByConcept}{a boolean indicating whether to group descriptions
+by concept. Default is \code{FALSE}.}
+
+\item{searchMode}{a character string for the search mode. Must be either
+\code{"STANDARD"} (default) or \code{"REGEX"}.}
 }
 \value{
 An \code{httr} \code{\link[httr]{response}()} object.
@@ -137,10 +261,11 @@ with the operations built in the \href{https://github.com/IHTSDO/snowstorm}{Snow
 }
 \examples{
 # look up the pneumonia concept
-api_find_concept(conceptId = "233604007")
-api_find_concepts(term = "pneumonia")
-api_find_concepts(conceptIds = c("233604007", "68566005"))
+api_concept(conceptId = "233604007")
+api_concepts(term = "pneumonia")
+api_concepts(conceptIds = c("233604007", "68566005"))
 
 # get the content of the server request
-httr::content(api_find_concepts(term = "pneumonia"))
+httr::content(api_concepts(term = "pneumonia"))
 }
+\concept{api_operations}

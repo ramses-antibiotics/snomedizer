@@ -52,4 +52,10 @@ snomedizer_options_get()
 \seealso{
 To learn how to set environment variables in `.Rprofile` or `.Renviron`, see
 \link[base]{Startup}
+
+Other utilities: 
+\code{\link{result_completeness}()},
+\code{\link{result_flatten}()},
+\code{\link{snomed_public_endpoint_suggest}()}
 }
+\concept{utilities}

@@ -12,3 +12,10 @@ a string object containing the URL to a responsive SNOMED CT Terminology Server 
 \description{
 Find a public SNOMED-CT endpoint
 }
+\seealso{
+Other utilities: 
+\code{\link{result_completeness}()},
+\code{\link{result_flatten}()},
+\code{\link{snomedizer_options}}
+}
+\concept{utilities}

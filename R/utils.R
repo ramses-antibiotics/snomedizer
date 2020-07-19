@@ -25,7 +25,7 @@
 #'    \item{limit} an integer stating the the maximum number of results fetched. This is set to 50 The default
 #'         is 50.
 #' }
-#'
+#' @family utilities
 #' @return The factory setting of the target API parameter.
 #' @seealso To learn how to set environment variables in `.Rprofile` or `.Renviron`, see
 #' \link[base]{Startup}
@@ -40,8 +40,7 @@ snomedizer_options_get <- function(option.name = NULL){
   default_options <- list(
     endpoint = getOption("snomedizer.endpoint"),
     branch = getOption("snomedizer.branch"),
-    limit = getOption("snomedizer.limit"),
-    language = getOption("snomedizer.language")
+    limit = getOption("snomedizer.limit")
   )
   if ( any(is.null(default_options)) ) {
     print(default_options)
@@ -110,6 +109,7 @@ snomedizer_options_set <- function(endpoint = NULL,
 #' Find a public SNOMED-CT endpoint
 #'
 #' @return a string object containing the URL to a responsive SNOMED CT Terminology Server REST API endpoint.
+#' @family utilities
 #' @export
 snomed_public_endpoint_suggest <- function() {
   snomed_public_endpoints <- gsub("/*$", "", list(
@@ -150,7 +150,7 @@ snomed_public_endpoint_suggest <- function() {
 #' )
 snomed_endpoint_test <- function(endpoint, branch) {
 
-  output <- api_find_concept(conceptId = "233604007",
+  output <- api_concept(conceptId = "233604007",
                              endpoint = endpoint,
                              branch = branch)
 
@@ -167,12 +167,12 @@ snomed_endpoint_test <- function(endpoint, branch) {
 #' nested server results from an \code{\link{api_operations}}
 #'  into a single non-nested data frame
 #' @param x an `httr` \code{\link[httr]{response}()} object
-#'
 #' @return a data frame
 #' @export
+#' @family utilities
 #' @examples
 #' result_flatten(
-#'    api_find_concepts(term = "pneumonia",
+#'    api_concepts(term = "pneumonia",
 #'    activeFilter = TRUE,
 #'    limit = 10))
 result_flatten <- function(x) {
@@ -182,6 +182,36 @@ result_flatten <- function(x) {
   colnames(x) <- gsub("^items.", "", colnames(x))
 
   x
+}
+
+
+#' Check that results are complete
+#'
+#' @description Check whether the server request returned all the results,
+#' i.e. whether the `limit` < results `total`.
+#' @param x an `httr` \code{\link[httr]{response}()} object produce by an
+#' \code{\link{api_operations}} function.
+#' @param silent whether to display warnings (default is `FALSE`)
+#'
+#' @return a boolean indicating whether the set of results obtained is
+#' the complete set of results on the server.
+#' @export
+#' @family utilities
+#' @examples
+#' result_completeness(api_concepts(term = "pneumonia", limit = 10))
+result_completeness <- function(x, silent = FALSE) {
+  stopifnot(methods::is(x, "response"))
+  complete <- httr::content(x)$total <= httr::content(x)$limit
+
+  if(!complete & !silent) {
+    warning(paste0(
+      "\nThis server request returned just ", httr::content(x)$limit,
+      " of a total ", httr::content(x)$total, " results.",
+      "\nPlease increase the server `limit` to fetch all results."
+    ))
+  }
+
+  complete
 }
 
 
@@ -206,5 +236,24 @@ result_flatten <- function(x) {
     stop(paste0("The following arguments must have length <= 1: `",
                 paste(names(rest_url$query)[length(rest_url$query) > 1], collapse = "`, `"), "`"))
   }
+}
+
+
+#' Concatenated REST query array parameters
+#'
+#' @param param a character vector of values to concatenate
+#' @return a character string
+#' @keywords internal
+.concatenate_array_parameter <- function(param) {
+  if(length(param>1)){
+    # `AsIs` used to prevent URL encoding of the ampersand
+    # by httr:::compose_query (curl::curl_escape)
+    param <- I(
+      paste(param,
+            collapse = paste0("&", substitute(param), "="))
+    )
+  }
+
+  param
 }
 

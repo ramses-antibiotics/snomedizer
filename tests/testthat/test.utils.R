@@ -1,5 +1,7 @@
 
 
+# default options load ----------------------------------------------------
+
 test_that("default options load", {
   library(snomedizer)
   expect_equal(snomedizer_options_get()$limit, 50)
@@ -10,6 +12,8 @@ test_that("default options load", {
                 onLoadendpoint == "https://browser.ihtsdotools.org/snowstorm/snomed-ct")
 })
 
+# snomedizer_default_options ----------------------------------------------
+
 test_that("snomedizer_default_options", {
   expect_error(snomedizer_options_set())
   expect_error(snomedizer_options_set(endpoint = "https://URLWHICHDOESNOTEXIST"))
@@ -19,22 +23,27 @@ test_that("snomedizer_default_options", {
   )
 })
 
+# result_flatten ----------------------------------------------------------
+
 test_that("result_flatten", {
   pneumo <- result_flatten(
-    api_find_concepts(term = "pneumonia",
-                      activeFilter = TRUE,
-                      limit = 2))
+    api_concepts(term = "pneumonia",
+                 activeFilter = TRUE,
+                 limit = 2))
   expect_true(is.data.frame(pneumo))
   expect_equal(dim(pneumo)[1], 2)
 })
 
+# result_completeness -----------------------------------------------------
+
 test_that("result_completeness", {
-  pneumo <- api_find_concepts(term = "pneumonia",
+  pneumo <- api_concepts(term = "pneumonia",
                               activeFilter = TRUE,
                               limit = 10)
   expect_false(result_completeness(pneumo, silent = TRUE))
 })
 
+# .check_rest_query_length1 -----------------------------------------------
 
 test_that(".check_rest_query_length1", {
   expect_silent(.check_rest_query_length1(list()))
@@ -43,4 +52,19 @@ test_that(".check_rest_query_length1", {
 })
 
 
+# .concatenate_array_parameter --------------------------------------------
+
+test_that(".concatenate_array_parameter", {
+  conceptIds = c("233604007", "68566005")
+  expect_equal(
+    .concatenate_array_parameter(conceptIds),
+    I("233604007&conceptIds=68566005")
+  )
+
+  thingummy = c("233604007", "68566005")
+  expect_equal(
+    .concatenate_array_parameter(thingummy),
+    I("233604007&thingummy=68566005")
+  )
+})
 

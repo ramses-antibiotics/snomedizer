@@ -43,27 +43,47 @@ devtools::install_github("ramses-antibiotics/snomedizer")
 
 ## Example
 
-This is a basic example which shows you how to solve a common problem:
+Direct interfaces with the SNOMED-CT API exist, for instance
+\[\]{<https://snowstorm.ihtsdotools.org/snowstorm/snomed-ct/swagger-ui.html#!/Concepts/findConceptsUsingGET>}
+is implemented in `api_concepts()`:
 
 ``` r
 library(snomedizer)
-api_find_concepts(term = "pneumonia", activeFilter = TRUE)
-#> Response [https://snowstorm.ihtsdotools.org/snowstorm/snomed-ct/MAIN/concepts?term=pneumonia]
-#>   Date: 2020-04-15 16:06
+api_concepts(term = "pneumonia", activeFilter = TRUE)
+#> Response [https://snowstorm.ihtsdotools.org/snowstorm/snomed-ct/MAIN/concepts?term=pneumonia&limit=50&offset=0&activeFilter=TRUE]
+#>   Date: 2020-07-19 16:30
 #>   Status: 200
 #>   Content-Type: application/json;charset=UTF-8
 #>   Size: 18.4 kB
 #> {
 #>   "items" : [ {
-#>     "conceptId" : "60363000",
-#>     "active" : false,
-#>     "definitionStatus" : "PRIMITIVE",
+#>     "conceptId" : "233604007",
+#>     "active" : true,
+#>     "definitionStatus" : "FULLY_DEFINED",
 #>     "moduleId" : "900000000000207008",
-#>     "effectiveTime" : "20020131",
+#>     "effectiveTime" : "20150131",
 #>     "fsn" : {
 #>       "term" : "Pneumonia (disorder)",
 #>       "lang" : "en"
 #> ...
+```
+
+Wrapper functions provide simpler solutions for common operations and
+return outputs as data frames:
+
+``` r
+concepts_find(term = "pneumonia") %>% 
+  dplyr::select(conceptId, fsn.term, pt.term) %>% 
+  head()
+#> Warning in structure(list(message = as.character(message), call = call), : This server request returned just 50 of a total 562 results.
+#> Please increase the server limit.
+#>   conceptId                         fsn.term            pt.term
+#> 1 233604007             Pneumonia (disorder)          Pneumonia
+#> 2 161525004 History of pneumonia (situation)     H/O: pneumonia
+#> 3 416916004    Lipoid pneumonitis (disorder) Lipoid pneumonitis
+#> 4 300999006       Basal pneumonia (disorder)    Basal pneumonia
+#> 5 278516003       Lobar pneumonia (disorder)    Lobar pneumonia
+#> 6  75570004       Viral pneumonia (disorder)    Viral pneumonia
 ```
 
 ## Code of conduct
