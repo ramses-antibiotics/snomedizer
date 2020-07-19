@@ -36,32 +36,34 @@ install.packages("snomedizer")
 ```
 -->
 
-And the development version from [GitHub](https://github.com/) with:
+You can install the development version from [GitHub](https://github.com/ramses-antibiotics/snomedizer) with:
 
 ``` r
-# install.packages("devtools")
+install.packages("devtools")
 devtools::install_github("ramses-antibiotics/snomedizer")
 ```
 ## Example
 
-Direct interfaces with the SNOMED-CT API exist, for instance [\code{GET /{branch}/concepts}]{https://snowstorm.ihtsdotools.org/snowstorm/snomed-ct/swagger-ui.html#!/Concepts/findConceptsUsingGET} is implemented in `api_concepts()`:
+`snomedizer` provides a direct interface to the SNOMED CT Terminology Server REST API. 
+
+By default, the package uses the official [IHTSDO API endpoint](https://browser.ihtsdotools.org/snowstorm/snomed-ct/), subject to the [SNOMED International SNOMED CT Browser License Agreement](https://browser.ihtsdotools.org/) (restricted to reference purposes).
+
+For example, \code{[GET /branch/concepts](https://snowstorm.ihtsdotools.org/snowstorm/snomed-ct/swagger-ui.html#!/Concepts/findConceptsUsingGET)} is implemented in `api_concepts()`:
 
 ```{r api_concepts_pneumonia}
 library(snomedizer)
 api_concepts(term = "pneumonia", activeFilter = TRUE)
 ```
 
-Wrapper functions provide simpler solutions for common operations and return outputs as data frames:
+Simpler wrapper functions are available for common operations, which provide results as data frames:
 
 ```{r concepts_find_pneumonia, warning=TRUE}
-concepts_find(term = "pneumonia") %>% 
-  dplyr::select(conceptId, fsn.term, pt.term) %>% 
-  head()
+concepts_find(term = "pneumonia", limit = 5) %>% 
+  dplyr::select(conceptId, fsn.term, pt.term) 
 ```
 
 ## Code of conduct
 
-Please note that the 'snomedizer' project is released with a
-[Contributor Code of Conduct](CODE_OF_CONDUCT.md).
+The `snomedizer` project is released with a [Contributor Code of Conduct](CODE_OF_CONDUCT.md).
 
 By contributing to this project, you agree to abide by its terms.

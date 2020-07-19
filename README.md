@@ -34,24 +34,32 @@ install.packages("snomedizer")
 ```
 -->
 
-And the development version from [GitHub](https://github.com/) with:
+You can install the development version from
+[GitHub](https://github.com/ramses-antibiotics/snomedizer) with:
 
 ``` r
-# install.packages("devtools")
+install.packages("devtools")
 devtools::install_github("ramses-antibiotics/snomedizer")
 ```
 
 ## Example
 
-Direct interfaces with the SNOMED-CT API exist, for instance
-\[\]{<https://snowstorm.ihtsdotools.org/snowstorm/snomed-ct/swagger-ui.html#!/Concepts/findConceptsUsingGET>}
-is implemented in `api_concepts()`:
+`snomedizer` provides a direct interface to the SNOMED CT Terminology
+Server REST API.
+
+By default, the package uses the official [IHTSDO API
+endpoint](https://browser.ihtsdotools.org/snowstorm/snomed-ct/), subject
+to the [SNOMED International SNOMED CT Browser License
+Agreement](https://browser.ihtsdotools.org/) (restricted to reference
+purposes).
+
+For example,  is implemented in `api_concepts()`:
 
 ``` r
 library(snomedizer)
 api_concepts(term = "pneumonia", activeFilter = TRUE)
 #> Response [https://snowstorm.ihtsdotools.org/snowstorm/snomed-ct/MAIN/concepts?term=pneumonia&limit=50&offset=0&activeFilter=TRUE]
-#>   Date: 2020-07-19 16:30
+#>   Date: 2020-07-19 17:05
 #>   Status: 200
 #>   Content-Type: application/json;charset=UTF-8
 #>   Size: 18.4 kB
@@ -68,27 +76,26 @@ api_concepts(term = "pneumonia", activeFilter = TRUE)
 #> ...
 ```
 
-Wrapper functions provide simpler solutions for common operations and
-return outputs as data frames:
+Simpler wrapper functions are available for common operations, which
+provide results as data frames:
 
 ``` r
-concepts_find(term = "pneumonia") %>% 
-  dplyr::select(conceptId, fsn.term, pt.term) %>% 
-  head()
-#> Warning in structure(list(message = as.character(message), call = call), : This server request returned just 50 of a total 562 results.
-#> Please increase the server limit.
+concepts_find(term = "pneumonia", limit = 5) %>% 
+  dplyr::select(conceptId, fsn.term, pt.term) 
+#> Warning: 
+#> This server request returned just 5 of a total 562 results.
+#> Please increase the server `limit` to fetch all results.
 #>   conceptId                         fsn.term            pt.term
 #> 1 233604007             Pneumonia (disorder)          Pneumonia
 #> 2 161525004 History of pneumonia (situation)     H/O: pneumonia
 #> 3 416916004    Lipoid pneumonitis (disorder) Lipoid pneumonitis
 #> 4 300999006       Basal pneumonia (disorder)    Basal pneumonia
 #> 5 278516003       Lobar pneumonia (disorder)    Lobar pneumonia
-#> 6  75570004       Viral pneumonia (disorder)    Viral pneumonia
 ```
 
 ## Code of conduct
 
-Please note that the ‘snomedizer’ project is released with a
-[Contributor Code of Conduct](CODE_OF_CONDUCT.md).
+The `snomedizer` project is released with a [Contributor Code of
+Conduct](CODE_OF_CONDUCT.md).
 
 By contributing to this project, you agree to abide by its terms.

@@ -208,7 +208,7 @@ result_completeness <- function(x, silent = FALSE) {
       "\nThis server request returned just ", httr::content(x)$limit,
       " of a total ", httr::content(x)$total, " results.",
       "\nPlease increase the server `limit` to fetch all results."
-    ))
+    ), call. = FALSE)
   }
 
   complete
