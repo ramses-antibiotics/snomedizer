@@ -1,0 +1,74 @@
+@import url("https://fonts.googleapis.com/css?family=Open+Sans:600|Noto+Sans:400,400i,700,700i");/
+
+/*
+Roboto+Slab:400
+*/
+
+
+h2, .h2 {
+ font-size: 26px !important;
+}
+
+.version {
+  background-color: #00519f !important;
+}
+
+div.navbar, .navbar-link {
+ background-color:#005EB8 !important;
+ border-color:transparent !important;
+ color: white !important;
+}
+
+.navbar-default .navbar-nav > li > a {
+  color: white !important;	
+}
+
+.navbar-default .navbar-nav > .active > a {
+  background-color: #00519f;
+}
+
+a {
+ color:#0069bf !important;
+ text-decoration:none !important
+}
+
+h1,h2,h3,h4,h5,h6,.h1,.h2,.h3,.h4,.h5,.h6,.tooltip,.nav,.navbar-link {
+ font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif !important;
+ font-weight: 600 !important;
+}
+
+body {
+ font-family:"Noto Sans","Helvetica Neue",Helvetica,Arial,sans-serif !important;
+ color: #003850 !important;
+}
+
+
+code,
+kbd,
+pre,
+samp {
+ font-family:Menlo,Monaco,Consolas,"Roboto Mono", "DejaVu Sans Mono", "Liberation Mono",Courier,monospace
+}
+
+.contents h1 {
+  margin-top: -10px;
+  font-size: 32px;
+  padding-top: 80px;
+}
+
+contents h2 {
+  margin-top: -10px;
+}
+
+h1, .h1, h2, .h2, h3, .h3 {
+  margin-bottom: 15px;
+}
+
+.developers h2 {
+  visibility: hidden;
+}
+
+.developers h2:before {
+  content: "Authors";
+  visibility: visible;
+}

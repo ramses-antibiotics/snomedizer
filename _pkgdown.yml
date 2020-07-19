@@ -1,0 +1,16 @@
+destination: docs
+template:
+  params:
+    bootswatch: flatly
+
+url: https://ramses-antibiotics.github.io/
+
+authors:
+    University College London:
+      href: "https://www.ucl.ac.uk"
+      html: "<img src='reference/figures/partner-logos/UCL.png' height=28>"
+
+right:
+  - text: "PASS website"
+    icon: "fab fa-pill fa-lg"
+    href: https://pass-antibiotics.github.io/

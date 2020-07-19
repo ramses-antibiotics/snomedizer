@@ -1,12 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-<h1>
-
-<code>snomedizer</code>: R Interface to the SNOMED CT Terminology Server
-REST API
-
-</h1>
+# <img src="man/figures/logo.png" align="right" width="150px"/><code>snomedizer</code>: R Interface to the SNOMED CT Terminology Server REST API
 
 <!-- badges: start -->
 
@@ -59,7 +54,7 @@ For example,  is implemented in `api_concepts()`:
 library(snomedizer)
 api_concepts(term = "pneumonia", activeFilter = TRUE)
 #> Response [https://snowstorm.ihtsdotools.org/snowstorm/snomed-ct/MAIN/concepts?term=pneumonia&limit=50&offset=0&activeFilter=TRUE]
-#>   Date: 2020-07-19 17:05
+#>   Date: 2020-07-19 19:33
 #>   Status: 200
 #>   Content-Type: application/json;charset=UTF-8
 #>   Size: 18.4 kB
@@ -92,6 +87,18 @@ concepts_find(term = "pneumonia", limit = 5) %>%
 #> 4 300999006       Basal pneumonia (disorder)    Basal pneumonia
 #> 5 278516003       Lobar pneumonia (disorder)    Lobar pneumonia
 ```
+
+## Funders
+
+<div style="display: table-cell;">
+
+<a href="https://www.nihr.ac.uk/" ><img height="65px" style="vertical-align: bottom;" alt="National Institute of Health Research" src="man/figures/partner-logos/NIHR.svg" ></a>
+  
+<a href="https://www.esrc.ukri.org" ><img height="70px" style="vertical-align: bottom; bottom;margin-bottom: -7px;" alt="Economic and Social Research Council" src="man/figures/partner-logos/ESRC.svg" ></a>
+  
+<a href="https://www.ucl.ac.uk/infection-immunity/people/professor-judith-breuer/precision-amr"><img style="vertical-align: bottom;margin-bottom: -20px;" alt="Precision AMR" src="man/figures/partner-logos/pAMR.jpg" height="100px"></a>
+
+</div>
 
 ## Code of conduct
 
