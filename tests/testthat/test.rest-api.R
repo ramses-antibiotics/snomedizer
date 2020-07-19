@@ -67,3 +67,48 @@ test_that("api_version", {
   expect_true(exists("version", httr::content(api_version())))
 })
 
+test_that("api_descriptions", {
+  pneumo_no_desc <- api_browser_concepts(conceptId = "233604007",
+                                         descendantCountForm = NULL) %>%
+    httr::content()
+  expect_false(exists("descendantCount", pneumo_no_desc))
+  expect_equal(pneumo_no_desc$conceptId, "233604007")
+
+
+  pneumo_stated_desc <- api_browser_concepts(conceptId = "233604007",
+                                         descendantCountForm = "stated") %>%
+    httr::content()
+  expect_true(exists("descendantCount", pneumo_stated_desc))
+  expect_equal(pneumo_stated_desc$conceptId, "233604007")
+
+  expect_error(api_browser_concepts())
+  expect_error(api_browser_concepts(conceptId = "233604007",
+                                    descendantCountForm = "biduletruccestleurtruc"))
+})
+
+
+test_that("api_browser_concept_ancestors", {
+
+  pneumo <- httr::content(api_browser_concept_ancestors(conceptId = "233604007")) %>%
+    purrr::map(~dplyr::as_tibble(.x))%>% dplyr::bind_rows()
+  expect_true("609623002" %in% pneumo$conceptId)
+
+  expect_equal(
+    httr::content(api_browser_concept_ancestors(conceptId = "233604007",
+                                                form = NULL) ),
+    httr::content(api_browser_concept_ancestors(conceptId = "233604007"))
+  )
+  expect_error(api_browser_concept_ancestors(conceptId = "233604007",
+                                             form = "biduletruccestleurtruc"))
+})
+
+# test_that("snowstorm_branch_info", {
+#   expect_named(
+#     snowstorm_branch_info(),
+#     c(
+#       "path", "state", "containsContent", "locked", "creation",
+#       "base", "head", "creationTimestamp", "baseTimestamp",
+#       "headTimestamp", "metadata", "versionsReplacedCounts"
+#     )
+#   )
+# })

@@ -5,20 +5,27 @@
 #' with the operations built in the \href{https://github.com/IHTSDO/snowstorm}{Snowstorm API}
 #' @param accept_language a string specifying acceptable result languages
 #' @param activeFilter optional boolean: \itemize{
-#'     \item `TRUE` returns only active terminology
-#'     \item `FALSE` returns only inactive terminology
-#'     \item `NULL` (the default) returns both active and inactive terminology
+#'     \item \code{TRUE} returns only active terminology
+#'     \item \code{FALSE} returns only inactive terminology
+#'     \item \code{NULL} (the default) returns both active and inactive terminology
 #' }
 #' @param catch404 whether to display a warning if the API operation returns a
-#' '404 Not Found' status. Default is `TRUE`.
+#' '404 Not Found' status. Default is \code{TRUE}.
 #' @param concept character string of a SNOMED-CT concept id (for example:
 #' \code{"233604007"})
 #' @param conceptId character string of a SNOMED-CT concept id (for example:
 #' \code{"233604007"})
 #' @param conceptIds a character vector of SNOMED-CT concept ids (for example:
 #' \code{c("233604007", "68566005")})
+#' @param descendantCountForm a character string indicating whether to report
+#' the count of descendant concepts based on stated or inferred relationships.
+#' Must be one of \code{"inferred"}, \code{"stated"}, or \code{"additional"}.
+#' Default is \code{NULL} for no descendant count reported.
 #' @param endpoint the URL of a SNOMED CT Terminology Server REST API endpoint.
 #'  See \code{\link{snomedizer_options}}.
+#' @param form a character string indicating which ancestors/descendants to
+#' extract based on stated or inferred relationships. Must be one of
+#' \code{"inferred"} (default), \code{"stated"}, or \code{"additional"}.
 #' @param branch a string for the name of the API endpoint branch to use (most
 #' commonly \code{"MAIN"}). See \code{\link{snomedizer_options}}.
 #' @param limit integer for the maximum number of results to return.
@@ -28,7 +35,7 @@
 #'
 #' @param ... other REST API parameters
 #' @importFrom httr parse_url build_url GET
-#' @return An `httr` \code{\link[httr]{response}()} object.
+#' @return An \code{httr} \code{\link[httr]{response}()} object.
 #' @name api_operations
 #' @examples
 #' # look up the pneumonia concept
@@ -107,10 +114,8 @@ api_find_concepts <- function(
     activeFilter = activeFilter
   )
   rest_url$query <- append(rest_url$query, list(...))
-  if(any(sapply(rest_url$query, length) > 1)){
-    stop(paste0("The following arguments must have length <= 1: `",
-               paste(names(rest_url$query)[length(rest_url$query) > 1], collapse = "`, `"), "`"))
-  }
+  .check_rest_query_length1(rest_url)
+
   rest_url <- httr::build_url(rest_url)
   rest_result <- GET(rest_url)
 
@@ -149,10 +154,8 @@ api_branch <- function(endpoint = snomedizer_options_get("endpoint"),
                      "branches",
                      branch)
   rest_url$query <- list(...)
-  if(any(sapply(rest_url$query, length) > 1)){
-    stop(paste0("The following arguments must have length <= 1: `",
-                paste(names(rest_url$query)[length(rest_url$query) > 1], collapse = "`, `"), "`"))
-  }
+  .check_rest_query_length1(rest_url)
+
   rest_url <- httr::build_url(rest_url)
   rest_result <- GET(rest_url)
 
@@ -177,10 +180,8 @@ api_branch_descendants <- function(
                      branch,
                      "children")
   rest_url$query <- list(...)
-  if(any(sapply(rest_url$query, length) > 1)){
-    stop(paste0("The following arguments must have length <= 1: `",
-                paste(names(rest_url$query)[length(rest_url$query) > 1], collapse = "`, `"), "`"))
-  }
+  .check_rest_query_length1(rest_url)
+
   rest_url <- httr::build_url(rest_url)
   rest_result <- GET(rest_url)
 
@@ -212,10 +213,8 @@ api_descriptions <- function(
     limit = limit
   )
   rest_url$query <- append(rest_url$query, list(...))
-  if(any(sapply(rest_url$query, length) > 1)){
-    stop(paste0("The following arguments must have length <= 1: `",
-                paste(names(rest_url$query)[length(rest_url$query) > 1], collapse = "`, `"), "`"))
-  }
+  .check_rest_query_length1(rest_url)
+
   rest_url <- httr::build_url(rest_url)
   rest_result <- GET(rest_url)
 
@@ -246,3 +245,77 @@ api_version <- function(
   rest_result
 }
 
+#' @rdname api_operations
+#' @export
+api_browser_concepts <- function(
+    conceptId,
+    descendantCountForm = c(NULL, "inferred", "stated", "additional"),
+    endpoint = snomedizer_options_get("endpoint"),
+    branch = snomedizer_options_get("branch"),
+    accept_language = snomedizer_options_get("language"),
+    catch404 = TRUE
+  ) {
+
+  descendantCountForm <- descendantCountForm[1]
+  if(!is.null(descendantCountForm)) {
+    stopifnot(descendantCountForm %in% c("inferred", "stated", "additional"))
+  }
+
+  rest_url <- httr::parse_url(endpoint)
+  rest_url$path <- c(rest_url$path,
+                     "browser",
+                     branch,
+                     "concepts",
+                     conceptId)
+  rest_url$query <- list(
+    descendantCountForm = descendantCountForm
+  )
+  .check_rest_query_length1(rest_url)
+
+  rest_url <- httr::build_url(rest_url)
+  rest_result <- GET(rest_url)
+
+  if(catch404){
+    .catch404(rest_result)
+  }
+
+  rest_result
+}
+
+#' @rdname api_operations
+#' @export
+api_browser_concept_ancestors <- function(
+  conceptId,
+  form = c("inferred", "stated", "additional"),
+  endpoint = snomedizer_options_get("endpoint"),
+  branch = snomedizer_options_get("branch"),
+  accept_language = snomedizer_options_get("language"),
+  catch404 = TRUE
+) {
+
+  form <- form[1]
+  if(!is.null(form)) {
+    stopifnot(form %in% c("inferred", "stated", "additional"))
+  }
+
+  rest_url <- httr::parse_url(endpoint)
+  rest_url$path <- c(rest_url$path,
+                     "browser",
+                     branch,
+                     "concepts",
+                     conceptId,
+                     "ancestors")
+  rest_url$query <- list(
+    form = form
+  )
+  .check_rest_query_length1(rest_url)
+
+  rest_url <- httr::build_url(rest_url)
+  rest_result <- GET(rest_url)
+
+  if(catch404){
+    .catch404(rest_result)
+  }
+
+  rest_result
+}

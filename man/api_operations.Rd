@@ -9,6 +9,8 @@
 \alias{api_branch_descendants}
 \alias{api_descriptions}
 \alias{api_version}
+\alias{api_browser_concepts}
+\alias{api_browser_concept_ancestors}
 \title{SNOMED CT Terminology Server REST API operations}
 \usage{
 api_find_concept(
@@ -62,6 +64,24 @@ api_descriptions(
 )
 
 api_version(endpoint = snomedizer_options_get("endpoint"), catch404 = TRUE)
+
+api_browser_concepts(
+  conceptId,
+  descendantCountForm = c(NULL, "inferred", "stated", "additional"),
+  endpoint = snomedizer_options_get("endpoint"),
+  branch = snomedizer_options_get("branch"),
+  accept_language = snomedizer_options_get("language"),
+  catch404 = TRUE
+)
+
+api_browser_concept_ancestors(
+  conceptId,
+  form = c("inferred", "stated", "additional"),
+  endpoint = snomedizer_options_get("endpoint"),
+  branch = snomedizer_options_get("branch"),
+  accept_language = snomedizer_options_get("language"),
+  catch404 = TRUE
+)
 }
 \arguments{
 \item{conceptId}{character string of a SNOMED-CT concept id (for example:
@@ -76,7 +96,7 @@ commonly \code{"MAIN"}). See \code{\link{snomedizer_options}}.}
 \item{accept_language}{a string specifying acceptable result languages}
 
 \item{catch404}{whether to display a warning if the API operation returns a
-'404 Not Found' status. Default is `TRUE`.}
+'404 Not Found' status. Default is \code{TRUE}.}
 
 \item{term}{character vector of terms to search}
 
@@ -84,9 +104,9 @@ commonly \code{"MAIN"}). See \code{\link{snomedizer_options}}.}
 \code{c("233604007", "68566005")})}
 
 \item{activeFilter}{optional boolean: \itemize{
-    \item `TRUE` returns only active terminology
-    \item `FALSE` returns only inactive terminology
-    \item `NULL` (the default) returns both active and inactive terminology
+    \item \code{TRUE} returns only active terminology
+    \item \code{FALSE} returns only inactive terminology
+    \item \code{NULL} (the default) returns both active and inactive terminology
 }}
 
 \item{limit}{integer for the maximum number of results to return.
@@ -98,9 +118,18 @@ See \code{\link{snomedizer_options}}.}
 
 \item{concept}{character string of a SNOMED-CT concept id (for example:
 \code{"233604007"})}
+
+\item{descendantCountForm}{a character string indicating whether to report
+the count of descendant concepts based on stated or inferred relationships.
+Must be one of \code{"inferred"}, \code{"stated"}, or \code{"additional"}.
+Default is \code{NULL} for no descendant count reported.}
+
+\item{form}{a character string indicating which ancestors/descendants to
+extract based on stated or inferred relationships. Must be one of
+\code{"inferred"} (default), \code{"stated"}, or \code{"additional"}.}
 }
 \value{
-An `httr` \code{\link[httr]{response}()} object.
+An \code{httr} \code{\link[httr]{response}()} object.
 }
 \description{
 Low-level wrapper functions based on \link{httr} for interfacing

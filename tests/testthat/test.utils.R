@@ -34,15 +34,13 @@ test_that("result_completeness", {
                               limit = 10)
   expect_false(result_completeness(pneumo, silent = TRUE))
 })
-#
-# test_that("snowstorm_branch_info", {
-#   expect_named(
-#     snowstorm_branch_info(),
-#     c(
-#       "path", "state", "containsContent", "locked", "creation",
-#       "base", "head", "creationTimestamp", "baseTimestamp",
-#       "headTimestamp", "metadata", "versionsReplacedCounts"
-#     )
-#   )
-# })
+
+
+test_that(".check_rest_query_length1", {
+  expect_silent(.check_rest_query_length1(list()))
+  expect_silent(.check_rest_query_length1(list(query = list(a = 1, b = 2))))
+  expect_error(.check_rest_query_length1(list(query = list(a = 1:2))))
+})
+
+
 
