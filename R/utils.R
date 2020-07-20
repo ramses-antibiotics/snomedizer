@@ -178,6 +178,10 @@ snomed_endpoint_test <- function(endpoint, branch) {
 result_flatten <- function(x) {
   x <- httr::content(x, as = 'text')
   x <- jsonlite::fromJSON(x, flatten = TRUE)
+  empty_index <- sapply(x, length) == 0
+  if(any(empty_index)) {
+    x[empty_index] <- NA
+  }
   x <- as.data.frame(x, stringsAsFactors = FALSE)
   colnames(x) <- gsub("^items.", "", colnames(x))
 

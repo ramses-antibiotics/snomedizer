@@ -19,7 +19,7 @@ concepts_find(
 \item{conceptIds}{a character vector of one or more SNOMED-CT codes
 to search}
 
-\item{ecl}{a character expression contraint. Consult the
+\item{ecl}{a character expression constraint query (with full inference). Consult the
 \href{http://snomed.org/ecl}{Expression Constraint Language guide}
 for more detail.}
 
@@ -28,14 +28,15 @@ Consult the \href{http://snomed.org/gl}{SNOMED glossary} for more detail.}
 
 \item{silent}{whether to hide warnings. Default is `FALSE`}
 
-\item{...}{other optional arguments listed in \code{\link{api_operations}}}
+\item{...}{other optional arguments listed in \code{\link{api_operations}}, such as
+\code{endpoint}, \code{branch} or \code{limit}}
 }
 \value{
 a data frame
 }
 \description{
-A wrapper function searching for a term or a list of
-concepts
+A wrapper function for \code{\link{api_concepts}} searching for a
+term or a list of concepts
 }
 \examples{
 # Free text search

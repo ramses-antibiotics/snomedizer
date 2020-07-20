@@ -6,6 +6,8 @@
 \alias{snomedizer-package}
 \title{snomedizer: R Interface to the SNOMED CT Terminology Server REST API}
 \description{
+\if{html}{\figure{logo.png}{options: align='right' alt='logo' width='120'}}
+
 >
    A package to manipulate the SNOMED clinical ontology using the 
    SNOMED CT Terminology Server REST API <https://github.com/IHTSDO/snowstorm>.
@@ -65,6 +67,14 @@ following sub-license limitations: \itemize{
 }
 }
 
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/ramses-antibiotics/snomedizer}
+  \item Report bugs at \url{https://github.com/ramses-antibiotics/snomedizer/issues}
+}
+
+}
 \author{
 \strong{Maintainer}: Peter Dutey-Magni \email{p.dutey-magni@ucl.ac.uk} (\href{https://orcid.org/0000-0002-8942-9836}{ORCID}) [researcher]
 

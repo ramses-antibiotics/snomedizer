@@ -39,6 +39,12 @@
 #' the count of descendant concepts based on stated or inferred relationships.
 #' Must be one of \code{"inferred"}, \code{"stated"}, or \code{"additional"}.
 #' Default is \code{NULL} for no descendant count reported.
+#' @param ecl a character expression constraint query (with full relationship inference).
+#' Consult the \href{http://snomed.org/ecl}{Expression Constraint Language guide}
+#' for more detail.
+#' @param eclStated a character expression constraint query (limited to stated relationships).
+#' Consult the \href{http://snomed.org/ecl}{Expression Constraint Language guide}
+#' for more detail.
 #' @param endpoint the URL of a SNOMED CT Terminology Server REST API endpoint.
 #'  See \code{\link{snomedizer_options}}.
 #' @param form a character string indicating which ancestors/parents or
@@ -123,6 +129,8 @@ api_concept <- function(conceptId,
 api_concepts <- function(
   term = NULL,
   conceptIds = NULL,
+  ecl = NULL,
+  eclStated = NULL,
   activeFilter = NULL,
   endpoint = snomedizer_options_get("endpoint"),
   branch = snomedizer_options_get("branch"),
@@ -132,7 +140,11 @@ api_concepts <- function(
   ...
 ) {
 
-  stopifnot(is.character(conceptIds) | is.null(conceptIds))
+  stopifnot(is.vector(conceptIds) | is.null(conceptIds))
+  stopifnot(length(term) == 1 | is.null(term))
+  stopifnot(length(ecl) == 1 | is.null(ecl))
+  stopifnot(length(eclStated) == 1 | is.null(eclStated))
+
   conceptIds <- .concatenate_array_parameter(conceptIds)
   stopifnot(is.null(offset) | length(offset) == 1)
   stopifnot(is.null(limit) | length(limit) == 1)
@@ -144,6 +156,8 @@ api_concepts <- function(
   rest_url$query <- list(
     term = term,
     conceptIds = conceptIds,
+    ecl = ecl,
+    eclStated = eclStated,
     limit = limit,
     offset = offset,
     activeFilter = activeFilter

@@ -32,6 +32,8 @@ test_that("result_flatten", {
                  limit = 2))
   expect_true(is.data.frame(pneumo))
   expect_equal(dim(pneumo)[1], 2)
+
+  expect_equal(result_flatten(api_concepts(conceptIds = "thingummy"))$items, NA)
 })
 
 # result_completeness -----------------------------------------------------

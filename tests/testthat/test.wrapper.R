@@ -1,5 +1,7 @@
 
 
+# concepts_find -----------------------------------------------------------
+
 test_that("concepts_find", {
   expect_warning(asthma_concepts <- concepts_find(term = "asthma"))
   expect_true("195967001" %in% asthma_concepts$conceptId)
@@ -21,8 +23,21 @@ test_that("concepts_find", {
   expect_equal(ecl_query_concept$conceptId, "312124009")
 })
 
-#
-# test_that("snowstorm_fetch_children", {
-#   expect_warning(asthma_concepts <- snowstorm_fetch_children(c("195967001")))
-#   expect_true("304527002" %in% asthma_concepts$conceptId)
-# })
+
+
+# concepts_descendants ----------------------------------------------------
+
+test_that("concepts_descendants", {
+
+  infections <- concepts_descendants(conceptIds = c("233604007", "68566005"),
+                                     direct_descendants = TRUE, activeFilter = TRUE)
+  expect_false("882784691000119100" %in% infections$`233604007`$conceptId)
+  expect_false("1469007" %in% infections$`68566005`$conceptId)
+  expect_true("422747000" %in% infections$`68566005`$conceptId)
+
+  expect_warning(concepts_descendants(conceptIds = c("233604007", "68566005"), limit = 2))
+  infections <- concepts_descendants(conceptIds = c("233604007", "68566005"), limit = 300)
+  expect_true("882784691000119100" %in% infections$`233604007`$conceptId)
+
+})
+

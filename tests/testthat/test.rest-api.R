@@ -38,6 +38,10 @@ test_that("api_concepts", {
   infection_id <- api_concepts(conceptIds = "233604007",  ecl = ">404684003|Clinical finding|")
   infection_id_code <- sapply(httr::content(infection_id)[["items"]], function(X) X$conceptId)
   expect_equal(infection_id_code, list())
+
+  uti_children <- sapply(httr::content(api_concepts(ecl = "<!68566005"))[["items"]],
+                         function(X) X$conceptId)
+  expect_true("422747000" %in% uti_children)
 })
 
 

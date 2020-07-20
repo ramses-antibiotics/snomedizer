@@ -29,6 +29,8 @@ api_concept(
 api_concepts(
   term = NULL,
   conceptIds = NULL,
+  ecl = NULL,
+  eclStated = NULL,
   activeFilter = NULL,
   endpoint = snomedizer_options_get("endpoint"),
   branch = snomedizer_options_get("branch"),
@@ -165,6 +167,14 @@ commonly \code{"MAIN"}). See \code{\link{snomedizer_options}}.}
 
 \item{conceptIds}{a character vector of SNOMED-CT concept ids (for example:
 \code{c("233604007", "68566005")})}
+
+\item{ecl}{a character expression constraint query (with full relationship inference).
+Consult the \href{http://snomed.org/ecl}{Expression Constraint Language guide}
+for more detail.}
+
+\item{eclStated}{a character expression constraint query (limited to stated relationships).
+Consult the \href{http://snomed.org/ecl}{Expression Constraint Language guide}
+for more detail.}
 
 \item{activeFilter}{optional boolean: \itemize{
     \item \code{TRUE} returns only active terminology
