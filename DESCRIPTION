@@ -12,6 +12,8 @@ Authors@R: c(
 Description: >
    A package to manipulate the SNOMED clinical ontology using the 
    SNOMED CT Terminology Server REST API <https://github.com/IHTSDO/snowstorm>.
+URL: https://github.com/ramses-antibiotics/snomedizer
+BugReports: https://github.com/ramses-antibiotics/snomedizer/issues
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
