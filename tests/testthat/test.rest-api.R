@@ -42,6 +42,12 @@ test_that("api_concepts", {
   uti_children <- sapply(httr::content(api_concepts(ecl = "<!68566005"))[["items"]],
                          function(X) X$conceptId)
   expect_true("422747000" %in% uti_children)
+
+
+  # invalid arguments
+  expect_error(api_concepts(conceptIds = "422747000", limit = "blurgh"))
+  expect_error(api_concepts(conceptIds = "422747000", limit = "400000"))
+
 })
 
 

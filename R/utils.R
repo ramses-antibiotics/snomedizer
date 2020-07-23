@@ -75,10 +75,9 @@ snomedizer_options_set <- function(endpoint = NULL,
     options(snomedizer.branch = utils::URLencode(branch))
   }
 
+
   if (!is.null(limit)) {
-    stopifnot(length(limit) == 1)
-    stopifnot(is.integer(limit))
-    stopifnot(!is.na(limit))
+    limit <- .validate_limit(limit)
     options(snomedizer.limit = limit)
   }
 
@@ -261,3 +260,21 @@ result_completeness <- function(x, silent = FALSE) {
   param
 }
 
+
+.validate_limit <- function(limit) {
+  if(is.null(limit)) {
+    stop("`limit` must not be NULL")
+  }
+  if(is.na(limit)) {
+    stop("`limit` must not be missing")
+  }
+  if(length(limit) != 1) {
+    stop("`limit` must have length == 1")
+  }
+  if(!is.numeric(limit) || limit < 0 ||
+     # check is whole number
+     abs(limit - round(limit)) >= .Machine$double.eps^0.5) {
+    stop("`limit` must be a positive integer")
+  }
+  as.integer(limit)
+}

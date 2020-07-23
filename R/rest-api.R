@@ -147,7 +147,7 @@ api_concepts <- function(
 
   conceptIds <- .concatenate_array_parameter(conceptIds)
   stopifnot(is.null(offset) | length(offset) == 1)
-  stopifnot(is.null(limit) | length(limit) == 1)
+  limit <- .validate_limit(limit)
 
   rest_url <- httr::parse_url(endpoint)
   rest_url$path <- c(rest_url$path,
@@ -189,9 +189,9 @@ api_concept_descendants <- function(
 
   stopifnot(is.character(conceptId))
   stopifnot(is.null(offset) | length(offset) == 1)
-  stopifnot(is.null(limit) | length(limit) == 1)
   stopifnot(length(conceptId) == 1)
   stopifnot(stated %in% c(TRUE, FALSE))
+  limit <- .validate_limit(limit)
 
   rest_url <- httr::parse_url(endpoint)
   rest_url$path <- c(rest_url$path,
@@ -323,6 +323,7 @@ api_descriptions <- function(
 
   stopifnot(is.character(concept))
   stopifnot(length(concept) == 1)
+  limit <- .validate_limit(limit)
 
   rest_url <- httr::parse_url(endpoint)
   rest_url$path <- c(rest_url$path,
@@ -586,7 +587,7 @@ api_browser_concept_descriptions <- function(
   ))
   stopifnot(searchMode %in% c("STANDARD", "REGEX"))
   stopifnot(is.null(offset) | length(offset) == 1)
-  stopifnot(is.null(limit) | length(limit) == 1)
+  limit <- .validate_limit(limit)
 
   rest_url <- httr::parse_url(endpoint)
   rest_url$path <- c(rest_url$path,
