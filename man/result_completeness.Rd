@@ -14,7 +14,8 @@ result_completeness(x, silent = FALSE)
 }
 \value{
 a boolean indicating whether the set of results obtained is
-the complete set of results on the server.
+the complete set of results on the server. If the REST request failed
+(eg: 404 error), the function returns \code{NULL}
 }
 \description{
 Check whether the server request returned all the results,

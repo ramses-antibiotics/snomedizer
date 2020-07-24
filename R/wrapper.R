@@ -52,9 +52,15 @@ concepts_find <- function(term = NULL,
     activeFilter = activeFilter,
     ...
   )
-  ignore <- result_completeness(x, silent = silent)
 
-  result_flatten(x)
+  if(httr::http_error(x)) {
+    return(httr::content(x))
+  } else if(length(httr::content(x)$items) == 0) {
+    return(NULL)
+  } else {
+    ignore <- result_completeness(x)
+    return(result_flatten(x))
+  }
 }
 
 
@@ -101,10 +107,17 @@ concepts_descendants <- function(conceptIds,
       ecl = ecl,
       activeFilter = activeFilter,
       ...)
-    ignore <- result_completeness(descendants)
+
     progress_bar$tick()$print()
 
-    result_flatten(descendants)
+    if(httr::http_error(descendants)) {
+      return(httr::content(descendants))
+    } else if(length(httr::content(descendants)$items) == 0) {
+      return(NULL)
+    } else {
+      ignore <- result_completeness(descendants)
+      return(result_flatten(descendants))
+    }
   }, ...)
   names(x) <- conceptIds
 

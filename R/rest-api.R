@@ -56,8 +56,9 @@
 #' children/descendants counter should be included in the result
 #' @param language vector of two-character language codes to include
 #' (example: \code{c("en", "de")}).
-#' @param limit integer for the maximum number of results to return.
-#' See \code{\link{snomedizer_options}}.
+#' @param limit a positive integer for the maximum number of results to return.
+#' See \code{\link{snomedizer_options}}. The maximum limit on public endpoints
+#' is 10,000.
 #' @param module character vector of SNOMED-CT modules to include (example:
 #' \code{"900000000000207008"})
 #' @param offset an integer indicating the number of results to skip
@@ -118,7 +119,7 @@ api_concept <- function(conceptId,
   rest_result <- GET(rest_url)
 
   if(catch404) {
-    .catch404(rest_result)
+    .catch_http_error(rest_result)
   }
 
   rest_result
@@ -169,7 +170,7 @@ api_concepts <- function(
   rest_result <- GET(rest_url)
 
   if(catch404){
-    .catch404(rest_result)
+    .catch_http_error(rest_result)
   }
 
   rest_result
@@ -209,7 +210,7 @@ api_concept_descendants <- function(
   rest_result <- GET(rest_url)
 
   if(catch404) {
-    .catch404(rest_result)
+    .catch_http_error(rest_result)
   }
 
   rest_result
@@ -238,7 +239,7 @@ api_concept_descriptions <- function(
   rest_result <- GET(rest_url)
 
   if(catch404) {
-    .catch404(rest_result)
+    .catch_http_error(rest_result)
   }
 
   rest_result
@@ -254,7 +255,7 @@ api_all_branches <- function(endpoint = snomedizer_options_get("endpoint"),
   rest_result <- GET(rest_url)
 
   if(catch404){
-    .catch404(rest_result)
+    .catch_http_error(rest_result)
   }
 
   rest_result
@@ -278,7 +279,7 @@ api_branch <- function(endpoint = snomedizer_options_get("endpoint"),
   rest_result <- GET(rest_url)
 
   if(catch404){
-    .catch404(rest_result)
+    .catch_http_error(rest_result)
   }
 
   rest_result
@@ -304,7 +305,7 @@ api_branch_descendants <- function(
   rest_result <- GET(rest_url)
 
   if(catch404){
-    .catch404(rest_result)
+    .catch_http_error(rest_result)
   }
 
   rest_result
@@ -341,7 +342,7 @@ api_descriptions <- function(
   rest_result <- GET(rest_url)
 
   if(catch404){
-    .catch404(rest_result)
+    .catch_http_error(rest_result)
   }
 
   rest_result
@@ -360,7 +361,7 @@ api_version <- function(
   rest_result <- GET(rest_url)
 
   if(catch404){
-    .catch404(rest_result)
+    .catch_http_error(rest_result)
   }
 
   rest_result
@@ -398,7 +399,7 @@ api_browser_concepts <- function(
   rest_result <- GET(rest_url)
 
   if(catch404){
-    .catch404(rest_result)
+    .catch_http_error(rest_result)
   }
 
   rest_result
@@ -437,7 +438,7 @@ api_browser_concept_ancestors <- function(
   rest_result <- GET(rest_url)
 
   if(catch404){
-    .catch404(rest_result)
+    .catch_http_error(rest_result)
   }
 
   rest_result
@@ -482,7 +483,7 @@ api_browser_concept_children <- function(
   rest_result <- GET(rest_url)
 
   if(catch404){
-    .catch404(rest_result)
+    .catch_http_error(rest_result)
   }
 
   rest_result
@@ -535,7 +536,7 @@ api_browser_concept_parents <- function(
   rest_result <- GET(rest_url)
 
   if(catch404){
-    .catch404(rest_result)
+    .catch_http_error(rest_result)
   }
 
   rest_result
@@ -618,7 +619,7 @@ api_browser_concept_descriptions <- function(
   rest_result <- GET(rest_url)
 
   if(catch404){
-    .catch404(rest_result)
+    .catch_http_error(rest_result)
   }
 
   rest_result
@@ -638,7 +639,7 @@ api_descriptions_semantic_tags <- function(
                      "semantictags")
   rest_result <- GET(rest_url)
   if(catch404){
-    .catch404(rest_result)
+    .catch_http_error(rest_result)
   }
 
   rest_result

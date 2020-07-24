@@ -74,8 +74,9 @@ test_that(".concatenate_array_parameter", {
 # .validate_limit ---------------------------------------------------------
 
 test_that(".validate_limit", {
-  expect_equal(.validate_limit(1e+05), 100000L)
+  expect_equal(.validate_limit(1e+04), 10000L)
   expect_error(.validate_limit("100"))
   expect_error(.validate_limit( "blurgh"))
   expect_error(.validate_limit(-100L))
+  expect_warning(.validate_limit(100000))
 })

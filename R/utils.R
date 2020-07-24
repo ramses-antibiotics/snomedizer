@@ -197,13 +197,15 @@ result_flatten <- function(x) {
 #' @param silent whether to display warnings (default is `FALSE`)
 #'
 #' @return a boolean indicating whether the set of results obtained is
-#' the complete set of results on the server.
+#' the complete set of results on the server. If the REST request failed
+#' (eg: 404 error), the function returns \code{NULL}
 #' @export
 #' @family utilities
 #' @examples
 #' result_completeness(api_concepts(term = "pneumonia", limit = 10))
 result_completeness <- function(x, silent = FALSE) {
   stopifnot(methods::is(x, "response"))
+
   complete <- httr::content(x)$total <= httr::content(x)$limit
 
   if(!complete & !silent) {
@@ -218,13 +220,16 @@ result_completeness <- function(x, silent = FALSE) {
 }
 
 
-#' Catch 404 errors in a server request
+#' Catch HTTP errors in a server request
 #'
 #' @param x a \code{\link{httr}{response}} object from a server request
 #' @keywords internal
-.catch404 <- function(x) {
-  if(x$status_code == 404) {
-    warning(simpleWarning("404 Not Found"))
+.catch_http_error <- function(x) {
+  if(httr::http_error(x)) {
+    warning(paste0(
+      "Status ", x$status_code, " ", httr::content(x)$error,
+      "\n", httr::content(x)$message
+    ), call. = FALSE)
   }
 }
 
@@ -276,5 +281,9 @@ result_completeness <- function(x, silent = FALSE) {
      abs(limit - round(limit)) >= .Machine$double.eps^0.5) {
     stop("`limit` must be a positive integer")
   }
+  if(limit > 10000){
+    warning("Please not the maximum limit on public endpoints is 10,000.")
+  }
+
   as.integer(limit)
 }

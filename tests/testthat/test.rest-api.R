@@ -47,7 +47,8 @@ test_that("api_concepts", {
   # invalid arguments
   expect_error(api_concepts(conceptIds = "422747000", limit = "blurgh"))
   expect_error(api_concepts(conceptIds = "422747000", limit = "400000"))
-
+  expect_warning(api_concepts(ecl = "blur&*("))
+  expect_warning(api_concepts(conceptId = "233604007", limit = 100000))
 })
 
 
@@ -123,7 +124,6 @@ test_that("api_browser_concepts", {
   expect_true(exists("descendantCount", pneumo_stated_desc))
   expect_equal(pneumo_stated_desc$conceptId, "233604007")
 
-  expect_error(api_browser_concepts())
   expect_error(api_browser_concepts(conceptId = "233604007",
                                     descendantCountForm = "biduletruccestleurtruc"))
 })

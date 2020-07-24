@@ -182,8 +182,9 @@ for more detail.}
     \item \code{NULL} (the default) returns both active and inactive terminology
 }}
 
-\item{limit}{integer for the maximum number of results to return.
-See \code{\link{snomedizer_options}}.}
+\item{limit}{a positive integer for the maximum number of results to return.
+See \code{\link{snomedizer_options}}. The maximum limit on public endpoints
+is 10,000.}
 
 \item{offset}{an integer indicating the number of results to skip}
 
