@@ -18,9 +18,10 @@ test_that("snomedizer_default_options", {
   expect_error(snomedizer_options_set())
   expect_error(snomedizer_options_set(endpoint = "https://URLWHICHDOESNOTEXIST"))
   expect_invisible(snomedizer_options_set(endpoint = snomed_public_endpoint_suggest()))
-  expect_warning(
-    expect_error(snomedizer_options_set(endpoint = "http://detectportal.firefox.com/success.txt"))
-  )
+  expect_error(
+    expect_warning(
+      snomedizer_options_set(
+        endpoint = "http://detectportal.firefox.com/success.txt")))
 })
 
 # result_flatten ----------------------------------------------------------

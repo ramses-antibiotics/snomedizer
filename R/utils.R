@@ -98,7 +98,6 @@ snomedizer_options_set <- function(endpoint = NULL,
                              branch = snomedizer_options_get()$branch)) {
       stop("`endpoint` is not returning valid answers.")
     }
-
   }
 
   invisible()
@@ -150,8 +149,8 @@ snomed_public_endpoint_suggest <- function() {
 snomed_endpoint_test <- function(endpoint, branch) {
 
   output <- api_concept(conceptId = "233604007",
-                             endpoint = endpoint,
-                             branch = branch)
+                        endpoint = endpoint,
+                        branch = branch)
 
   # Determine whether the status code starts with a 2
   return(
@@ -227,8 +226,8 @@ result_completeness <- function(x, silent = FALSE) {
 .catch_http_error <- function(x) {
   if(httr::http_error(x)) {
     warning(paste0(
-      "Status ", x$status_code, " ", httr::content(x)$error,
-      "\n", httr::content(x)$message
+      "Status ", x$status_code, " ", httr::content(x, encoding = "UTF-8")$error,
+      "\n", httr::content(x, encoding = "UTF-8")$message
     ), call. = FALSE)
   }
 }

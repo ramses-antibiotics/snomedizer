@@ -86,9 +86,10 @@ concepts_find <- function(term = NULL,
 #'
 #' @examples
 #' # This will trigger a warning using the default limit set by snomedizer_options_get("limit")
-#' concepts_descendants(conceptIds = c("233604007", "68566005"))
+#' pneumonia_concepts <- concepts_descendants(conceptIds = "233604007")
 #' # Raising the limit
-#' concepts_descendants(conceptIds = c("233604007", "68566005"), limit = 300)
+#' pneumonia_concepts <- concepts_descendants(conceptIds = "233604007", limit = 300)
+#' head(pneumonia_concepts$`233604007`)
 concepts_descendants <- function(conceptIds,
                                  direct_descendants = FALSE,
                                  activeFilter = TRUE,
@@ -123,6 +124,8 @@ concepts_descendants <- function(conceptIds,
 
   x
 }
+
+
 
 #' #' Get all SNOMED-CT infection concepts
 #' #'
