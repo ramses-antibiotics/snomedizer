@@ -16,6 +16,9 @@
 #' @param ... other optional arguments listed in \code{\link{api_operations}}, such as
 #' \code{endpoint}, \code{branch} or \code{limit}
 #' @return a data frame
+#' @section Disclaimer:
+#' In order to use SNOMED-CT, a licence is required which depends both on the country you are
+#' based in, and the purpose of your work. See details on \link{snomedizer}.
 #' @export
 #' @family wrapper
 #' @examples
@@ -83,7 +86,9 @@ concepts_find <- function(term = NULL,
 #'
 #' @return a named list of data frames
 #' @export
-#'
+#' @section Disclaimer:
+#' In order to use SNOMED-CT, a licence is required which depends both on the country you are
+#' based in, and the purpose of your work. See details on \link{snomedizer}.
 #' @examples
 #' # This will trigger a warning using the default limit set by snomedizer_options_get("limit")
 #' pneumonia_concepts <- concepts_descendants(conceptIds = "233604007")

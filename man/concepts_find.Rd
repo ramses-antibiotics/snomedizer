@@ -38,6 +38,12 @@ a data frame
 A wrapper function for \code{\link{api_concepts}} searching for a
 term or a list of concepts
 }
+\section{Disclaimer}{
+
+In order to use SNOMED-CT, a licence is required which depends both on the country you are
+based in, and the purpose of your work. See details on \link{snomedizer}.
+}
+
 \examples{
 # Free text search
 concepts_find("asthma")

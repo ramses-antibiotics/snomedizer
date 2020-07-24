@@ -35,9 +35,16 @@ fetches descendants of one or several concept identifiers using full SNOMED-CT
 inference. The search can be restricted to children concepts using the
 \code{direct_descendants} argument.
 }
+\section{Disclaimer}{
+
+In order to use SNOMED-CT, a licence is required which depends both on the country you are
+based in, and the purpose of your work. See details on \link{snomedizer}.
+}
+
 \examples{
 # This will trigger a warning using the default limit set by snomedizer_options_get("limit")
-concepts_descendants(conceptIds = c("233604007", "68566005"))
+pneumonia_concepts <- concepts_descendants(conceptIds = "233604007")
 # Raising the limit
-concepts_descendants(conceptIds = c("233604007", "68566005"), limit = 300)
+pneumonia_concepts <- concepts_descendants(conceptIds = "233604007", limit = 300)
+head(pneumonia_concepts$`233604007`)
 }

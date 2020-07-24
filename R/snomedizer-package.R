@@ -8,7 +8,7 @@
 #' analysis or health care production systems is subject to other licences.
 #'
 #' UK-based users can apply for such a licence free of charge on the
-#' \href{https://isd.digital.nhs.uk/trud3/user/guest/group/0/pack/26}{NHS TRUD website}.
+#' \href{https://isd.digital.nhs.uk/trud3}{NHS TRUD website}.
 #'
 #' Residents of other Member Countries and low income countries are also eligible for
 #' licences free of costs. More information can be found on the

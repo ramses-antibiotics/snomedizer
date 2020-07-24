@@ -8,8 +8,7 @@
 \description{
 \if{html}{\figure{logo.png}{options: align='right' alt='logo' width='120'}}
 
->
-   A package to manipulate the SNOMED clinical ontology using the 
+A package to manipulate the SNOMED clinical ontology using the 
    SNOMED CT Terminology Server REST API <https://github.com/IHTSDO/snowstorm>.
 }
 \section{SNOMED-CT licensing}{
@@ -21,7 +20,7 @@ SNOMED-CT terminology server hosted by IHSTO to anyone for reference purpose, us
 analysis or health care production systems is subject to other licences.
 
 UK-based users can apply for such a licence free of charge on the
-\href{https://isd.digital.nhs.uk/trud3/user/guest/group/0/pack/26}{NHS TRUD website}.
+\href{https://isd.digital.nhs.uk/trud3}{NHS TRUD website}.
 
 Residents of other Member Countries and low income countries are also eligible for
 licences free of costs. More information can be found on the

@@ -270,6 +270,12 @@ An \code{httr} \code{\link[httr]{response}()} object.
 Low-level wrapper functions based on \link{httr} for interfacing
 with the operations built in the \href{https://github.com/IHTSDO/snowstorm}{Snowstorm API}
 }
+\section{Disclaimer}{
+
+In order to use SNOMED-CT, a licence is required which depends both on the country you are
+based in, and the purpose of your work. See details on \link{snomedizer}.
+}
+
 \examples{
 # look up the pneumonia concept
 api_concept(conceptId = "233604007")

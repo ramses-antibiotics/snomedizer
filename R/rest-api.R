@@ -89,6 +89,9 @@
 #' @return An \code{httr} \code{\link[httr]{response}()} object.
 #' @name api_operations
 #' @family api_operations
+#' @section Disclaimer:
+#' In order to use SNOMED-CT, a licence is required which depends both on the country you are
+#' based in, and the purpose of your work. See details on \link{snomedizer}.
 #' @examples
 #' # look up the pneumonia concept
 #' api_concept(conceptId = "233604007")

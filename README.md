@@ -14,8 +14,8 @@ coverage](https://codecov.io/gh/ramses-antibiotics/snomedizer/branch/master/grap
 <p class="lead">
 
 <code>snomedizer</code> is an R package to manipulate the SNOMED
-clinical ontology using the SNOMED CT Terminology Server REST API
-<https://github.com/IHTSDO/snowstorm>.
+clinical ontology using the [SNOMED CT Terminology Server REST
+API](https://github.com/IHTSDO/snowstorm).
 
 </p>
 
@@ -42,19 +42,20 @@ devtools::install_github("ramses-antibiotics/snomedizer")
 `snomedizer` provides a direct interface to the SNOMED CT Terminology
 Server REST API.
 
-By default, the package uses the official [IHTSDO API
-endpoint](https://browser.ihtsdotools.org/snowstorm/snomed-ct/), subject
-to the [SNOMED International SNOMED CT Browser License
-Agreement](https://browser.ihtsdotools.org/) (restricted to reference
-purposes).
+By default, the package uses the official [SNOMED International
+server](https://browser.ihtsdotools.org/snowstorm/snomed-ct/), which is
+subject to [terms & conditions use](#terms-&-conditions) and limited to
+reference purposes.
 
-For example,  is implemented in `api_concepts()`:
+For example, [`GET
+/branch/concepts`](https://snowstorm.ihtsdotools.org/snowstorm/snomed-ct/swagger-ui.html#!/Concepts/findConceptsUsingGET)
+is implemented in `api_concepts()`:
 
 ``` r
 library(snomedizer)
 api_concepts(term = "pneumonia", activeFilter = TRUE)
 #> Response [https://snowstorm.ihtsdotools.org/snowstorm/snomed-ct/MAIN/concepts?term=pneumonia&limit=50&offset=0&activeFilter=TRUE]
-#>   Date: 2020-07-19 19:33
+#>   Date: 2020-07-24 11:16
 #>   Status: 200
 #>   Content-Type: application/json;charset=UTF-8
 #>   Size: 18.4 kB
@@ -87,6 +88,32 @@ concepts_find(term = "pneumonia", limit = 5) %>%
 #> 4 300999006       Basal pneumonia (disorder)    Basal pneumonia
 #> 5 278516003       Lobar pneumonia (disorder)    Lobar pneumonia
 ```
+
+## Terms & conditions
+
+By default, `snomedizer` queries the [public SNOMED-CT terminology
+endpoint](https://snowstorm.ihtsdotools.org/snowstorm/snomed-ct/swagger-ui.html)
+hosted by SNOMED International.
+
+In order to use SNOMED-CT terminology, a licence is required which
+depends both on the country you are based in, and the purpose of your
+work.
+
+SNOMED International allows access to public SNOMED-CT terminology
+servers to anyone for strict ‘reference purposes’ under the [SNOMED
+International SNOMED CT Browser License
+Agreement](https://browser.ihtsdotools.org/).
+
+Use of SNOMED-CT terminology for data analysis or health care production
+systems is subject to other licences. Some users are eligible for free
+licences:
+
+  - UK-based users can obtain a licence free of charge on the [NHS TRUD
+    website](https://isd.digital.nhs.uk/trud3).
+  - residents of other Member Countries and low-income countries are
+    also eligible. More information can be found on the [SNOMED
+    International
+website](https://www.snomed.org/snomed-ct/get-snomed).
 
 ## Funders
 
