@@ -286,3 +286,12 @@ result_completeness <- function(x, silent = FALSE) {
 
   as.integer(limit)
 }
+
+
+.ignore_empty_string <- function(x) {
+  if(x == "") {
+    NULL
+  } else {
+    x
+  }
+}

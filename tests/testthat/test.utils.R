@@ -81,3 +81,13 @@ test_that(".validate_limit", {
   expect_error(.validate_limit(-100L))
   expect_warning(.validate_limit(100000))
 })
+
+
+# .ignore_empty_string ----------------------------------------------------
+
+test_that(".ignore_empty_string", {
+  expect_equal(c(.ignore_empty_string("a"), "a", "b"),
+               c("a", "a", "b"))
+  expect_equal(c(.ignore_empty_string(""), "a", "b"),
+               c("a", "b"))
+})
