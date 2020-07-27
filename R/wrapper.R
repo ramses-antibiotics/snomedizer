@@ -131,6 +131,45 @@ concepts_descendants <- function(conceptIds,
 }
 
 
+#' Fetch descriptions of one or more concepts
+#'
+#' @description This function is a wrapper of \code{\link{api_concept_descriptions}} that
+#' fetches description of one or several concept identifiers.
+#' @param conceptIds a character vector of concept identifiers
+#' @param ... other valid arguments to function \code{\link{api_concept_descriptions}},
+#' for instance \code{endpoint}, \code{branch}.
+#'
+#' @return a named list of data frames
+#' @export
+#' @section Disclaimer:
+#' In order to use SNOMED-CT, a licence is required which depends both on the country you are
+#' based in, and the purpose of your work. See details on \link{snomedizer}.
+#' @examples
+#' pneumonia_descriptions <- concepts_descriptions(conceptIds = "233604007")
+#' str(pneumonia_descriptions$`233604007`)
+concepts_descriptions <- function(conceptIds, ...) {
+
+  stopifnot(is.vector(conceptIds))
+  progress_bar <- dplyr::progress_estimated(length(conceptIds))
+
+  x <- purrr::map(
+    conceptIds,
+    function(conceptId) {
+      desc <- api_descriptions(concept = conceptId, ...)
+      progress_bar$tick()$print()
+
+      if(httr::http_error(desc)) {
+        return(httr::content(desc))
+      } else if(length(httr::content(desc)$items) == 0) {
+        return(NULL)
+      } else {
+        ignore <- result_completeness(desc)
+        return(result_flatten(desc))
+      }}, ...)
+  names(x) <- conceptIds
+
+  x
+}
 
 #' #' Get all SNOMED-CT infection concepts
 #' #'
