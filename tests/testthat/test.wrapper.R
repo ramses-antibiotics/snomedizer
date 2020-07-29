@@ -30,10 +30,6 @@ test_that("concepts_find", {
 
 test_that("concepts_descendants", {
 
-  concepts_descendants(conceptIds = "blurgh")
-
-  concepts_descendants(conceptIds = c("233604007", "blurgh"))
-
   infections <- concepts_descendants(conceptIds = c("233604007", "68566005"),
                                      direct_descendants = TRUE, activeFilter = TRUE)
   expect_false("882784691000119100" %in% infections$`233604007`$conceptId)
@@ -56,4 +52,13 @@ test_that("concepts_descriptions", {
   expect_true("Pneumonia" %in% infection_descriptions$`233604007`$term)
   expect_true("Urinary tract infectious disease" %in% infection_descriptions$`68566005`$term)
   expect_null(concepts_descriptions("")[[1]])
+  expect_warning(concepts_descriptions(conceptIds = "233604007", limit = 1))
+})
+
+# release_version ---------------------------------------------------------
+
+test_that("release_version", {
+  ct_version <- release_version()
+  expect_false(is.na(ct_version$rf2_date))
+  expect_false(is.na(ct_version$rf2_month_year))
 })

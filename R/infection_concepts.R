@@ -1,0 +1,89 @@
+
+
+
+#' Data frame of SNOMED-CT infection concepts and descriptions
+#'
+#' @docType data
+#' @description Dataset containing 6,710 descendants of concept
+#' \code{40733004 | Infectious disease (disorder) |}, along with all documented
+#' synonyms.
+#' @details This data frame contains one SNOMED-CT concept per row and the
+#' following variables: \describe{
+#'    \item{\code{conceptId}}{character vector of unique, immutable and
+#'    machine-readable SNOMED CT identifiers}
+#'    \item{\code{active}}{a logical vector indicating whether the concept
+#'    was active starting from the the nominal release date specified in
+#'    \code{effectiveTime}}
+#'    \item{\code{definitionStatus}}{a character vector indicating whether
+#'    the concept is \code{"FULLY_DEFINED"} (its defining relationships
+#'    make up a complete definition of the concept) or \code{"PRIMITIVE"}
+#'    (the concept's defining relationships do not define the concept in
+#'    full; the missing parts are not known, not expressible in SNOMED CT's
+#'    terms, or are otherwise not present)}
+#'    \item{\code{moduleId}}{identifier of the concept's module (descendants of
+#'    \code{900000000000443000 | Module (core metadata concept) |}}
+#'    \item{\code{effectiveTime}}{a character vector of YYYYMMDD dates
+#'    referring to the date of the SNOMED-CT release when the concept state
+#'    was last changed}
+#'    \item{\code{id}}{duplicate of \code{conceptId}}
+#'    \item{\code{fsn.term}}{fully specified term text}
+#'    \item{\code{fsn.lang}}{two character ISO-639-1 language codes
+#'    for the fully specified term text}
+#'    \item{\code{pt.term}}{preferred synonym description text}
+#'    \item{\code{pt.lang}}{two character ISO-639-1 language codes
+#'    for the preferred synonym text}
+#'    \item{\code{total}}{total number of results from the original REST
+#'    query retrieved by \link{api_concepts}}
+#'    \item{\code{limit}}{limit imposed on the number of results in the
+#'    original REST query retrieved by \link{api_concepts}}
+#'    \item{\code{offset}}{index of the first result retrieved in the
+#'    original REST query}
+#'    \item{\code{searchAfter}}{Elasticsearch pagination offset parameter}
+#'    \item{\code{searchAfterArray}}{Elasticsearch pagination offset parameter}
+#'    \item{\code{descriptions}}{Nested data frame with one row per concept description
+#'      \describe{
+#'        \item{\code{active}}{a logical vector indicating whether the concept was active
+#'        starting from the release date specified in \code{releasedEffectiveTime}}
+#'        \item{\code{released}}{a logical vector indicating whether the concept was
+#'        released}
+#'        \item{\code{releasedEffectiveTime}}{a character vector of YYYYMMDD dates
+#'        referring to the date of the SNOMED-CT release when the description state
+#'        was last changed}
+#'        \item{\code{descriptionId}}{unique identifier for the description}
+#'        \item{\code{term}}{UTF-8 description text}
+#'        \item{\code{conceptId}}{unique identifier of the corresponding SNOMED-CT concept}
+#'        \item{\code{moduleId}}{identifier of the concept's module (descendants of
+#'        \code{900000000000443000 | Module (core metadata concept) |}}
+#'        \item{\code{typeId}}{character code indicating whether s whether the description
+#'        is a fully specified name, a synonym, or another description type (
+#'        descendant of \code{900000000000446008 | Description type (core metadata concept) |})}
+#'        \item{\code{type}}{description of the \code{typeId} attribute}
+#'        \item{\code{caseSignificance}}{description of the case significance of the
+#'        description (descendant of
+#'        \code{900000000000447004 | Case significance (core metadata concept) |}:
+#'        \code{"CASE_INSENSITIVE"},
+#'        \code{"ENTIRE_TERM_CASE_SENSITIVE"}, or
+#'        \code{"INITIAL_CHARACTER_CASE_INSENSITIVE"})}
+#'        \item{\code{lang}}{two character ISO-639-1 language codes for the description
+#'        text}
+#'        \item{\code{effectiveTime}}{duplicate of \code{releasedEffectiveTime}}
+#'        \item{\code{acceptabilityMap}}{variables indicating whether the description
+#'        is \code{"ACCEPTABLE"} or \code{"PREFERRED"} in every available
+#'        reference set}
+#'        \item{\code{total}}{total number of results from the original REST
+#'    query retrieved by \link{api_concepts}}
+#'    \item{\code{limit}}{limit imposed on the number of results in the
+#'    original REST query retrieved by \link{api_concepts}}
+#'        \item{\code{offset}}{index of the first result retrieved in the
+#'    original REST query}
+#'        \item{\code{searchAfter}}{Elasticsearch pagination offset parameter}
+#'        \item{\code{searchAfterArray}}{Elasticsearch pagination offset parameter}
+#'      }
+#'    }
+#' }
+#' @keywords data
+#' @section Disclaimer:
+#' In order to use SNOMED-CT, a licence is required which depends both on the country you are
+#' based in, and the purpose of your work. See details on \link{snomedizer}.
+#' @source SNOMED-CT International Edition, RF2 release 20180731 (July 2018)
+"infection_concepts"

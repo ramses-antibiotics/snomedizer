@@ -76,7 +76,7 @@ concepts_find <- function(term = NULL,
 #' @param conceptIds a character vector of concept identifiers
 #' @param direct_descendants a logical vector indicating whether to fetch
 #' direct descendants (children) of the \code{conceptIds} exclusively or all
-#' descendants. The default is \code{FALSE}. If a single
+#' descendants (including children). The default is \code{FALSE}. If a single
 #' value is provided, it will be recycled.
 #' @param activeFilter a logical vector indicating whether to fetch active
 #' descendant concepts exclusively. The default is \code{TRUE}. If a single
@@ -154,7 +154,7 @@ concepts_descriptions <- function(conceptIds, ...) {
 
   x <- purrr::map(
     conceptIds,
-    function(conceptId) {
+    function(conceptId, ...) {
       desc <- api_descriptions(concept = conceptId, ...)
       progress_bar$tick()$print()
 
@@ -170,6 +170,41 @@ concepts_descriptions <- function(conceptIds, ...) {
 
   x
 }
+
+
+
+#' Fetch endpoint release version
+#'
+#' @param endpoint the URL of a SNOMED CT Terminology Server REST API endpoint.
+#'  See \code{\link{snomedizer_options}}.
+#' @param branch a string for the name of the API endpoint branch to use (most
+#' commonly \code{"MAIN"}). See \code{\link{snomedizer_options}}.
+#' @return a list containing two character strings: \code{rf2_date}
+#' (YYYYMMDD release date) and \code{rf2_month_year} (month and year string)
+#' @export
+release_version <- function(endpoint = snomedizer_options_get("endpoint"),
+                            branch = snomedizer_options_get("branch")) {
+
+  active <- term <- NULL
+
+  ct_version <- concepts_descriptions(
+    conceptIds = "138875005",
+    endpoint = endpoint,
+    branch = branch,
+    limit = 200
+  )[[1]]
+
+  ct_version <- dplyr::filter(ct_version,
+                              active == TRUE,
+                              grepl("version:", term))
+
+  list(
+    rf2_date = stringr::str_extract(ct_version$term, "[0-9]{6}"),
+    rf2_month_year = stringr::str_match(ct_version$term, "[(](.*) Release[)]$")[,2]
+  )
+}
+
+
 
 #' #' Get all SNOMED-CT infection concepts
 #' #'

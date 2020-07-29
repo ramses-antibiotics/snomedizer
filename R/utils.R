@@ -275,10 +275,10 @@ result_completeness <- function(x, silent = FALSE) {
   if(length(limit) != 1) {
     stop("`limit` must have length == 1")
   }
-  if(!is.numeric(limit) || limit < 0 ||
+  if(!is.numeric(limit) || limit <= 0 ||
      # check is whole number
      abs(limit - round(limit)) >= .Machine$double.eps^0.5) {
-    stop("`limit` must be a positive integer")
+    stop("`limit` must be a strictly positive integer")
   }
   if(limit > 10000){
     warning("Please not the maximum limit on public endpoints is 10,000.")

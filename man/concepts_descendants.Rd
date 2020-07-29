@@ -16,7 +16,7 @@ concepts_descendants(
 
 \item{direct_descendants}{a logical vector indicating whether to fetch
 direct descendants (children) of the \code{conceptIds} exclusively or all
-descendants. The default is \code{FALSE}. If a single
+descendants (including children). The default is \code{FALSE}. If a single
 value is provided, it will be recycled.}
 
 \item{activeFilter}{a logical vector indicating whether to fetch active

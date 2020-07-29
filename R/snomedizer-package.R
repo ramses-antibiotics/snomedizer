@@ -2,17 +2,22 @@
 #' @keywords internal
 #' @section SNOMED-CT licensing:
 #'
-#' In order to use SNOMED-CT, a licence is required which depends both on the country you are
-#' based in, and the purpose of your work. Although SNOMED International allows access to the
-#' SNOMED-CT terminology server hosted by IHSTO to anyone for reference purpose, uses for data
-#' analysis or health care production systems is subject to other licences.
+#' In order to use SNOMED-CT terminology, a licence is required which depends both on the
+#' country you are based in, and the purpose of your work.
 #'
-#' UK-based users can apply for such a licence free of charge on the
-#' \href{https://isd.digital.nhs.uk/trud3}{NHS TRUD website}.
+#' SNOMED International allows access to public SNOMED-CT terminology servers to anyone
+#' for strict 'reference purposes' under the \href{https://browser.ihtsdotools.org/}{SNOMED
+#' International SNOMED CT Browser License Agreement} (see section below).
 #'
-#' Residents of other Member Countries and low income countries are also eligible for
-#' licences free of costs. More information can be found on the
-#' \href{https://www.snomed.org/snomed-ct/get-snomed}{SNOMED International website}.
+#' Use of SNOMED-CT terminology for data analysis or health care production systems is
+#' subject to other licences. Some users are eligible for free licences:
+#' \itemize{
+#'   \item{UK-based users can obtain a licence free of charge on the
+#'   \href{https://isd.digital.nhs.uk/trud3}{NHS TRUD website}}
+#'   \item{residents of other Member Countries and low-income countries are also eligible.
+#'   More information can be found on
+#'   \href{https://www.snomed.org/snomed-ct/get-snomed}{SNOMED International's website}.}
+#' }
 #'
 #' @section Licensing for reference use:
 #'
