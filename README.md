@@ -9,6 +9,10 @@
 status](https://travis-ci.org/ramses-antibiotics/snomedizer.svg?branch=master)](https://travis-ci.org/ramses-antibiotics/snomedizer)
 [![Codecov test
 coverage](https://codecov.io/gh/ramses-antibiotics/snomedizer/branch/master/graph/badge.svg)](https://codecov.io/gh/ramses-antibiotics/snomedizer?branch=master)
+[![Project Status: WIP – Initial development is in progress, but there
+has not yet been a stable, usable release suitable for the
+public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
+
 <!-- badges: end -->
 
 <p class="lead">
@@ -55,7 +59,7 @@ is implemented in `api_concepts()`:
 library(snomedizer)
 api_concepts(term = "pneumonia", activeFilter = TRUE)
 #> Response [https://snowstorm.ihtsdotools.org/snowstorm/snomed-ct/MAIN/concepts?term=pneumonia&limit=50&offset=0&activeFilter=TRUE]
-#>   Date: 2020-07-24 11:16
+#>   Date: 2020-08-11 08:24
 #>   Status: 200
 #>   Content-Type: application/json;charset=UTF-8
 #>   Size: 18.4 kB
@@ -79,7 +83,7 @@ provide results as data frames:
 concepts_find(term = "pneumonia", limit = 5) %>% 
   dplyr::select(conceptId, fsn.term, pt.term) 
 #> Warning: 
-#> This server request returned just 5 of a total 562 results.
+#> This server request returned just 5 of a total 563 results.
 #> Please increase the server `limit` to fetch all results.
 #>   conceptId                         fsn.term            pt.term
 #> 1 233604007             Pneumonia (disorder)          Pneumonia
