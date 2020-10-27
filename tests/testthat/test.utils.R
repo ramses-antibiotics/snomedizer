@@ -22,6 +22,8 @@ test_that("snomedizer_default_options", {
     expect_warning(
       snomedizer_options_set(
         endpoint = "http://detectportal.firefox.com/success.txt")))
+  expect_invisible(snomedizer_options_set(branch = "MAIN"))
+  expect_invisible(snomedizer_options_set(limit = 50))
 })
 
 # result_flatten ----------------------------------------------------------
@@ -80,8 +82,19 @@ test_that(".validate_limit", {
   expect_error(.validate_limit( "blurgh"))
   expect_error(.validate_limit(-100L))
   expect_warning(.validate_limit(100000))
+  expect_error(.validate_limit(NULL))
+  expect_error(.validate_limit(NA_real_))
+  expect_error(.validate_limit(c(1, 2)))
 })
 
+
+# .validate_branch --------------------------------------------------------
+
+test_that(".validate_branch", {
+  expect_equal(.validate_branch("MAIN"), "MAIN")
+  expect_equal(.validate_branch("MAIN/SNOMEDCT-GB"), "MAIN%2FSNOMEDCT-GB")
+  expect_error(.validate_branch(""))
+})
 
 # snomedizer_version_compatibility ----------------------------------------
 

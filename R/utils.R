@@ -61,42 +61,55 @@ snomedizer_options_get <- function(option.name = NULL){
 #' @rdname snomedizer_options
 #' @export
 snomedizer_options_set <- function(endpoint = NULL,
-                                   branch = NULL, limit = NULL) {
+                                   branch = NULL,
+                                   limit = NULL) {
 
   if (all(sapply(list(endpoint, branch, limit), is.null))) {
     stop("Please provide at least one input.")
   }
-
-  if (!is.null(branch)) {
-    stopifnot(length(branch) == 1)
-    stopifnot(!is.na(branch))
-    stopifnot(is.character(branch))
-    stopifnot(branch != "")
-    options(snomedizer.branch = utils::URLencode(branch))
-  }
-
 
   if (!is.null(limit)) {
     limit <- .validate_limit(limit)
     options(snomedizer.limit = limit)
   }
 
+  if (is.null(branch)) {
+    branch <- ifelse(
+      is.null(snomedizer_options_get("branch")),
+      "MAIN",
+      snomedizer_options_get("branch"))
+  } else {
+    branch <- .validate_branch(branch)
+  }
+
   if (!is.null(endpoint)) {
+
     endpoint <- utils::URLencode(gsub("/*$", "", endpoint))
     stopifnot(length(endpoint) == 1)
     stopifnot(is.character(endpoint))
-    if(httr::http_error(endpoint)) {
+
+    if (httr::http_error(endpoint)) {
       stop("The provided `endpoint` is not responding.")
     }
-    if(!snomed_endpoint_test(endpoint = endpoint,
-                             branch = snomedizer_options_get()$branch)) {
+
+    if (
+      !snomed_endpoint_test(
+        endpoint = endpoint,
+        branch = branch
+      )
+    ) {
       stop("`endpoint` and `branch` are not returning valid answers.")
+    } else {
+      options(snomedizer.endpoint = endpoint)
+      options(snomedizer.branch = branch)
     }
-    options(snomedizer.endpoint = endpoint)
+
   } else {
     if(!snomed_endpoint_test(endpoint = snomedizer_options_get()$endpoint,
-                             branch = snomedizer_options_get()$branch)) {
+                             branch = branch)) {
       stop("`endpoint` is not returning valid answers.")
+    } else {
+      options(snomedizer.branch = branch)
     }
   }
 
@@ -126,7 +139,8 @@ snomed_public_endpoint_suggest <- function() {
   }
 
   if(!exists("endpoint")) {
-    stop("No working SNOMED endpoint found. Try again later.")
+    warning("No working SNOMED endpoint found. Try again later.")
+    return(NULL)
   } else {
     test <- snomedizer_version_compatibility(endpoint = endpoint)
     return(endpoint)
@@ -310,11 +324,11 @@ result_completeness <- function(x, silent = FALSE) {
   if(is.null(limit)) {
     stop("`limit` must not be NULL")
   }
-  if(is.na(limit)) {
-    stop("`limit` must not be missing")
-  }
   if(length(limit) != 1) {
     stop("`limit` must have length == 1")
+  }
+  if(is.na(limit)) {
+    stop("`limit` must not be missing")
   }
   if(!is.numeric(limit) || limit < 0 ||
      # check is whole number
@@ -328,3 +342,10 @@ result_completeness <- function(x, silent = FALSE) {
   as.integer(limit)
 }
 
+.validate_branch <- function(branch) {
+  stopifnot(length(branch) == 1)
+  stopifnot(!is.na(branch))
+  stopifnot(is.character(branch))
+  stopifnot(branch != "")
+  utils::URLencode(URL = branch, reserved = TRUE)
+}
