@@ -18,10 +18,10 @@
 #'    \item{endpoint} this is the address of the SNOWSTORM terminology server
 #'    to be used. When \code{snomedizer} is loaded, it is set to the current
 #'    environment variable \code{SNOMEDIZER_ENDPOINT}. If no such
-#'     the SNOMED-CT version maintained by the official
+#'     the SNOMED CT version maintained by the official
 #'         SNOWSTORM server.
 #'    \item{branch} The default is "MAIN/SNOMEDCT-GB", the most
-#'         up-to-date edition of SNOMED-CT UK Core Edition.
+#'         up-to-date edition of SNOMED CT UK Core Edition.
 #'    \item{limit} an integer stating the the maximum number of results fetched. This is set to 50 The default
 #'         is 50.
 #' }
@@ -104,7 +104,7 @@ snomedizer_options_set <- function(endpoint = NULL,
 }
 
 
-#' Find a public SNOMED-CT endpoint
+#' Find a public SNOMED CT endpoint
 #'
 #' @return a string object containing the URL to a responsive SNOMED CT Terminology Server REST API endpoint.
 #' @family utilities
@@ -128,14 +128,15 @@ snomed_public_endpoint_suggest <- function() {
   if(!exists("endpoint")) {
     stop("No working SNOMED endpoint found. Try again later.")
   } else {
+    test <- snomedizer_version_compatibility(endpoint = endpoint)
     return(endpoint)
   }
 }
 
 
-#' Test a SNOMED-CT endpoint
+#' Test a SNOMED CT endpoint
 #'
-#' @param endpoint a character URL to a SNOMED-CT endpoint
+#' @param endpoint URL of a SNOMED CT Terminology Server REST API endpoint
 #' @param branch a character string of a branch name
 #'
 #' @return a boolean indicating whether the endpoint passed the test
@@ -156,6 +157,46 @@ snomed_endpoint_test <- function(endpoint, branch) {
   return(
     output$status_code - (output$status_code %% 100) == 200
   )
+}
+
+
+#' Verify the endpoint compatibility with snomedizer
+#'
+#' @description This function compares the SNOMED CT terminology server endpoint version
+#' with `snomedizer`'s supported version. The SNOMED CT terminology server API
+#' is continuously developed and may introduce breaking changes in REST operations
+#' and parameters.
+#' @param endpoint URL of a SNOMED CT Terminology Server REST API endpoint
+#' @param silent whether to hide warnings. Default is `FALSE`
+#' @return a logical value indicating whether the endpoint version is supported
+#' @export
+snomedizer_version_compatibility <- function(
+  endpoint = snomedizer_options_get("endpoint"),
+  silent = FALSE
+) {
+
+  endpoint_version <- httr::content(api_version(endpoint = endpoint))$version
+  endpoint_version_num <- as.numeric(unlist(strsplit(endpoint_version, "[.]")))
+
+  version_main <- endpoint_version_num[1]
+  version_minor <- (endpoint_version_num[2] + endpoint_version_num[3] * 0.001)
+
+  if (
+    (version_main < 5) |
+    (version_main == 5 & version_minor < 0.006)
+  ) {
+    warning(
+      paste(
+        paste0("The selected endpoint version is ", endpoint_version, "."),
+        "This version of snomedizer is designed for endpoint versions 5.0.6 or greater.",
+        "Some function may not work as intended.",
+        sep = "\n"
+      )
+    )
+    return(FALSE)
+  } else {
+    return(TRUE)
+  }
 }
 
 
@@ -286,3 +327,4 @@ result_completeness <- function(x, silent = FALSE) {
 
   as.integer(limit)
 }
+

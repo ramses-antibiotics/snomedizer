@@ -2,12 +2,12 @@
 % Please edit documentation in R/utils.R
 \name{snomed_endpoint_test}
 \alias{snomed_endpoint_test}
-\title{Test a SNOMED-CT endpoint}
+\title{Test a SNOMED CT endpoint}
 \usage{
 snomed_endpoint_test(endpoint, branch)
 }
 \arguments{
-\item{endpoint}{a character URL to a SNOMED-CT endpoint}
+\item{endpoint}{URL of a SNOMED CT Terminology Server REST API endpoint}
 
 \item{branch}{a character string of a branch name}
 }
@@ -15,7 +15,7 @@ snomed_endpoint_test(endpoint, branch)
 a boolean indicating whether the endpoint passed the test
 }
 \description{
-Test a SNOMED-CT endpoint
+Test a SNOMED CT endpoint
 }
 \examples{
 snomed_endpoint_test(

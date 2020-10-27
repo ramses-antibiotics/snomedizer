@@ -77,7 +77,7 @@ api_branch_descendants(
 )
 
 api_descriptions(
-  concept,
+  conceptIds = NULL,
   endpoint = snomedizer_options_get("endpoint"),
   branch = snomedizer_options_get("branch"),
   offset = 0,
@@ -154,7 +154,7 @@ api_descriptions_semantic_tags(
 \item{conceptId}{character string of a SNOMED-CT concept id (for example:
 \code{"233604007"})}
 
-\item{endpoint}{the URL of a SNOMED CT Terminology Server REST API endpoint.
+\item{endpoint}{URL of a SNOMED CT Terminology Server REST API endpoint.
 See \code{\link{snomedizer_options}}.}
 
 \item{branch}{a string for the name of the API endpoint branch to use (most
@@ -192,9 +192,6 @@ is 10,000.}
 
 \item{stated}{a boolean indicating whether to limit search to descendants
 whose relationship is stated rather than inferred. Default is \code{FALSE}.}
-
-\item{concept}{character string of a SNOMED-CT concept id (for example:
-\code{"233604007"})}
 
 \item{descendantCountForm}{a character string indicating whether to report
 the count of descendant concepts based on stated or inferred relationships.

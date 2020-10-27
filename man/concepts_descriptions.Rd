@@ -9,23 +9,23 @@ concepts_descriptions(conceptIds, ...)
 \arguments{
 \item{conceptIds}{a character vector of concept identifiers}
 
-\item{...}{other valid arguments to function \code{\link{api_concept_descriptions}},
-for instance \code{endpoint}, \code{branch}.}
+\item{...}{other optional arguments listed in \code{\link{api_operations}}, such as
+\code{endpoint}, \code{branch} or \code{limit}}
 }
 \value{
 a named list of data frames
 }
 \description{
-This function is a wrapper of \code{\link{api_concept_descriptions}} that
+This function is a wrapper of \code{\link{api_descriptions}} that
 fetches description of one or several concept identifiers.
 }
 \section{Disclaimer}{
 
-In order to use SNOMED-CT, a licence is required which depends both on the country you are
+In order to use SNOMED CT, a licence is required which depends both on the country you are
 based in, and the purpose of your work. See details on \link{snomedizer}.
 }
 
 \examples{
 pneumonia_descriptions <- concepts_descriptions(conceptIds = "233604007")
-str(pneumonia_descriptions$`233604007`)
+str(pneumonia_descriptions)
 }

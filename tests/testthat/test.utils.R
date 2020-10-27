@@ -81,3 +81,10 @@ test_that(".validate_limit", {
   expect_error(.validate_limit(-100L))
   expect_warning(.validate_limit(100000))
 })
+
+
+# snomedizer_version_compatibility ----------------------------------------
+
+test_that("snomedizer_version_compatibility", {
+  expect_true(snomedizer_version_compatibility(), "logical")
+})

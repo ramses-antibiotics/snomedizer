@@ -30,9 +30,6 @@ test_that("concepts_find", {
 
 test_that("concepts_descendants", {
 
-  concepts_descendants(conceptIds = "blurgh")
-
-  concepts_descendants(conceptIds = c("233604007", "blurgh"))
 
   infections <- concepts_descendants(conceptIds = c("233604007", "68566005"),
                                      direct_descendants = TRUE, activeFilter = TRUE)
@@ -53,7 +50,7 @@ test_that("concepts_descendants", {
 test_that("concepts_descriptions", {
   infection_descriptions <- concepts_descriptions(conceptIds =  c("233604007",
                                                                   "68566005"))
-  expect_true("Pneumonia" %in% infection_descriptions$`233604007`$term)
-  expect_true("Urinary tract infectious disease" %in% infection_descriptions$`68566005`$term)
-  expect_null(concepts_descriptions("")[[1]])
+  expect_true("Pneumonia" %in% infection_descriptions$term)
+  expect_true("Urinary tract infectious disease" %in% infection_descriptions$term)
+  expect_error(concepts_descriptions(""))
 })

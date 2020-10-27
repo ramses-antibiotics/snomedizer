@@ -96,9 +96,13 @@ test_that("api_branch_descendants", {
 # api_descriptions --------------------------------------------------------
 
 test_that("api_descriptions", {
-  expect_equal(
-    httr::content(api_descriptions(concept = "233604007"))[["items"]][[1]][["conceptId"]],
-    "233604007"
+  expect_setequal(
+    snomedizer::result_flatten(api_descriptions(conceptIds = c("233604007")))$descriptionId,
+    c("350049016", "621810017")
+  )
+  expect_setequal(
+    snomedizer::result_flatten(api_descriptions(conceptIds = c("233604007", "205237003")))$descriptionId,
+    c("314740018", "350049016", "621810017", "590574014")
   )
 })
 

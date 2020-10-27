@@ -38,10 +38,10 @@ set to default values when this package is launched:
    \item{endpoint} this is the address of the SNOWSTORM terminology server
    to be used. When \code{snomedizer} is loaded, it is set to the current
    environment variable \code{SNOMEDIZER_ENDPOINT}. If no such
-    the SNOMED-CT version maintained by the official
+    the SNOMED CT version maintained by the official
         SNOWSTORM server.
    \item{branch} The default is "MAIN/SNOMEDCT-GB", the most
-        up-to-date edition of SNOMED-CT UK Core Edition.
+        up-to-date edition of SNOMED CT UK Core Edition.
    \item{limit} an integer stating the the maximum number of results fetched. This is set to 50 The default
         is 50.
 }

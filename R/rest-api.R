@@ -20,8 +20,6 @@
 #' commonly \code{"MAIN"}). See \code{\link{snomedizer_options}}.
 #' @param catch404 whether to display a warning if the API operation returns a
 #' '404 Not Found' status. Default is \code{TRUE}.
-#' @param concept character string of a SNOMED-CT concept id (for example:
-#' \code{"233604007"})
 #' @param conceptId character string of a SNOMED-CT concept id (for example:
 #' \code{"233604007"})
 #' @param conceptIds a character vector of SNOMED-CT concept ids (for example:
@@ -45,7 +43,7 @@
 #' @param eclStated a character expression constraint query (limited to stated relationships).
 #' Consult the \href{http://snomed.org/ecl}{Expression Constraint Language guide}
 #' for more detail.
-#' @param endpoint the URL of a SNOMED CT Terminology Server REST API endpoint.
+#' @param endpoint URL of a SNOMED CT Terminology Server REST API endpoint.
 #'  See \code{\link{snomedizer_options}}.
 #' @param form a character string indicating which ancestors/parents or
 #' descendants/children to extract based on stated or inferred relationships.
@@ -317,7 +315,7 @@ api_branch_descendants <- function(
 #' @rdname api_operations
 #' @export
 api_descriptions <- function(
-  concept,
+  conceptIds = NULL,
   endpoint = snomedizer_options_get("endpoint"),
   branch = snomedizer_options_get("branch"),
   offset = 0,
@@ -325,8 +323,8 @@ api_descriptions <- function(
   catch404 = TRUE,
   ...) {
 
-  stopifnot(is.character(concept))
-  stopifnot(length(concept) == 1)
+  stopifnot(is.character(conceptIds))
+  conceptIds <- .concatenate_array_parameter(conceptIds)
   limit <- .validate_limit(limit)
 
   rest_url <- httr::parse_url(endpoint)
@@ -334,7 +332,7 @@ api_descriptions <- function(
                      branch,
                      "descriptions")
   rest_url$query <- list(
-    concept = concept,
+    conceptIds = conceptIds,
     offset = offset,
     limit = limit
   )
