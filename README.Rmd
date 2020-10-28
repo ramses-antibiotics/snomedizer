@@ -2,6 +2,9 @@
 output: github_document
 ---
 
+<!-- Place this tag in your head or just before your close body tag. -->
+<script async defer src="https://buttons.github.io/buttons.js"></script>
+
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
 ```{r, include = FALSE}
@@ -48,7 +51,7 @@ devtools::install_github("ramses-antibiotics/snomedizer")
 
 `snomedizer` provides a direct interface to the SNOMED CT Terminology Server REST API. 
 
-By default, the package uses the official [SNOMED International server](https://browser.ihtsdotools.org/snowstorm/snomed-ct/), which is subject to [terms & conditions use](#terms-&-conditions) and limited to reference purposes.
+By default, the package uses the public [SNOMED International server](https://browser.ihtsdotools.org/snowstorm/snomed-ct/) available for reference purposes **only** (see [terms & conditions](#terms--conditions)).
 
 For example, [`GET /branch/concepts`](https://snowstorm.ihtsdotools.org/snowstorm/snomed-ct/swagger-ui.html#!/Concepts/findConceptsUsingGET) is implemented in `api_concepts()`:
 
@@ -64,13 +67,27 @@ concepts_find(term = "pneumonia", limit = 5) %>%
   dplyr::select(conceptId, fsn.term, pt.term) 
 ```
 
+## Development and new features
+
+Please share your experience as a user!
+
+Do not hesitate to [get in touch on GitHub](https://github.com/ramses-antibiotics/snomedizer/issues) to report bugs or request new features.
+
 ## Terms & conditions
+
+### Server endpoint
 
 By default, `snomedizer` queries the [public SNOMED-CT terminology endpoint](https://snowstorm.ihtsdotools.org/snowstorm/snomed-ct/swagger-ui.html) hosted by SNOMED International.
 
+This server has no service level agreement and **MUST NOT be used as part of production systems in healthcare settings**, even if you hold a SNOMED CT licence.
+
+Please refer to the [Snowstorm documentation](https://github.com/IHTSDO/snowstorm/blob/master/docs/getting-started.md) for instructions on how to build a dedicated endpoint for production.
+
+### SNOMED CT Terminology
+
 In order to use SNOMED-CT terminology, a licence is required which depends both on the country you are based in, and the purpose of your work.
 
-SNOMED International allows access to public SNOMED-CT terminology servers to anyone for strict 'reference purposes' under the [SNOMED International SNOMED CT Browser License Agreement](https://browser.ihtsdotools.org/).
+SNOMED International maintains a public SNOMED-CT terminology server for strict 'reference purposes' under the [SNOMED International SNOMED CT Browser License Agreement](https://browser.ihtsdotools.org/).
 
 Use of SNOMED-CT terminology for data analysis or health care production systems is subject to other licences. Some users are eligible for free licences:
 

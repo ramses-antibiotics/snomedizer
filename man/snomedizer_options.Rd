@@ -40,10 +40,11 @@ set to default values when this package is launched:
    environment variable \code{SNOMEDIZER_ENDPOINT}. If no such
     the SNOMED CT version maintained by the official
         SNOWSTORM server.
-   \item{branch} The default is "MAIN/SNOMEDCT-GB", the most
-        up-to-date edition of SNOMED CT UK Core Edition.
-   \item{limit} an integer stating the the maximum number of results fetched. This is set to 50 The default
-        is 50.
+   \item{branch} a branch name. If no branch name is provided and that none
+   has previously been set, a default "MAIN" will be used, pointing to the most
+        up-to-date edition of SNOMED CT International Edition.
+   \item{limit} an integer stating the the maximum number of results fetched.
+   This is set to 50 by default.
 }
 }
 \examples{

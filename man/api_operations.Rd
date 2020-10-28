@@ -280,6 +280,6 @@ api_concepts(term = "pneumonia")
 api_concepts(conceptIds = c("233604007", "68566005"))
 
 # get the content of the server request
-httr::content(api_concepts(term = "pneumonia"))
+httr::content(api_concepts(term = "pneumonia"), limit = 1)
 }
 \concept{api_operations}

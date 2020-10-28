@@ -1,4 +1,4 @@
-.onLoad <- function(libname, pkgname) {
+.onAttach <- function(libname, pkgname) {
 
   # get any environment variables
 
@@ -7,6 +7,16 @@
        length(snomedizer_endpoint) > 1 |
        is.character(snomedizer_endpoint) == FALSE) {
     snomedizer_endpoint <- snomed_public_endpoint_suggest()
+    if (!is.null(snomedizer_endpoint)) {
+      packageStartupMessage(paste(
+        "The following SNOMED CT Terminology Server has been selected:",
+        snomedizer_endpoint,
+        "This server may be used for reference purposes only.",
+        "It MUST NOT be used in production. Please refer to ?snomedizer for details.",
+        sep = "\n"
+      ))
+    }
+
   }
 
   snomedizer_branch <- Sys.getenv("SNOMEDIZER_BRANCH")

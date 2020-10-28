@@ -20,10 +20,11 @@
 #'    environment variable \code{SNOMEDIZER_ENDPOINT}. If no such
 #'     the SNOMED CT version maintained by the official
 #'         SNOWSTORM server.
-#'    \item{branch} The default is "MAIN/SNOMEDCT-GB", the most
-#'         up-to-date edition of SNOMED CT UK Core Edition.
-#'    \item{limit} an integer stating the the maximum number of results fetched. This is set to 50 The default
-#'         is 50.
+#'    \item{branch} a branch name. If no branch name is provided and that none
+#'    has previously been set, a default "MAIN" will be used, pointing to the most
+#'         up-to-date edition of SNOMED CT International Edition.
+#'    \item{limit} an integer stating the the maximum number of results fetched.
+#'    This is set to 50 by default.
 #' }
 #' @family utilities
 #' @return The factory setting of the target API parameter.
@@ -229,7 +230,7 @@ snomedizer_version_compatibility <- function(
 #'    activeFilter = TRUE,
 #'    limit = 10))
 result_flatten <- function(x) {
-  x <- httr::content(x, as = 'text')
+  x <- httr::content(x, as = "text", encoding = "ISO-8859-1")
   x <- jsonlite::fromJSON(x, flatten = TRUE)
   empty_index <- sapply(x, length) == 0
   if(any(empty_index)) {

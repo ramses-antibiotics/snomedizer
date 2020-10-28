@@ -16,5 +16,5 @@ override_build_authors <- function (pkg = ".") {
 
 envpkgd <- getNamespace("pkgdown")
 R.utils::reassignInPackage("data_authors", "pkgdown", override_data_authors, keepOld=F)
-build_site()
+build_site(new_process = FALSE)
 # deploy_to_branch(new_process = FALSE)
