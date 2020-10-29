@@ -112,7 +112,7 @@ api_concept <- function(conceptId,
   stopifnot(length(conceptId) == 1)
 
   rest_url <- httr::parse_url(endpoint)
-  rest_url$path <- c(rest_url$path,
+  rest_url$path <- c(rest_url$path[rest_url$path != ""],
                      branch,
                      "concepts",
                      conceptId)
@@ -152,7 +152,7 @@ api_concepts <- function(
   limit <- .validate_limit(limit)
 
   rest_url <- httr::parse_url(endpoint)
-  rest_url$path <- c(rest_url$path,
+  rest_url$path <- c(rest_url$path[rest_url$path != ""],
                      branch,
                      "concepts")
   rest_url$query <- list(
@@ -196,7 +196,7 @@ api_concept_descendants <- function(
   limit <- .validate_limit(limit)
 
   rest_url <- httr::parse_url(endpoint)
-  rest_url$path <- c(rest_url$path,
+  rest_url$path <- c(rest_url$path[rest_url$path != ""],
                      branch,
                      "concepts",
                      conceptId,
@@ -230,7 +230,7 @@ api_concept_descriptions <- function(
   stopifnot(length(conceptId) == 1)
 
   rest_url <- httr::parse_url(endpoint)
-  rest_url$path <- c(rest_url$path,
+  rest_url$path <- c(rest_url$path[rest_url$path != ""],
                      branch,
                      "concepts",
                      conceptId,
@@ -251,7 +251,7 @@ api_concept_descriptions <- function(
 api_all_branches <- function(endpoint = snomedizer_options_get("endpoint"),
                              catch404 = TRUE) {
   rest_url <- httr::parse_url(endpoint)
-  rest_url$path <- c(rest_url$path,
+  rest_url$path <- c(rest_url$path[rest_url$path != ""],
                      "branches")
   rest_result <- GET(rest_url)
 
@@ -270,7 +270,7 @@ api_branch <- function(endpoint = snomedizer_options_get("endpoint"),
                        ...) {
 
   rest_url <- httr::parse_url(endpoint)
-  rest_url$path <- c(rest_url$path,
+  rest_url$path <- c(rest_url$path[rest_url$path != ""],
                      "branches",
                      branch)
   rest_url$query <- list(...)
@@ -295,7 +295,7 @@ api_branch_descendants <- function(
   ...) {
 
   rest_url <- httr::parse_url(endpoint)
-  rest_url$path <- c(rest_url$path,
+  rest_url$path <- c(rest_url$path[rest_url$path != ""],
                      "branches",
                      branch,
                      "children")
@@ -328,7 +328,7 @@ api_descriptions <- function(
   limit <- .validate_limit(limit)
 
   rest_url <- httr::parse_url(endpoint)
-  rest_url$path <- c(rest_url$path,
+  rest_url$path <- c(rest_url$path[rest_url$path != ""],
                      branch,
                      "descriptions")
   rest_url$query <- list(
@@ -356,7 +356,7 @@ api_version <- function(
   catch404 = TRUE) {
 
   rest_url <- httr::parse_url(endpoint)
-  rest_url$path <- c(rest_url$path,
+  rest_url$path <- c(rest_url$path[rest_url$path != ""],
                      "version")
 
   rest_result <- GET(rest_url)
@@ -386,7 +386,7 @@ api_browser_concepts <- function(
   }
 
   rest_url <- httr::parse_url(endpoint)
-  rest_url$path <- c(rest_url$path,
+  rest_url$path <- c(rest_url$path[rest_url$path != ""],
                      "browser",
                      branch,
                      "concepts",
@@ -424,7 +424,7 @@ api_browser_concept_ancestors <- function(
   stopifnot(form %in% c("inferred", "stated", "additional"))
 
   rest_url <- httr::parse_url(endpoint)
-  rest_url$path <- c(rest_url$path,
+  rest_url$path <- c(rest_url$path[rest_url$path != ""],
                      "browser",
                      branch,
                      "concepts",
@@ -468,7 +468,7 @@ api_browser_concept_children <- function(
               !is.na(includeDescendantCount))
 
   rest_url <- httr::parse_url(endpoint)
-  rest_url$path <- c(rest_url$path,
+  rest_url$path <- c(rest_url$path[rest_url$path != ""],
                      "browser",
                      branch,
                      "concepts",
@@ -521,7 +521,7 @@ api_browser_concept_parents <- function(
               !is.na(includeDescendantCount))
 
   rest_url <- httr::parse_url(endpoint)
-  rest_url$path <- c(rest_url$path,
+  rest_url$path <- c(rest_url$path[rest_url$path != ""],
                      "browser",
                      branch,
                      "concepts",
@@ -592,7 +592,7 @@ api_browser_concept_descriptions <- function(
   limit <- .validate_limit(limit)
 
   rest_url <- httr::parse_url(endpoint)
-  rest_url$path <- c(rest_url$path,
+  rest_url$path <- c(rest_url$path[rest_url$path != ""],
                      "browser",
                      branch,
                      "descriptions")
@@ -634,7 +634,7 @@ api_descriptions_semantic_tags <- function(
   catch404 = TRUE) {
 
   rest_url <- httr::parse_url(endpoint)
-  rest_url$path <- c(rest_url$path,
+  rest_url$path <- c(rest_url$path[rest_url$path != ""],
                      branch,
                      "descriptions",
                      "semantictags")
