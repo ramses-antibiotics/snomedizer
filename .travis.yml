@@ -15,8 +15,10 @@ r:
   - release
   - devel
 after_success:
-    - if [ "$TRAVIS_BRANCH" = "master" ] && [ "$TRAVIS_PULL_REQUEST" = "false" ]; then Rscript -e 'covr::codecov()'; fi
-    - if [ "$TRAVIS_BRANCH" = "master" ] && [ "$TRAVIS_PULL_REQUEST" = "false" ]; then ./pkgdown/build.R; fi
+    - if [ "$TRAVIS_BRANCH" = "master" ] && [ "$TRAVIS_PULL_REQUEST" = "false" ] && [ "$TRAVIS_R_VERSION_STRING" = "release" ]; then Rscript -e 'covr::codecov()'; fi
+
+before_deploy:
+  - if [ "$TRAVIS_BRANCH" = "master" ] && [ "$TRAVIS_PULL_REQUEST" = "false" ] && [ "$TRAVIS_R_VERSION_STRING" = "release" ]; then Rscript ./pkgdown/build.R; fi
 
 deploy:
   provider: firebase
