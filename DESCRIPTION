@@ -28,6 +28,7 @@ Suggests:
     knitr,
     rmarkdown,
     covr,
-    pkgdown
+    pkgdown,
+    R.utils
 RoxygenNote: 7.1.1
 VignetteBuilder: knitr
