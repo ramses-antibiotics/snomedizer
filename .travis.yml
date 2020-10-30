@@ -10,6 +10,8 @@ addons:
   apt:
     packages:
       - libxml2-dev
+      - libharfbuzz-dev
+      - libfribidi-dev
 r:
   - oldrel
   - release
