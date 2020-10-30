@@ -1,3 +1,4 @@
+#!/usr/bin/Rscript
 library(pkgdown)
 override_data_authors <- function (pkg = ".") {
   pkg <- as_pkgdown(pkg)

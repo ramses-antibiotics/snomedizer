@@ -16,3 +16,14 @@ r:
   - devel
 after_success:
     - if [ "$TRAVIS_BRANCH" = "master" ] && [ "$TRAVIS_PULL_REQUEST" = "false" ]; then Rscript -e 'covr::codecov()'; fi
+    - if [ "$TRAVIS_BRANCH" = "master" ] && [ "$TRAVIS_PULL_REQUEST" = "false" ]; then ./pkgdown/build.R; fi
+
+deploy:
+  provider: firebase
+  token:
+    secure: "qZwPodNwAsyCojr9euKHfuGq57mlczm0S/2I8eAGRjf1E4WsSl5FVhJXGtJceD5NIHORFDUUaVtMoIJh6viuCQzaoVx6uv7UgYUENYL2AqEf0AOEPXHWZwDF9/r0Q2qDNmf0zPG3/WtsEyTBngE929rvHZR9H7SQx1w3W28ZunHL0n0oKV7Jpzv9kbyKpZwoX3NBJx29qBskBBZXy8XtbS4c6c1c7/oHe+qfTOSMYQp1m/vWCIb8udBTntZYg5ApJ+tuZZXl8Nq8ObH5+o+YGDu9/gKjiLli1kR5LwylnTZH3igXeXbr7/zPTUEgO/DoN/Zm9wE4lb2RaGaeIJyFwpYjXBSsa9LUGDUIwpnGmmiEfUejyUf33r5TpvEK4/MDawhxeTi63eKK8QyVSUNK/EznbkMmQFwaNnyzW7XxxobB4A0DSJ5FYU5WigAJK6rLgDMikz4DbYpSSlrNnZf3E9qjx78ni9r6I1a/FJJt66VXcety5+b34KuVOg5Il1gJ+yqQ4nTzSd3vDAiBGUXcj1CkkmHAJgBfjH7id6o9lVGaw1ua+ehZrHyHh4EIkGJDFVdnUb0hp4CuoiLqNYznCxbSekTlBMiJDGIquV9avoWF7/RDnj/Vv/H0wwpQPma+D8h60BvAJw/pkMMOpw9sQedBrcOvRASOehApvg3HNgM="
+  project: "snomedizer"
+  on:
+    branch: master
+
+
