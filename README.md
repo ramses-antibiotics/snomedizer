@@ -1,8 +1,4 @@
 
-<!-- Place this tag in your head or just before your close body tag. -->
-
-<script async defer src="https://buttons.github.io/buttons.js"></script>
-
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
 # <img src="man/figures/logo.png" align="right" width="150px"/><code>snomedizer</code>: R Interface to the SNOMED CT Terminology Server REST API
@@ -63,7 +59,7 @@ is implemented in `api_concepts()`:
 library(snomedizer)
 api_concepts(term = "pneumonia", activeFilter = TRUE)
 #> Response [https://snowstorm.ihtsdotools.org/snowstorm/snomed-ct/MAIN/concepts?term=pneumonia&limit=50&offset=0&activeFilter=TRUE]
-#>   Date: 2020-10-28 15:09
+#>   Date: 2020-10-30 19:00
 #>   Status: 200
 #>   Content-Type: application/json
 #>   Size: 18.4 kB
@@ -139,7 +135,8 @@ licences:
     website](https://isd.digital.nhs.uk/trud3).
   - residents of other Member Countries and low-income countries are
     also eligible. More information can be found on the [SNOMED
-    International website](https://www.snomed.org/snomed-ct/get-snomed).
+    International
+website](https://www.snomed.org/snomed-ct/get-snomed).
 
 ## Funders
 

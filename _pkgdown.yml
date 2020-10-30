@@ -3,7 +3,7 @@ template:
   params:
     bootswatch: flatly
 
-url: https://ramses-antibiotics.github.io/snomedizer
+url: https://snomedizer.web.app
 
 authors:
     University College London:
