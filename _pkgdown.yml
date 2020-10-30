@@ -25,14 +25,14 @@ reference:
   desc:  User-friendly functions provided for every day tasks
   contents:
   - starts_with("concepts_")
-- title: Helper Functions
-  desc: Useful utilities
+- title: Utilities
+  desc: Useful functions to set parameters and handle server requests
   contents:
-  - starts_with("result_")
   - starts_with("snomed_")
   - starts_with("snomedizer_")
-- title: Transform and validate data
-  desc:  Functions to enrich and validate data before loading into the warehouse.
+  - starts_with("result_")
+- title: API operations
+  desc:  Like-for-like interfaces with the SNOMED CT Terminology Server API operations
   contents:
   - starts_with("api_")
 - title: Index

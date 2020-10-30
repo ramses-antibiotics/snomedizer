@@ -1,5 +1,5 @@
 
-#' Default \code{snomedizer} options
+#' Set SNOMED CT endpoint and other \code{snomedizer} options
 #'
 #' @description Functions to get and set \code{snomedizer} default endpoint and other options
 #' @param option.name the name of an option to return. If NULL (the default),
@@ -246,7 +246,8 @@ result_flatten <- function(x) {
 #' Check that results are complete
 #'
 #' @description Check whether the server request returned all the results,
-#' i.e. whether the `limit` < results `total`.
+#' i.e. whether the total number of results is smaller or equal to the
+#' request \code{limit} parameter.
 #' @param x an `httr` \code{\link[httr]{response}()} object produce by an
 #' \code{\link{api_operations}} function.
 #' @param silent whether to display warnings (default is `FALSE`)

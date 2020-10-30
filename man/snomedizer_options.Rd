@@ -4,7 +4,7 @@
 \alias{snomedizer_options}
 \alias{snomedizer_options_get}
 \alias{snomedizer_options_set}
-\title{Default \code{snomedizer} options}
+\title{Set SNOMED CT endpoint and other \code{snomedizer} options}
 \usage{
 snomedizer_options_get(option.name = NULL)
 
