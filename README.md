@@ -6,7 +6,7 @@
 <!-- badges: start -->
 
 [![Travis build
-status](https://travis-ci.com/ramses-antibiotics/snomedizer.svg?branch=master)](https://travis-ci.org/ramses-antibiotics/snomedizer)
+status](https://travis-ci.com/ramses-antibiotics/snomedizer.svg?branch=master)](https://travis-ci.com/ramses-antibiotics/snomedizer)
 [![Codecov test
 coverage](https://codecov.io/gh/ramses-antibiotics/snomedizer/branch/master/graph/badge.svg)](https://codecov.io/gh/ramses-antibiotics/snomedizer?branch=master)
 [![Project Status: WIP – Initial development is in progress, but there
@@ -59,7 +59,7 @@ is implemented in `api_concepts()`:
 library(snomedizer)
 api_concepts(term = "pneumonia", activeFilter = TRUE)
 #> Response [https://snowstorm.ihtsdotools.org/snowstorm/snomed-ct/MAIN/concepts?term=pneumonia&limit=50&offset=0&activeFilter=TRUE]
-#>   Date: 2020-10-30 19:00
+#>   Date: 2020-11-12 14:52
 #>   Status: 200
 #>   Content-Type: application/json
 #>   Size: 18.4 kB
@@ -83,7 +83,7 @@ provide results as data frames:
 concepts_find(term = "pneumonia", limit = 5) %>% 
   dplyr::select(conceptId, fsn.term, pt.term) 
 #> Warning: 
-#> This server request returned just 5 of a total 567 results.
+#> This server request returned just 5 of a total 584 results.
 #> Please increase the server `limit` to fetch all results.
 #>   conceptId                         fsn.term            pt.term
 #> 1 233604007             Pneumonia (disorder)          Pneumonia
@@ -135,8 +135,7 @@ licences:
     website](https://isd.digital.nhs.uk/trud3).
   - residents of other Member Countries and low-income countries are
     also eligible. More information can be found on the [SNOMED
-    International
-website](https://www.snomed.org/snomed-ct/get-snomed).
+    International website](https://www.snomed.org/snomed-ct/get-snomed).
 
 ## Funders
 
