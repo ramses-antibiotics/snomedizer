@@ -23,7 +23,7 @@
 #' @family wrapper
 #' @examples
 #' # Free text search
-#' concepts_find("asthma")
+#' str(concepts_find("asthma"))
 #'
 #' # Retrieve multiple concepts
 #' concepts_find(conceptIds =  c("233604007", "68566005"))

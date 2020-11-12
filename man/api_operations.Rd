@@ -18,6 +18,7 @@
 \alias{api_browser_concept_descriptions}
 \alias{api_descriptions_semantic_tags}
 \alias{api_relationships}
+\alias{api_relationship}
 \title{SNOMED CT Terminology Server REST API operations}
 \usage{
 api_concept(
@@ -164,6 +165,14 @@ api_relationships(
   catch404 = TRUE,
   ...
 )
+
+api_relationship(
+  endpoint = snomedizer_options_get("endpoint"),
+  branch = snomedizer_options_get("branch"),
+  relationshipId,
+  catch404 = TRUE,
+  ...
+)
 }
 \arguments{
 \item{conceptId}{character string of a SNOMED-CT concept id (for example:
@@ -296,6 +305,8 @@ results for: \itemize{
 }
 This parameter corresponds to \code{
 900000000000449001 | Characteristic type (core metadata concept)}}
+
+\item{relationshipId}{string of a relationship concept}
 }
 \value{
 An \code{httr} \code{\link[httr]{response}()} object.
@@ -317,6 +328,7 @@ api_concepts(term = "pneumonia")
 api_concepts(conceptIds = c("233604007", "68566005"))
 
 # get the content of the server request
-httr::content(api_concepts(term = "pneumonia"), limit = 1)
+pneumonia <- httr::content(api_concepts(term = "pneumonia"), limit = 1)
+str(pneumonia$items[[1]])
 }
 \concept{api_operations}

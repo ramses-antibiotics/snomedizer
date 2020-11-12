@@ -225,10 +225,11 @@ snomedizer_version_compatibility <- function(
 #' @export
 #' @family utilities
 #' @examples
-#' result_flatten(
+#' flattened_results <- result_flatten(
 #'    api_concepts(term = "pneumonia",
 #'    activeFilter = TRUE,
 #'    limit = 10))
+#' str(flattened_results)
 result_flatten <- function(x) {
   x <- httr::content(x, as = "text", encoding = "ISO-8859-1")
   x <- jsonlite::fromJSON(x, flatten = TRUE)

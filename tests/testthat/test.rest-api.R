@@ -254,3 +254,14 @@ test_that("api_relationships", {
 
   expect_equal(api_relationships()$status_code, 200)
 })
+
+
+# api_relationship --------------------------------------------------------
+
+test_that("api_relationship", {
+  expect_error(api_relationship())
+  is_a <- result_flatten(api_relationship(relationshipId = "1698297027"))
+  expect_equal(is_a$source.conceptId, "312119006")
+  expect_equal(is_a$type.conceptId, "116680003")
+  expect_equal(is_a$target.conceptId, "50417007")
+})

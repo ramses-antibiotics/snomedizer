@@ -20,6 +20,16 @@
 #' commonly \code{"MAIN"}). See \code{\link{snomedizer_options}}.
 #' @param catch404 whether to display a warning if the API operation returns a
 #' '404 Not Found' status. Default is \code{TRUE}.
+#' @param characteristicType a character string indicating whether to include
+#' results for: \itemize{
+#'     \item all relationships: NULL (the default)
+#'     \item only stated relationships: "STATED_RELATIONSHIP"
+#'     \item only inferred relationships: "INFERRED_RELATIONSHIP"
+#'     \item only additional relationships: ""ADDITIONAL_RELATIONSHIP" (for
+#'     instance, \code{123005000 | Part of (attribute) |})
+#' }
+#' This parameter corresponds to \code{
+#' 900000000000449001 | Characteristic type (core metadata concept)}
 #' @param conceptId character string of a SNOMED-CT concept id (for example:
 #' \code{"233604007"})
 #' @param conceptIds a character vector of SNOMED-CT concept ids (for example:
@@ -68,16 +78,7 @@
 #' @param preferredOrAcceptableIn character vector of description language reference sets
 #' (example: \code{"900000000000509007"}).
 #' The description must be preferred OR acceptable in at least one of these to match.
-#' @param characteristicType a character string indicating whether to include
-#' results for: \itemize{
-#'     \item all relationships: NULL (the default)
-#'     \item only stated relationships: "STATED_RELATIONSHIP"
-#'     \item only inferred relationships: "INFERRED_RELATIONSHIP"
-#'     \item only additional relationships: ""ADDITIONAL_RELATIONSHIP" (for
-#'     instance, \code{123005000 | Part of (attribute) |})
-#' }
-#' This parameter corresponds to \code{
-#' 900000000000449001 | Characteristic type (core metadata concept)}
+#' @param relationshipId string of a relationship concept
 #' @param searchMode a character string for the search mode. Must be either
 #' \code{"STANDARD"} (default) or \code{"REGEX"}.
 #' @param semanticTag character string of a description semantic tag
@@ -116,7 +117,8 @@
 #' api_concepts(conceptIds = c("233604007", "68566005"))
 #'
 #' # get the content of the server request
-#' httr::content(api_concepts(term = "pneumonia"), limit = 1)
+#' pneumonia <- httr::content(api_concepts(term = "pneumonia"), limit = 1)
+#' str(pneumonia$items[[1]])
 NULL
 
 #' @rdname api_operations
@@ -723,7 +725,33 @@ api_relationships <- function(
 }
 
 
+#' @rdname api_operations
+#' @export
+api_relationship <- function(
+  endpoint = snomedizer_options_get("endpoint"),
+  branch = snomedizer_options_get("branch"),
+  relationshipId,
+  catch404 = TRUE,
+  ...) {
 
+  stopifnot(length(relationshipId) == 1)
+
+  rest_url <- httr::parse_url(endpoint)
+  rest_url$path <- c(rest_url$path[rest_url$path != ""],
+                     branch,
+                     "relationships",
+                     relationshipId)
+  .check_rest_query_length1(rest_url)
+
+  rest_url <- httr::build_url(rest_url)
+  rest_result <- GET(rest_url)
+
+  if(catch404){
+    .catch_http_error(rest_result)
+  }
+
+  rest_result
+}
 
 
 
