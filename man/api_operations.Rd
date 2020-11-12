@@ -17,6 +17,7 @@
 \alias{api_browser_concept_parents}
 \alias{api_browser_concept_descriptions}
 \alias{api_descriptions_semantic_tags}
+\alias{api_relationships}
 \title{SNOMED CT Terminology Server REST API operations}
 \usage{
 api_concept(
@@ -149,6 +150,20 @@ api_descriptions_semantic_tags(
   branch = snomedizer_options_get("branch"),
   catch404 = TRUE
 )
+
+api_relationships(
+  endpoint = snomedizer_options_get("endpoint"),
+  branch = snomedizer_options_get("branch"),
+  active = NULL,
+  source = NULL,
+  type = NULL,
+  destination = NULL,
+  characteristicType = NULL,
+  limit = snomedizer_options_get("limit"),
+  offset = 0,
+  catch404 = TRUE,
+  ...
+)
 }
 \arguments{
 \item{conceptId}{character string of a SNOMED-CT concept id (for example:
@@ -217,9 +232,14 @@ children/descendants counter should be included in the result}
 \item{language}{vector of two-character language codes to include
 (example: \code{c("en", "de")}).}
 
-\item{type}{character vector of description types to include. See
-\code{api_concept_descendants("900000000000446008")} for valid
-description type inputs.}
+\item{type}{character vector of concept codes defining the type of description or
+the type of attribute/relationship to include, depending on the function:
+\itemize{
+   \item see \code{api_concept_descendants("900000000000446008")} for valid
+   description type concepts.
+   \item see \code{api_concept_descendants("106237007")} for valid
+   attributes (relationship types) concepts.
+ }}
 
 \item{semanticTag}{character string of a description semantic tag
 to include (example: \code{"attribute"}). See
@@ -259,6 +279,23 @@ by concept. Default is \code{FALSE}.}
 
 \item{searchMode}{a character string for the search mode. Must be either
 \code{"STANDARD"} (default) or \code{"REGEX"}.}
+
+\item{source}{a character vector of concepts to be included as
+sources defined by the relationship}
+
+\item{destination}{concept character string restricting the range of the
+relationships to be included in results}
+
+\item{characteristicType}{a character string indicating whether to include
+results for: \itemize{
+    \item all relationships: NULL (the default)
+    \item only stated relationships: "STATED_RELATIONSHIP"
+    \item only inferred relationships: "INFERRED_RELATIONSHIP"
+    \item only additional relationships: ""ADDITIONAL_RELATIONSHIP" (for
+    instance, \code{123005000 | Part of (attribute) |})
+}
+This parameter corresponds to \code{
+900000000000449001 | Characteristic type (core metadata concept)}}
 }
 \value{
 An \code{httr} \code{\link[httr]{response}()} object.

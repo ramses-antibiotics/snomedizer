@@ -229,10 +229,28 @@ test_that("api_browser_concept_descriptions", {
 })
 
 
-
 # api_descriptions_semantic_tags ------------------------------------------
 
 test_that("api_descriptions_semantic_tags", {
   tags <- httr::content(api_descriptions_semantic_tags())
   expect_true("core metadata concept" %in% names(tags))
+})
+
+
+# api_relationships -------------------------------------------------------
+
+test_that("api_relationships", {
+  #test that NULL is equivalent to c("NULL", "NULL")
+  bacter_pneumo_relationships <- result_flatten(api_relationships(source = "312119006"))
+  expect_true(all(c("116680003", "246075003", "370135005", "363698007") %in%
+                    bacter_pneumo_relationships$type.conceptId))
+
+  caused_by_ecoli <- result_flatten(api_relationships(type = "246075003", destination = "112283007"))
+  expect_true(all(c("9323009", "10625111000119106") %in% caused_by_ecoli$source.conceptId))
+
+  caused_by_ecoli <- result_flatten(api_relationships(type = "246075003", destination = "112283007",
+                                                      characteristicType = "STATED_RELATIONSHIP"))
+  expect_false("INFERRED_RELATIONSHIP" %in% caused_by_ecoli$characteristicType)
+
+  expect_equal(api_relationships()$status_code, 200)
 })
