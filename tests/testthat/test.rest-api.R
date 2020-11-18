@@ -265,3 +265,37 @@ test_that("api_relationship", {
   expect_equal(is_a$type.conceptId, "116680003")
   expect_equal(is_a$target.conceptId, "50417007")
 })
+
+
+# api_all_code_systems ----------------------------------------------------
+
+test_that("api_all_code_systems", {
+  expect_error(api_all_code_systems(forBranch = c(1, 2)))
+  expect_true("SNOMEDCT" %in% result_flatten(api_all_code_systems())$shortName)
+  expect_equal(
+    result_flatten(api_all_code_systems(forBranch = "MAIN"))$shortName,
+    "SNOMEDCT"
+  )
+})
+
+
+# api_code_system ---------------------------------------------------------
+
+test_that("api_code_system", {
+  expect_error(api_code_system(shortName = NULL))
+  expect_error(api_code_system(shortName = c("a", "b")))
+  expect_true(
+    "SNOMEDCT" %in% result_flatten(api_code_system(shortName = "SNOMEDCT"))$shortName
+  )
+})
+
+
+# api_code_system_all_versions --------------------------------------------
+
+test_that("api_code_system_all_versions", {
+  expect_error(api_code_system_all_versions(shortName = NULL))
+  expect_error(api_code_system_all_versions(shortName = c("a", "b")))
+  expect_true(
+    "SNOMEDCT" %in% result_flatten(api_code_system_all_versions(shortName = "SNOMEDCT"))$shortName
+  )
+})

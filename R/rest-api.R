@@ -60,6 +60,8 @@
 #' @param form a character string indicating which ancestors/parents or
 #' descendants/children to extract based on stated or inferred relationships.
 #' Must be one of \code{"inferred"} (default), \code{"stated"}, or \code{"additional"}.
+#' @param forBranch a character name of a single branch (eg \code{"MAIN"}) for which
+#' to fetch code systems results. The default (\code{NULL}) will return all code systems.
 #' @param groupByConcept a boolean indicating whether to group descriptions
 #' by concept. Default is \code{FALSE}.
 #' @param includeDescendantCount a boolean indicating whether a number of
@@ -89,6 +91,11 @@
 #' to include (example: \code{c("attribute", "finding")}). See
 #' \code{api_descriptions_semantic_tags()} for a list of valid
 #' description semantic tags.
+#' @param shortName character name of a code system (eg \code{"SNOMEDCT"},
+#' \code{"SNOMEDCT-UK"})
+#' @param showFutureVersions a boolean indicating whether to include all code
+#' systems (\code{NULL}, the default), only future code systems (\code{TRUE}),
+#' or no future code systems (\code{FALSE})
 #' @param source a character vector of concepts to be included as
 #' sources defined by the relationship
 #' @param stated a boolean indicating whether to limit search to descendants
@@ -753,5 +760,89 @@ api_relationship <- function(
   rest_result
 }
 
+
+#' @rdname api_operations
+#' @export
+api_all_code_systems <- function(endpoint = snomedizer_options_get("endpoint"),
+                                 forBranch = NULL,
+                                 catch404 = TRUE) {
+
+  if( !is.null(forBranch) ) {
+    stopifnot(length(forBranch) == 1)
+    stopifnot(is.character(forBranch))
+  }
+
+  rest_url <- httr::parse_url(endpoint)
+  rest_url$path <- c(rest_url$path[rest_url$path != ""],
+                     "codesystems")
+  rest_url$query <- list(
+    forBranch = forBranch
+  )
+  rest_url <- httr::build_url(rest_url)
+  rest_result <- GET(rest_url)
+
+  if(catch404){
+    .catch_http_error(rest_result)
+  }
+
+  rest_result
+}
+
+
+#' @rdname api_operations
+#' @export
+api_code_system <- function(endpoint = snomedizer_options_get("endpoint"),
+                            shortName,
+                            catch404 = TRUE) {
+
+  stopifnot(length(shortName) == 1)
+  stopifnot(is.character(shortName))
+
+  rest_url <- httr::parse_url(endpoint)
+  rest_url$path <- c(rest_url$path[rest_url$path != ""],
+                     "codesystems",
+                     shortName)
+  rest_url <- httr::build_url(rest_url)
+  rest_result <- GET(rest_url)
+
+  if(catch404){
+    .catch_http_error(rest_result)
+  }
+
+  rest_result
+}
+
+
+#' @rdname api_operations
+#' @export
+api_code_system_all_versions <- function(endpoint = snomedizer_options_get("endpoint"),
+                                         shortName,
+                                         showFutureVersions = NULL,
+                                         catch404 = TRUE) {
+  stopifnot(length(shortName) == 1)
+  stopifnot(is.character(shortName))
+
+  if( !is.null(showFutureVersions) ) {
+    stopifnot(length(showFutureVersions)==1)
+    stopifnot(is.logical(showFutureVersions))
+  }
+
+  rest_url <- httr::parse_url(endpoint)
+  rest_url$path <- c(rest_url$path[rest_url$path != ""],
+                     "codesystems",
+                     shortName,
+                     "versions")
+  rest_url$query <- list(
+    showFutureVersions = showFutureVersions
+  )
+  rest_url <- httr::build_url(rest_url)
+  rest_result <- GET(rest_url)
+
+  if(catch404){
+    .catch_http_error(rest_result)
+  }
+
+  rest_result
+}
 
 

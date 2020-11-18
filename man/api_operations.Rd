@@ -19,6 +19,9 @@
 \alias{api_descriptions_semantic_tags}
 \alias{api_relationships}
 \alias{api_relationship}
+\alias{api_all_code_systems}
+\alias{api_code_system}
+\alias{api_code_system_all_versions}
 \title{SNOMED CT Terminology Server REST API operations}
 \usage{
 api_concept(
@@ -173,6 +176,25 @@ api_relationship(
   catch404 = TRUE,
   ...
 )
+
+api_all_code_systems(
+  endpoint = snomedizer_options_get("endpoint"),
+  forBranch = NULL,
+  catch404 = TRUE
+)
+
+api_code_system(
+  endpoint = snomedizer_options_get("endpoint"),
+  shortName,
+  catch404 = TRUE
+)
+
+api_code_system_all_versions(
+  endpoint = snomedizer_options_get("endpoint"),
+  shortName,
+  showFutureVersions = NULL,
+  catch404 = TRUE
+)
 }
 \arguments{
 \item{conceptId}{character string of a SNOMED-CT concept id (for example:
@@ -307,6 +329,16 @@ This parameter corresponds to \code{
 900000000000449001 | Characteristic type (core metadata concept)}}
 
 \item{relationshipId}{string of a relationship concept}
+
+\item{forBranch}{a character name of a single branch (eg \code{"MAIN"}) for which
+to fetch code systems results. The default (\code{NULL}) will return all code systems.}
+
+\item{shortName}{character name of a code system (eg \code{"SNOMEDCT"},
+\code{"SNOMEDCT-UK"})}
+
+\item{showFutureVersions}{a boolean indicating whether to include all code
+systems (\code{NULL}, the default), only future code systems (\code{TRUE}),
+or no future code systems (\code{FALSE})}
 }
 \value{
 An \code{httr} \code{\link[httr]{response}()} object.
