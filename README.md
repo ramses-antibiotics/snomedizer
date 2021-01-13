@@ -5,14 +5,13 @@
 
 <!-- badges: start -->
 
-[![Travis build
-status](https://travis-ci.com/ramses-antibiotics/snomedizer.svg?branch=master)](https://travis-ci.com/ramses-antibiotics/snomedizer)
+[![R build
+status](https://github.com/ramses-antibiotics/snomedizer/workflows/R-CMD-check/badge.svg?branch=master)](https://github.com/ramses-antibiotics/snomedizer/actions)
 [![Codecov test
 coverage](https://codecov.io/gh/ramses-antibiotics/snomedizer/branch/master/graph/badge.svg)](https://codecov.io/gh/ramses-antibiotics/snomedizer?branch=master)
 [![Project Status: WIP – Initial development is in progress, but there
 has not yet been a stable, usable release suitable for the
 public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
-
 <!-- badges: end -->
 
 <p class="lead">
@@ -59,7 +58,7 @@ is implemented in `api_concepts()`:
 library(snomedizer)
 api_concepts(term = "pneumonia", activeFilter = TRUE)
 #> Response [https://snowstorm.ihtsdotools.org/snowstorm/snomed-ct/MAIN/concepts?term=pneumonia&limit=50&offset=0&activeFilter=TRUE]
-#>   Date: 2021-01-13 17:16
+#>   Date: 2021-01-13 17:38
 #>   Status: 200
 #>   Content-Type: application/json
 #>   Size: 18.5 kB
