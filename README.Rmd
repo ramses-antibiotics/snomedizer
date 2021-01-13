@@ -43,6 +43,7 @@ You can install the development version from [GitHub](https://github.com/ramses-
 install.packages("devtools")
 devtools::install_github("ramses-antibiotics/snomedizer")
 ```
+
 ## Example
 
 `snomedizer` provides a direct interface to the SNOMED CT Terminology Server REST API. 
