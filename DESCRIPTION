@@ -9,7 +9,7 @@ Authors@R: c(
            email = "p.dutey-magni@ucl.ac.uk",
            comment = c(ORCID = "0000-0002-8942-9836")),
     person("University College London", role = c("cph")))
-Description: A package to manipulate the SNOMED CT clinical ontology using the 
+Description: Manipulate the SNOMED CT clinical ontology using the 
    SNOMED CT Terminology Server REST API <https://github.com/IHTSDO/snowstorm>.
 URL: https://github.com/ramses-antibiotics/snomedizer
 BugReports: https://github.com/ramses-antibiotics/snomedizer/issues

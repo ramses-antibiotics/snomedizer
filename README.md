@@ -59,10 +59,10 @@ is implemented in `api_concepts()`:
 library(snomedizer)
 api_concepts(term = "pneumonia", activeFilter = TRUE)
 #> Response [https://snowstorm.ihtsdotools.org/snowstorm/snomed-ct/MAIN/concepts?term=pneumonia&limit=50&offset=0&activeFilter=TRUE]
-#>   Date: 2020-11-12 14:52
+#>   Date: 2021-01-13 17:16
 #>   Status: 200
 #>   Content-Type: application/json
-#>   Size: 18.4 kB
+#>   Size: 18.5 kB
 #> {
 #>   "items" : [ {
 #>     "conceptId" : "233604007",
@@ -141,9 +141,9 @@ licences:
 
 <div style="display: table-cell;">
 
-<a href="https://www.nihr.ac.uk/" ><img height="65px" style="vertical-align: bottom;" alt="National Institute of Health Research" src="man/figures/partner-logos/NIHR.svg" ></a>
+<a href="https://www.nihr.ac.uk/"><img height="65px" style="vertical-align: bottom;" alt="National Institute of Health Research" src="man/figures/partner-logos/NIHR.svg" ></a>
   
-<a href="https://www.esrc.ukri.org" ><img height="70px" style="vertical-align: bottom; bottom;margin-bottom: -7px;" alt="Economic and Social Research Council" src="man/figures/partner-logos/ESRC.svg" ></a>
+<a href="https://esrc.ukri.org/"><img height="70px" style="vertical-align: bottom; bottom;margin-bottom: -7px;" alt="Economic and Social Research Council" src="man/figures/partner-logos/ESRC.svg" ></a>
   
 <a href="https://www.ucl.ac.uk/infection-immunity/people/professor-judith-breuer/precision-amr"><img style="vertical-align: bottom;margin-bottom: -20px;" alt="Precision AMR" src="man/figures/partner-logos/pAMR.jpg" height="100px"></a>
 
