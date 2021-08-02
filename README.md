@@ -15,11 +15,9 @@ public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostat
 <!-- badges: end -->
 
 <p class="lead">
-
 <code>snomedizer</code> is an R package to manipulate the SNOMED
 clinical ontology using the [SNOMED CT Terminology Server REST
 API](https://github.com/IHTSDO/snowstorm).
-
 </p>
 
 ## Installation
@@ -50,18 +48,18 @@ server](https://browser.ihtsdotools.org/snowstorm/snomed-ct/) available
 for reference purposes **only** (see [terms &
 conditions](#terms--conditions)).
 
-For example, [`GET
-/branch/concepts`](https://snowstorm.ihtsdotools.org/snowstorm/snomed-ct/swagger-ui.html#!/Concepts/findConceptsUsingGET)
+For example,
+[`GET /branch/concepts`](https://snowstorm.ihtsdotools.org/snowstorm/snomed-ct/swagger-ui.html#!/Concepts/findConceptsUsingGET)
 is implemented in `api_concepts()`:
 
 ``` r
 library(snomedizer)
 api_concepts(term = "pneumonia", activeFilter = TRUE)
 #> Response [https://snowstorm.ihtsdotools.org/snowstorm/snomed-ct/MAIN/concepts?term=pneumonia&limit=50&offset=0&activeFilter=TRUE]
-#>   Date: 2021-01-13 17:38
+#>   Date: 2021-08-02 14:53
 #>   Status: 200
 #>   Content-Type: application/json
-#>   Size: 18.5 kB
+#>   Size: 22 kB
 #> {
 #>   "items" : [ {
 #>     "conceptId" : "233604007",
@@ -82,7 +80,7 @@ provide results as data frames:
 concepts_find(term = "pneumonia", limit = 5) %>% 
   dplyr::select(conceptId, fsn.term, pt.term) 
 #> Warning: 
-#> This server request returned just 5 of a total 584 results.
+#> This server request returned just 5 of a total 589 results.
 #> Please increase the server `limit` to fetch all results.
 #>   conceptId                         fsn.term            pt.term
 #> 1 233604007             Pneumonia (disorder)          Pneumonia
@@ -94,7 +92,7 @@ concepts_find(term = "pneumonia", limit = 5) %>%
 
 ## Development and new features
 
-Please share your experience as a user\!
+Please share your experience as a user!
 
 Do not hesitate to [get in touch on
 GitHub](https://github.com/ramses-antibiotics/snomedizer/issues) to
@@ -104,7 +102,7 @@ report bugs or request new features.
 
 ### Server endpoint
 
-By default, `snomedizer` queries the [public SNOMED-CT terminology
+By default, `snomedizer` queries the [public SNOMED CT terminology
 endpoint](https://snowstorm.ihtsdotools.org/snowstorm/snomed-ct/swagger-ui.html)
 hosted by SNOMED International.
 
@@ -118,21 +116,21 @@ for instructions on how to build a dedicated endpoint for production.
 
 ### SNOMED CT Terminology
 
-In order to use SNOMED-CT terminology, a licence is required which
+In order to use SNOMED CT terminology, a licence is required which
 depends both on the country you are based in, and the purpose of your
 work.
 
-SNOMED International maintains a public SNOMED-CT terminology server for
+SNOMED International maintains a public SNOMED CT terminology server for
 strict ‘reference purposes’ under the [SNOMED International SNOMED CT
 Browser License Agreement](https://browser.ihtsdotools.org/).
 
-Use of SNOMED-CT terminology for data analysis or health care production
+Use of SNOMED CT terminology for data analysis or health care production
 systems is subject to other licences. Some users are eligible for free
 licences:
 
-  - UK-based users can obtain a licence free of charge on the [NHS TRUD
+-   UK-based users can obtain a licence free of charge on the [NHS TRUD
     website](https://isd.digital.nhs.uk/trud3).
-  - residents of other Member Countries and low-income countries are
+-   residents of other Member Countries and low-income countries are
     also eligible. More information can be found on the [SNOMED
     International website](https://www.snomed.org/snomed-ct/get-snomed).
 
