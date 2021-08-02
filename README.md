@@ -1,22 +1,17 @@
 
-<!-- Place this tag in your head or just before your close body tag. -->
-
-<script async defer src="https://buttons.github.io/buttons.js"></script>
-
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
 # <img src="man/figures/logo.png" align="right" width="150px"/><code>snomedizer</code>: R Interface to the SNOMED CT Terminology Server REST API
 
 <!-- badges: start -->
 
-[![Travis build
-status](https://travis-ci.com/ramses-antibiotics/snomedizer.svg?branch=master)](https://travis-ci.org/ramses-antibiotics/snomedizer)
+[![R build
+status](https://github.com/ramses-antibiotics/snomedizer/workflows/R-CMD-check/badge.svg?branch=master)](https://github.com/ramses-antibiotics/snomedizer/actions)
 [![Codecov test
 coverage](https://codecov.io/gh/ramses-antibiotics/snomedizer/branch/master/graph/badge.svg)](https://codecov.io/gh/ramses-antibiotics/snomedizer?branch=master)
 [![Project Status: WIP – Initial development is in progress, but there
 has not yet been a stable, usable release suitable for the
 public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
-
 <!-- badges: end -->
 
 <p class="lead">
@@ -63,10 +58,10 @@ is implemented in `api_concepts()`:
 library(snomedizer)
 api_concepts(term = "pneumonia", activeFilter = TRUE)
 #> Response [https://snowstorm.ihtsdotools.org/snowstorm/snomed-ct/MAIN/concepts?term=pneumonia&limit=50&offset=0&activeFilter=TRUE]
-#>   Date: 2020-10-28 15:09
+#>   Date: 2021-01-13 17:38
 #>   Status: 200
 #>   Content-Type: application/json
-#>   Size: 18.4 kB
+#>   Size: 18.5 kB
 #> {
 #>   "items" : [ {
 #>     "conceptId" : "233604007",
@@ -87,7 +82,7 @@ provide results as data frames:
 concepts_find(term = "pneumonia", limit = 5) %>% 
   dplyr::select(conceptId, fsn.term, pt.term) 
 #> Warning: 
-#> This server request returned just 5 of a total 567 results.
+#> This server request returned just 5 of a total 584 results.
 #> Please increase the server `limit` to fetch all results.
 #>   conceptId                         fsn.term            pt.term
 #> 1 233604007             Pneumonia (disorder)          Pneumonia
@@ -145,9 +140,9 @@ licences:
 
 <div style="display: table-cell;">
 
-<a href="https://www.nihr.ac.uk/" ><img height="65px" style="vertical-align: bottom;" alt="National Institute of Health Research" src="man/figures/partner-logos/NIHR.svg" ></a>
+<a href="https://www.nihr.ac.uk/"><img height="65px" style="vertical-align: bottom;" alt="National Institute of Health Research" src="man/figures/partner-logos/NIHR.svg" ></a>
   
-<a href="https://www.esrc.ukri.org" ><img height="70px" style="vertical-align: bottom; bottom;margin-bottom: -7px;" alt="Economic and Social Research Council" src="man/figures/partner-logos/ESRC.svg" ></a>
+<a href="https://esrc.ukri.org/"><img height="70px" style="vertical-align: bottom; bottom;margin-bottom: -7px;" alt="Economic and Social Research Council" src="man/figures/partner-logos/ESRC.svg" ></a>
   
 <a href="https://www.ucl.ac.uk/infection-immunity/people/professor-judith-breuer/precision-amr"><img style="vertical-align: bottom;margin-bottom: -20px;" alt="Precision AMR" src="man/figures/partner-logos/pAMR.jpg" height="100px"></a>
 

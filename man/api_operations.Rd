@@ -17,6 +17,11 @@
 \alias{api_browser_concept_parents}
 \alias{api_browser_concept_descriptions}
 \alias{api_descriptions_semantic_tags}
+\alias{api_relationships}
+\alias{api_relationship}
+\alias{api_all_code_systems}
+\alias{api_code_system}
+\alias{api_code_system_all_versions}
 \title{SNOMED CT Terminology Server REST API operations}
 \usage{
 api_concept(
@@ -149,9 +154,50 @@ api_descriptions_semantic_tags(
   branch = snomedizer_options_get("branch"),
   catch404 = TRUE
 )
+
+api_relationships(
+  endpoint = snomedizer_options_get("endpoint"),
+  branch = snomedizer_options_get("branch"),
+  active = NULL,
+  source = NULL,
+  type = NULL,
+  destination = NULL,
+  characteristicType = NULL,
+  limit = snomedizer_options_get("limit"),
+  offset = 0,
+  catch404 = TRUE,
+  ...
+)
+
+api_relationship(
+  endpoint = snomedizer_options_get("endpoint"),
+  branch = snomedizer_options_get("branch"),
+  relationshipId,
+  catch404 = TRUE,
+  ...
+)
+
+api_all_code_systems(
+  endpoint = snomedizer_options_get("endpoint"),
+  forBranch = NULL,
+  catch404 = TRUE
+)
+
+api_code_system(
+  endpoint = snomedizer_options_get("endpoint"),
+  shortName,
+  catch404 = TRUE
+)
+
+api_code_system_all_versions(
+  endpoint = snomedizer_options_get("endpoint"),
+  shortName,
+  showFutureVersions = NULL,
+  catch404 = TRUE
+)
 }
 \arguments{
-\item{conceptId}{character string of a SNOMED-CT concept id (for example:
+\item{conceptId}{character string of a SNOMED CT concept id (for example:
 \code{"233604007"})}
 
 \item{endpoint}{URL of a SNOMED CT Terminology Server REST API endpoint.
@@ -165,7 +211,7 @@ commonly \code{"MAIN"}). See \code{\link{snomedizer_options}}.}
 
 \item{term}{character vector of terms to search}
 
-\item{conceptIds}{a character vector of SNOMED-CT concept ids (for example:
+\item{conceptIds}{a character vector of SNOMED CT concept ids (for example:
 \code{c("233604007", "68566005")})}
 
 \item{ecl}{a character expression constraint query (with full relationship inference).
@@ -211,15 +257,20 @@ children/descendants counter should be included in the result}
     \item \code{NULL} (the default) returns both active and inactive terminology
 }}
 
-\item{module}{character vector of SNOMED-CT modules to include (example:
+\item{module}{character vector of SNOMED CT modules to include (example:
 \code{"900000000000207008"})}
 
 \item{language}{vector of two-character language codes to include
 (example: \code{c("en", "de")}).}
 
-\item{type}{character vector of description types to include. See
-\code{api_concept_descendants("900000000000446008")} for valid
-description type inputs.}
+\item{type}{character vector of concept codes defining the type of description or
+the type of attribute/relationship to include, depending on the function:
+\itemize{
+   \item see \code{api_concept_descendants("900000000000446008")} for valid
+   description type concepts.
+   \item see \code{api_concept_descendants("106237007")} for valid
+   attributes (relationship types) concepts.
+ }}
 
 \item{semanticTag}{character string of a description semantic tag
 to include (example: \code{"attribute"}). See
@@ -259,6 +310,35 @@ by concept. Default is \code{FALSE}.}
 
 \item{searchMode}{a character string for the search mode. Must be either
 \code{"STANDARD"} (default) or \code{"REGEX"}.}
+
+\item{source}{a character vector of concepts to be included as
+sources defined by the relationship}
+
+\item{destination}{concept character string restricting the range of the
+relationships to be included in results}
+
+\item{characteristicType}{a character string indicating whether to include
+results for: \itemize{
+    \item all relationships: NULL (the default)
+    \item only stated relationships: "STATED_RELATIONSHIP"
+    \item only inferred relationships: "INFERRED_RELATIONSHIP"
+    \item only additional relationships: ""ADDITIONAL_RELATIONSHIP" (for
+    instance, \code{123005000 | Part of (attribute) |})
+}
+This parameter corresponds to \code{
+900000000000449001 | Characteristic type (core metadata concept)}}
+
+\item{relationshipId}{string of a relationship concept}
+
+\item{forBranch}{a character name of a single branch (eg \code{"MAIN"}) for which
+to fetch code systems results. The default (\code{NULL}) will return all code systems.}
+
+\item{shortName}{character name of a code system (eg \code{"SNOMEDCT"},
+\code{"SNOMEDCT-UK"})}
+
+\item{showFutureVersions}{a boolean indicating whether to include all code
+systems (\code{NULL}, the default), only future code systems (\code{TRUE}),
+or no future code systems (\code{FALSE})}
 }
 \value{
 An \code{httr} \code{\link[httr]{response}()} object.
@@ -269,7 +349,7 @@ with the operations built in the \href{https://github.com/IHTSDO/snowstorm}{Snow
 }
 \section{Disclaimer}{
 
-In order to use SNOMED-CT, a licence is required which depends both on the country you are
+In order to use SNOMED CT, a licence is required which depends both on the country you are
 based in, and the purpose of your work. See details on \link{snomedizer}.
 }
 
@@ -280,6 +360,7 @@ api_concepts(term = "pneumonia")
 api_concepts(conceptIds = c("233604007", "68566005"))
 
 # get the content of the server request
-httr::content(api_concepts(term = "pneumonia"), limit = 1)
+pneumonia <- httr::content(api_concepts(term = "pneumonia"), limit = 1)
+str(pneumonia$items[[1]])
 }
 \concept{api_operations}

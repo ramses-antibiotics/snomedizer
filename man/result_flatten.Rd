@@ -18,10 +18,11 @@ nested server results from an \code{\link{api_operations}}
  into a single non-nested data frame
 }
 \examples{
-result_flatten(
+flattened_results <- result_flatten(
    api_concepts(term = "pneumonia",
    activeFilter = TRUE,
    limit = 10))
+str(flattened_results)
 }
 \seealso{
 Other utilities: 

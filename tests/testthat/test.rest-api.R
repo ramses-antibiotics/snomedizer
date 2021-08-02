@@ -229,10 +229,73 @@ test_that("api_browser_concept_descriptions", {
 })
 
 
-
 # api_descriptions_semantic_tags ------------------------------------------
 
 test_that("api_descriptions_semantic_tags", {
   tags <- httr::content(api_descriptions_semantic_tags())
   expect_true("core metadata concept" %in% names(tags))
+})
+
+
+# api_relationships -------------------------------------------------------
+
+test_that("api_relationships", {
+  #test that NULL is equivalent to c("NULL", "NULL")
+  bacter_pneumo_relationships <- result_flatten(api_relationships(source = "312119006"))
+  expect_true(all(c("116680003", "246075003", "370135005", "363698007") %in%
+                    bacter_pneumo_relationships$type.conceptId))
+
+  caused_by_ecoli <- result_flatten(api_relationships(type = "246075003", destination = "112283007"))
+  expect_true(all(c("9323009", "10625111000119106") %in% caused_by_ecoli$source.conceptId))
+
+  caused_by_ecoli <- result_flatten(api_relationships(type = "246075003", destination = "112283007",
+                                                      characteristicType = "STATED_RELATIONSHIP"))
+  expect_false("INFERRED_RELATIONSHIP" %in% caused_by_ecoli$characteristicType)
+
+  expect_equal(api_relationships()$status_code, 200)
+})
+
+
+# api_relationship --------------------------------------------------------
+
+test_that("api_relationship", {
+  expect_error(api_relationship())
+  is_a <- result_flatten(api_relationship(relationshipId = "1698297027"))
+  expect_equal(is_a$source.conceptId, "312119006")
+  expect_equal(is_a$type.conceptId, "116680003")
+  expect_equal(is_a$target.conceptId, "50417007")
+})
+
+
+# api_all_code_systems ----------------------------------------------------
+
+test_that("api_all_code_systems", {
+  expect_error(api_all_code_systems(forBranch = c(1, 2)))
+  expect_true("SNOMEDCT" %in% result_flatten(api_all_code_systems())$shortName)
+  expect_equal(
+    result_flatten(api_all_code_systems(forBranch = "MAIN"))$shortName,
+    "SNOMEDCT"
+  )
+})
+
+
+# api_code_system ---------------------------------------------------------
+
+test_that("api_code_system", {
+  expect_error(api_code_system(shortName = NULL))
+  expect_error(api_code_system(shortName = c("a", "b")))
+  expect_true(
+    "SNOMEDCT" %in% result_flatten(api_code_system(shortName = "SNOMEDCT"))$shortName
+  )
+})
+
+
+# api_code_system_all_versions --------------------------------------------
+
+test_that("api_code_system_all_versions", {
+  expect_error(api_code_system_all_versions(shortName = NULL))
+  expect_error(api_code_system_all_versions(shortName = c("a", "b")))
+  expect_true(
+    "SNOMEDCT" %in% result_flatten(api_code_system_all_versions(shortName = "SNOMEDCT"))$shortName
+  )
 })
