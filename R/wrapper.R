@@ -175,13 +175,13 @@ concepts_descriptions <- function(conceptIds, ...) {
 #' #'
 #' #' @return A data frame containing the following variables:
 #' #'     \itemize{
-#' #'       \item[conceptId] a character vector of SNOMED-CT conceptIds
+#' #'       \item[conceptId] a character vector of SNOMED CT conceptIds
 #' #'       \item[term] a character vector of fully specified names
 #' #'       \item[causalAgent] a factor characterising the pathogen causing the infection:
 #' #'           bacterial, fungal, viral, unspecified
 #' #'       \item[onset] a factor characterising the onset of disease: community or healthcare
 #' #'       \item[class1] a character vector containing the conceptId of
-#' #'          a parent SNOMED-CT concept.
+#' #'          a parent SNOMED CT concept.
 #' #'     }
 #' #' @export
 #' #'

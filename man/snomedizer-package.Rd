@@ -8,15 +8,15 @@
 \description{
 \if{html}{\figure{logo.png}{options: align='right' alt='logo' width='120'}}
 
-A package to manipulate the SNOMED CT clinical ontology using the 
+Manipulate the SNOMED CT clinical ontology using the 
    SNOMED CT Terminology Server REST API <https://github.com/IHTSDO/snowstorm>.
 }
-\section{SNOMED-CT licensing}{
+\section{SNOMED CT licensing}{
 
 
-In order to use SNOMED-CT, a licence is required which depends both on the country you are
+In order to use SNOMED CT, a licence is required which depends both on the country you are
 based in, and the purpose of your work. Although SNOMED International allows access to the
-SNOMED-CT terminology server hosted by IHSTO to anyone for reference purpose, uses for data
+SNOMED CT terminology server hosted by IHSTO to anyone for reference purpose, uses for data
 analysis or health care production systems is subject to other licences.
 
 UK-based users can apply for such a licence free of charge on the
