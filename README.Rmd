@@ -11,7 +11,6 @@ knitr::opts_chunk$set(
   fig.path = "man/figures/README-",
   out.width = "100%"
 )
-devtools::load_all()
 ```
 
 # <img src="man/figures/logo.png" align="right" width="150px"/><code>snomedizer</code>: R Interface to the SNOMED CT Terminology Server REST API
@@ -54,6 +53,7 @@ For example, [`GET /branch/concepts`](https://snowstorm.ihtsdotools.org/snowstor
 
 ```{r api_concepts_pneumonia}
 library(snomedizer)
+library(dplyr)
 api_concepts(term = "pneumonia", activeFilter = TRUE)
 ```
 
@@ -74,7 +74,7 @@ Do not hesitate to [get in touch on GitHub](https://github.com/ramses-antibiotic
 
 ### Server endpoint
 
-By default, `snomedizer` queries the [public SNOMED-CT terminology endpoint](https://snowstorm.ihtsdotools.org/snowstorm/snomed-ct/swagger-ui.html) hosted by SNOMED International.
+By default, `snomedizer` queries the [public SNOMED CT terminology endpoint](https://snowstorm.ihtsdotools.org/snowstorm/snomed-ct/swagger-ui.html) hosted by SNOMED International.
 
 This server has no service level agreement and **MUST NOT be used as part of production systems in healthcare settings**, even if you hold a SNOMED CT licence.
 
@@ -82,11 +82,11 @@ Please refer to the [Snowstorm documentation](https://github.com/IHTSDO/snowstor
 
 ### SNOMED CT Terminology
 
-In order to use SNOMED-CT terminology, a licence is required which depends both on the country you are based in, and the purpose of your work.
+In order to use SNOMED CT terminology, a licence is required which depends both on the country you are based in, and the purpose of your work.
 
-SNOMED International maintains a public SNOMED-CT terminology server for strict 'reference purposes' under the [SNOMED International SNOMED CT Browser License Agreement](https://browser.ihtsdotools.org/).
+SNOMED International maintains a public SNOMED CT terminology server for strict 'reference purposes' under the [SNOMED International SNOMED CT Browser License Agreement](https://browser.ihtsdotools.org/).
 
-Use of SNOMED-CT terminology for data analysis or health care production systems is subject to other licences. Some users are eligible for free licences:
+Use of SNOMED CT terminology for data analysis or health care production systems is subject to other licences. Some users are eligible for free licences:
 
 - UK-based users can obtain a licence free of charge on the [NHS TRUD website](https://isd.digital.nhs.uk/trud3).
 - residents of other Member Countries and low-income countries are also eligible. More information can be found on the [SNOMED International website](https://www.snomed.org/snomed-ct/get-snomed).

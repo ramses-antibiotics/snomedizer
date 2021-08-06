@@ -197,13 +197,13 @@ snomedizer_version_compatibility <- function(
   version_minor <- (endpoint_version_num[2] + endpoint_version_num[3] * 0.001)
 
   if (
-    (version_main < 5) |
-    (version_main == 5 & version_minor < 0.006)
+    (version_main < 6) |
+    (version_main == 6 & version_minor < 2)
   ) {
     warning(
       paste(
         paste0("The selected endpoint version is ", endpoint_version, "."),
-        "This version of snomedizer is designed for endpoint versions 5.0.6 or greater.",
+        "This version of snomedizer is designed for endpoint versions 6.2.0 or greater.",
         "Some function may not work as intended.",
         sep = "\n"
       )

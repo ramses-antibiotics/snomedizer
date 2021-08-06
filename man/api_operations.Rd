@@ -112,7 +112,7 @@ api_browser_concept_ancestors(
 api_browser_concept_children(
   conceptId,
   form = "inferred",
-  includeDescendantCount = FALSE,
+  includeDescendantCount = TRUE,
   endpoint = snomedizer_options_get("endpoint"),
   branch = snomedizer_options_get("branch"),
   catch404 = TRUE
@@ -197,7 +197,7 @@ api_code_system_all_versions(
 )
 }
 \arguments{
-\item{conceptId}{character string of a SNOMED-CT concept id (for example:
+\item{conceptId}{character string of a SNOMED CT concept id (for example:
 \code{"233604007"})}
 
 \item{endpoint}{URL of a SNOMED CT Terminology Server REST API endpoint.
@@ -211,7 +211,7 @@ commonly \code{"MAIN"}). See \code{\link{snomedizer_options}}.}
 
 \item{term}{character vector of terms to search}
 
-\item{conceptIds}{a character vector of SNOMED-CT concept ids (for example:
+\item{conceptIds}{a character vector of SNOMED CT concept ids (for example:
 \code{c("233604007", "68566005")})}
 
 \item{ecl}{a character expression constraint query (with full relationship inference).
@@ -257,7 +257,7 @@ children/descendants counter should be included in the result}
     \item \code{NULL} (the default) returns both active and inactive terminology
 }}
 
-\item{module}{character vector of SNOMED-CT modules to include (example:
+\item{module}{character vector of SNOMED CT modules to include (example:
 \code{"900000000000207008"})}
 
 \item{language}{vector of two-character language codes to include
@@ -349,7 +349,7 @@ with the operations built in the \href{https://github.com/IHTSDO/snowstorm}{Snow
 }
 \section{Disclaimer}{
 
-In order to use SNOMED-CT, a licence is required which depends both on the country you are
+In order to use SNOMED CT, a licence is required which depends both on the country you are
 based in, and the purpose of your work. See details on \link{snomedizer}.
 }
 

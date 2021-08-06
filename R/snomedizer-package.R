@@ -1,9 +1,11 @@
 
 #' @keywords internal
-#' @section SNOMED-CT licensing:
+#' @section SNOMED CT licensing:
 #'
-#' In order to use SNOMED-CT terminology, a licence is required which depends both on the
-#' country you are based in, and the purpose of your work.
+#' In order to use SNOMED CT, a licence is required which depends both on the country you are
+#' based in, and the purpose of your work. Although SNOMED International allows access to the
+#' SNOMED CT terminology server hosted by IHSTO to anyone for reference purpose, uses for data
+#' analysis or health care production systems is subject to other licences.
 #'
 #' SNOMED International allows access to public SNOMED-CT terminology servers to anyone
 #' for strict 'reference purposes' under the \href{https://browser.ihtsdotools.org/}{SNOMED

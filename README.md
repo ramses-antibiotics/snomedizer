@@ -56,12 +56,25 @@ is implemented in `api_concepts()`:
 
 ``` r
 library(snomedizer)
+#> The following SNOMED CT Terminology Server has been selected:
+#> https://snowstorm.ihtsdotools.org/snowstorm/snomed-ct
+#> This server may be used for reference purposes only.
+#> It MUST NOT be used in production. Please refer to ?snomedizer for details.
+library(dplyr)
+#> 
+#> Attaching package: 'dplyr'
+#> The following objects are masked from 'package:stats':
+#> 
+#>     filter, lag
+#> The following objects are masked from 'package:base':
+#> 
+#>     intersect, setdiff, setequal, union
 api_concepts(term = "pneumonia", activeFilter = TRUE)
 #> Response [https://snowstorm.ihtsdotools.org/snowstorm/snomed-ct/MAIN/concepts?term=pneumonia&limit=50&offset=0&activeFilter=TRUE]
-#>   Date: 2021-01-13 17:38
+#>   Date: 2021-08-06 17:27
 #>   Status: 200
 #>   Content-Type: application/json
-#>   Size: 18.5 kB
+#>   Size: 22 kB
 #> {
 #>   "items" : [ {
 #>     "conceptId" : "233604007",
@@ -82,7 +95,7 @@ provide results as data frames:
 concepts_find(term = "pneumonia", limit = 5) %>% 
   dplyr::select(conceptId, fsn.term, pt.term) 
 #> Warning: 
-#> This server request returned just 5 of a total 584 results.
+#> This server request returned just 5 of a total 605 results.
 #> Please increase the server `limit` to fetch all results.
 #>   conceptId                         fsn.term            pt.term
 #> 1 233604007             Pneumonia (disorder)          Pneumonia
@@ -104,7 +117,7 @@ report bugs or request new features.
 
 ### Server endpoint
 
-By default, `snomedizer` queries the [public SNOMED-CT terminology
+By default, `snomedizer` queries the [public SNOMED CT terminology
 endpoint](https://snowstorm.ihtsdotools.org/snowstorm/snomed-ct/swagger-ui.html)
 hosted by SNOMED International.
 
@@ -118,15 +131,15 @@ for instructions on how to build a dedicated endpoint for production.
 
 ### SNOMED CT Terminology
 
-In order to use SNOMED-CT terminology, a licence is required which
+In order to use SNOMED CT terminology, a licence is required which
 depends both on the country you are based in, and the purpose of your
 work.
 
-SNOMED International maintains a public SNOMED-CT terminology server for
+SNOMED International maintains a public SNOMED CT terminology server for
 strict ‘reference purposes’ under the [SNOMED International SNOMED CT
 Browser License Agreement](https://browser.ihtsdotools.org/).
 
-Use of SNOMED-CT terminology for data analysis or health care production
+Use of SNOMED CT terminology for data analysis or health care production
 systems is subject to other licences. Some users are eligible for free
 licences:
 

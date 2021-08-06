@@ -30,9 +30,9 @@
 #' }
 #' This parameter corresponds to \code{
 #' 900000000000449001 | Characteristic type (core metadata concept)}
-#' @param conceptId character string of a SNOMED-CT concept id (for example:
+#' @param conceptId character string of a SNOMED CT concept id (for example:
 #' \code{"233604007"})
-#' @param conceptIds a character vector of SNOMED-CT concept ids (for example:
+#' @param conceptIds a character vector of SNOMED CT concept ids (for example:
 #' \code{c("233604007", "68566005")})
 #' @param conceptActive optional boolean: \itemize{
 #'     \item \code{TRUE} returns only active concepts
@@ -71,7 +71,7 @@
 #' @param limit a positive integer for the maximum number of results to return.
 #' See \code{\link{snomedizer_options}}. The maximum limit on public endpoints
 #' is 10,000.
-#' @param module character vector of SNOMED-CT modules to include (example:
+#' @param module character vector of SNOMED CT modules to include (example:
 #' \code{"900000000000207008"})
 #' @param offset an integer indicating the number of results to skip
 #' @param preferredIn character vector of description language reference sets
@@ -115,7 +115,7 @@
 #' @name api_operations
 #' @family api_operations
 #' @section Disclaimer:
-#' In order to use SNOMED-CT, a licence is required which depends both on the country you are
+#' In order to use SNOMED CT, a licence is required which depends both on the country you are
 #' based in, and the purpose of your work. See details on \link{snomedizer}.
 #' @examples
 #' # look up the pneumonia concept
@@ -140,7 +140,6 @@ api_concept <- function(conceptId,
   stopifnot(length(conceptId) == 1)
 
   rest_url <- httr::parse_url(endpoint)
-
   rest_url$path <- c(rest_url$path[rest_url$path != ""],
                      branch,
                      "concepts",
@@ -479,7 +478,7 @@ api_browser_concept_ancestors <- function(
 api_browser_concept_children <- function(
   conceptId,
   form = "inferred",
-  includeDescendantCount = FALSE,
+  includeDescendantCount = TRUE,
   endpoint = snomedizer_options_get("endpoint"),
   branch = snomedizer_options_get("branch"),
   catch404 = TRUE

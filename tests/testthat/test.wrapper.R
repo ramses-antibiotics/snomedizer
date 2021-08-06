@@ -29,6 +29,7 @@ test_that("concepts_find", {
 # concepts_descendants ----------------------------------------------------
 
 test_that("concepts_descendants", {
+
   infections <- concepts_descendants(conceptIds = c("233604007", "68566005"),
                                      direct_descendants = TRUE, activeFilter = TRUE)
   expect_false("882784691000119100" %in% infections$`233604007`$conceptId)
@@ -52,4 +53,12 @@ test_that("concepts_descriptions", {
   expect_error(concepts_descriptions(""))
 })
 
+
+# release_version ---------------------------------------------------------
+
+test_that("release_version", {
+  ct_version <- release_version(branch = "MAIN/2021-07-31")
+  expect_equal(ct_version$rf2_date, "20210731")
+  expect_equal(ct_version$rf2_month_year, "July 2021")
+})
 

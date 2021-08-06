@@ -151,6 +151,7 @@ concepts_descriptions <- function(conceptIds, ...) {
   stopifnot(is.vector(conceptIds))
   stopifnot(all(conceptIds != ""))
   desc <- api_descriptions(conceptIds = conceptIds, ...)
+
   if(httr::http_error(desc)) {
     return(httr::content(desc))
   } else if(length(httr::content(desc)$items) == 0) {
@@ -159,6 +160,42 @@ concepts_descriptions <- function(conceptIds, ...) {
     ignore <- result_completeness(desc)
     return(result_flatten(desc))
   }
+}
+
+
+#' Fetch SNOMED CT RF2 release version
+#'
+#' @description Provides the date of the release of the specified endpoint
+#' and branch. SNOMED CT is currently released released twice a year
+#' on 31 January and 31 July in a format known as Release Format 2 (RF2).
+#' @param endpoint the URL of a SNOMED CT Terminology Server REST API endpoint.
+#'  See \code{\link{snomedizer_options}}.
+#' @param branch a string for the name of the API endpoint branch to use (most
+#' commonly \code{"MAIN"}). See \code{\link{snomedizer_options}}.
+#' @return a list containing two character strings: \code{rf2_date}
+#' (YYYYMMDD release date) and \code{rf2_month_year} (month and year string)
+#' @references \href{SNOMED CT Release File Specifications}{http://snomed.org/rfs}
+#' @export
+release_version <- function(endpoint = snomedizer_options_get("endpoint"),
+                            branch = snomedizer_options_get("branch")) {
+
+  active <- term <- NULL
+
+  ct_version <- concepts_descriptions(
+    conceptIds = "138875005",
+    endpoint = endpoint,
+    branch = branch,
+    limit = 1000
+  )
+
+  ct_version <- dplyr::filter(ct_version,
+                              active == TRUE,
+                              grepl("version:", term))
+
+  list(
+    rf2_date = stringr::str_extract(ct_version$term, "[0-9]{8}"),
+    rf2_month_year = stringr::str_match(ct_version$term, "[(](.*) Release[)]$")[,2]
+  )
 }
 
 #' #' Get all SNOMED CT infection concepts
@@ -174,13 +211,13 @@ concepts_descriptions <- function(conceptIds, ...) {
 #' #'
 #' #' @return A data frame containing the following variables:
 #' #'     \itemize{
-#' #'       \item[conceptId] a character vector of SNOMED-CT conceptIds
+#' #'       \item[conceptId] a character vector of SNOMED CT conceptIds
 #' #'       \item[term] a character vector of fully specified names
 #' #'       \item[causalAgent] a factor characterising the pathogen causing the infection:
 #' #'           bacterial, fungal, viral, unspecified
 #' #'       \item[onset] a factor characterising the onset of disease: community or healthcare
 #' #'       \item[class1] a character vector containing the conceptId of
-#' #'          a parent SNOMED-CT concept.
+#' #'          a parent SNOMED CT concept.
 #' #'     }
 #' #' @export
 #' #'
@@ -194,6 +231,4 @@ concepts_descriptions <- function(conceptIds, ...) {
 #'                        limit = limit,
 #'                        ...)
 #' }
-
-
 
