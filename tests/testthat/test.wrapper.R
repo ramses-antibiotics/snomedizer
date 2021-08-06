@@ -54,3 +54,14 @@ test_that("concepts_descriptions", {
   expect_true("Urinary tract infectious disease" %in% infection_descriptions$term)
   expect_error(concepts_descriptions(""))
 })
+
+
+# release_version ---------------------------------------------------------
+
+test_that("release_version", {
+  ct_version <- release_version(branch = "MAIN/2021-07-31")
+  expect_equal(ct_version$rf2_date, "20210731")
+  expect_equal(ct_version$rf2_month_year, "July 2021")
+})
+
+

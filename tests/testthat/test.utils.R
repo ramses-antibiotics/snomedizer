@@ -99,5 +99,5 @@ test_that(".validate_branch", {
 # snomedizer_version_compatibility ----------------------------------------
 
 test_that("snomedizer_version_compatibility", {
-  expect_true(snomedizer_version_compatibility(), "logical")
+  expect_true(snomedizer_version_compatibility())
 })
