@@ -193,8 +193,15 @@ release_version <- function(endpoint = snomedizer_options_get("endpoint"),
                               grepl("version:", term))
 
   list(
-    rf2_date = stringr::str_extract(ct_version$term, "[0-9]{8}"),
-    rf2_month_year = stringr::str_match(ct_version$term, "[(](.*) Release[)]$")[,2]
+    "rf2_date" = regmatches(
+      ct_version$term,
+      regexpr("[0-9]{8}", ct_version$term)
+    ),
+    "rf2_month_year" = regmatches(
+      ct_version$term,
+      regexpr("(?<=[(])(.*)(?= Release[)]$)",
+              ct_version$term, perl = T)
+    )
   )
 }
 
