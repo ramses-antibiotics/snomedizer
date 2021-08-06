@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{snomed_public_endpoint_suggest}
 \alias{snomed_public_endpoint_suggest}
-\title{Find a public SNOMED-CT endpoint}
+\title{Find a public SNOMED CT endpoint}
 \usage{
 snomed_public_endpoint_suggest()
 }
@@ -10,7 +10,7 @@ snomed_public_endpoint_suggest()
 a string object containing the URL to a responsive SNOMED CT Terminology Server REST API endpoint.
 }
 \description{
-Find a public SNOMED-CT endpoint
+Find a public SNOMED CT endpoint
 }
 \seealso{
 Other utilities: 

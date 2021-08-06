@@ -4,7 +4,7 @@
 \alias{snomedizer_options}
 \alias{snomedizer_options_get}
 \alias{snomedizer_options_set}
-\title{Default \code{snomedizer} options}
+\title{Set SNOMED CT endpoint and other \code{snomedizer} options}
 \usage{
 snomedizer_options_get(option.name = NULL)
 
@@ -38,12 +38,13 @@ set to default values when this package is launched:
    \item{endpoint} this is the address of the SNOWSTORM terminology server
    to be used. When \code{snomedizer} is loaded, it is set to the current
    environment variable \code{SNOMEDIZER_ENDPOINT}. If no such
-    the SNOMED-CT version maintained by the official
+    the SNOMED CT version maintained by the official
         SNOWSTORM server.
-   \item{branch} The default is "MAIN/SNOMEDCT-GB", the most
-        up-to-date edition of SNOMED-CT UK Core Edition.
-   \item{limit} an integer stating the the maximum number of results fetched. This is set to 50 The default
-        is 50.
+   \item{branch} a branch name. If no branch name is provided and that none
+   has previously been set, a default "MAIN" will be used, pointing to the most
+        up-to-date edition of SNOMED CT International Edition.
+   \item{limit} an integer stating the the maximum number of results fetched.
+   This is set to 50 by default.
 }
 }
 \examples{

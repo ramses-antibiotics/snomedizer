@@ -4,7 +4,9 @@
 \name{infection_concepts}
 \alias{infection_concepts}
 \title{Data frame of SNOMED-CT infection concepts and descriptions}
-\format{An object of class \code{data.frame} with 6710 rows and 16 columns.}
+\format{
+An object of class \code{data.frame} with 6710 rows and 16 columns.
+}
 \source{
 SNOMED-CT International Edition, RF2 release 20180731 (July 2018)
 }

@@ -1,5 +1,5 @@
 
-#' Default \code{snomedizer} options
+#' Set SNOMED CT endpoint and other \code{snomedizer} options
 #'
 #' @description Functions to get and set \code{snomedizer} default endpoint and other options
 #' @param option.name the name of an option to return. If NULL (the default),
@@ -18,12 +18,13 @@
 #'    \item{endpoint} this is the address of the SNOWSTORM terminology server
 #'    to be used. When \code{snomedizer} is loaded, it is set to the current
 #'    environment variable \code{SNOMEDIZER_ENDPOINT}. If no such
-#'     the SNOMED-CT version maintained by the official
+#'     the SNOMED CT version maintained by the official
 #'         SNOWSTORM server.
-#'    \item{branch} The default is "MAIN/SNOMEDCT-GB", the most
-#'         up-to-date edition of SNOMED-CT UK Core Edition.
-#'    \item{limit} an integer stating the the maximum number of results fetched. This is set to 50 The default
-#'         is 50.
+#'    \item{branch} a branch name. If no branch name is provided and that none
+#'    has previously been set, a default "MAIN" will be used, pointing to the most
+#'         up-to-date edition of SNOMED CT International Edition.
+#'    \item{limit} an integer stating the the maximum number of results fetched.
+#'    This is set to 50 by default.
 #' }
 #' @family utilities
 #' @return The factory setting of the target API parameter.
@@ -61,42 +62,55 @@ snomedizer_options_get <- function(option.name = NULL){
 #' @rdname snomedizer_options
 #' @export
 snomedizer_options_set <- function(endpoint = NULL,
-                                   branch = NULL, limit = NULL) {
+                                   branch = NULL,
+                                   limit = NULL) {
 
   if (all(sapply(list(endpoint, branch, limit), is.null))) {
     stop("Please provide at least one input.")
   }
-
-  if (!is.null(branch)) {
-    stopifnot(length(branch) == 1)
-    stopifnot(!is.na(branch))
-    stopifnot(is.character(branch))
-    stopifnot(branch != "")
-    options(snomedizer.branch = utils::URLencode(branch))
-  }
-
 
   if (!is.null(limit)) {
     limit <- .validate_limit(limit)
     options(snomedizer.limit = limit)
   }
 
+  if (is.null(branch)) {
+    branch <- ifelse(
+      is.null(snomedizer_options_get("branch")),
+      "MAIN",
+      snomedizer_options_get("branch"))
+  } else {
+    branch <- .validate_branch(branch)
+  }
+
   if (!is.null(endpoint)) {
+
     endpoint <- utils::URLencode(gsub("/*$", "", endpoint))
     stopifnot(length(endpoint) == 1)
     stopifnot(is.character(endpoint))
-    if(httr::http_error(endpoint)) {
+
+    if (httr::http_error(endpoint)) {
       stop("The provided `endpoint` is not responding.")
     }
-    if(!snomed_endpoint_test(endpoint = endpoint,
-                             branch = snomedizer_options_get()$branch)) {
+
+    if (
+      !snomed_endpoint_test(
+        endpoint = endpoint,
+        branch = branch
+      )
+    ) {
       stop("`endpoint` and `branch` are not returning valid answers.")
+    } else {
+      options(snomedizer.endpoint = endpoint)
+      options(snomedizer.branch = branch)
     }
-    options(snomedizer.endpoint = endpoint)
+
   } else {
     if(!snomed_endpoint_test(endpoint = snomedizer_options_get()$endpoint,
-                             branch = snomedizer_options_get()$branch)) {
+                             branch = branch)) {
       stop("`endpoint` is not returning valid answers.")
+    } else {
+      options(snomedizer.branch = branch)
     }
   }
 
@@ -104,7 +118,7 @@ snomedizer_options_set <- function(endpoint = NULL,
 }
 
 
-#' Find a public SNOMED-CT endpoint
+#' Find a public SNOMED CT endpoint
 #'
 #' @return a string object containing the URL to a responsive SNOMED CT Terminology Server REST API endpoint.
 #' @family utilities
@@ -126,16 +140,18 @@ snomed_public_endpoint_suggest <- function() {
   }
 
   if(!exists("endpoint")) {
-    stop("No working SNOMED endpoint found. Try again later.")
+    warning("No working SNOMED endpoint found. Try again later.")
+    return(NULL)
   } else {
+    test <- snomedizer_version_compatibility(endpoint = endpoint)
     return(endpoint)
   }
 }
 
 
-#' Test a SNOMED-CT endpoint
+#' Test a SNOMED CT endpoint
 #'
-#' @param endpoint a character URL to a SNOMED-CT endpoint
+#' @param endpoint URL of a SNOMED CT Terminology Server REST API endpoint
 #' @param branch a character string of a branch name
 #'
 #' @return a boolean indicating whether the endpoint passed the test
@@ -159,6 +175,46 @@ snomed_endpoint_test <- function(endpoint, branch) {
 }
 
 
+#' Verify the endpoint compatibility with snomedizer
+#'
+#' @description This function compares the SNOMED CT terminology server endpoint version
+#' with `snomedizer`'s supported version. The SNOMED CT terminology server API
+#' is continuously developed and may introduce breaking changes in REST operations
+#' and parameters.
+#' @param endpoint URL of a SNOMED CT Terminology Server REST API endpoint
+#' @param silent whether to hide warnings. Default is `FALSE`
+#' @return a logical value indicating whether the endpoint version is supported
+#' @export
+snomedizer_version_compatibility <- function(
+  endpoint = snomedizer_options_get("endpoint"),
+  silent = FALSE
+) {
+
+  endpoint_version <- httr::content(api_version(endpoint = endpoint))$version
+  endpoint_version_num <- as.numeric(unlist(strsplit(endpoint_version, "[.]")))
+
+  version_main <- endpoint_version_num[1]
+  version_minor <- (endpoint_version_num[2] + endpoint_version_num[3] * 0.001)
+
+  if (
+    (version_main < 5) |
+    (version_main == 5 & version_minor < 0.006)
+  ) {
+    warning(
+      paste(
+        paste0("The selected endpoint version is ", endpoint_version, "."),
+        "This version of snomedizer is designed for endpoint versions 5.0.6 or greater.",
+        "Some function may not work as intended.",
+        sep = "\n"
+      )
+    )
+    return(FALSE)
+  } else {
+    return(TRUE)
+  }
+}
+
+
 #' Flatten results from a server request
 #'
 #' @description A function to \code{\link[jsonlite]{flatten}}
@@ -169,12 +225,13 @@ snomed_endpoint_test <- function(endpoint, branch) {
 #' @export
 #' @family utilities
 #' @examples
-#' result_flatten(
+#' flattened_results <- result_flatten(
 #'    api_concepts(term = "pneumonia",
 #'    activeFilter = TRUE,
 #'    limit = 10))
+#' str(flattened_results)
 result_flatten <- function(x) {
-  x <- httr::content(x, as = 'text')
+  x <- httr::content(x, as = "text", encoding = "ISO-8859-1")
   x <- jsonlite::fromJSON(x, flatten = TRUE)
   empty_index <- sapply(x, length) == 0
   if(any(empty_index)) {
@@ -190,7 +247,8 @@ result_flatten <- function(x) {
 #' Check that results are complete
 #'
 #' @description Check whether the server request returned all the results,
-#' i.e. whether the `limit` < results `total`.
+#' i.e. whether the total number of results is smaller or equal to the
+#' request \code{limit} parameter.
 #' @param x an `httr` \code{\link[httr]{response}()} object produce by an
 #' \code{\link{api_operations}} function.
 #' @param silent whether to display warnings (default is `FALSE`)
@@ -269,13 +327,13 @@ result_completeness <- function(x, silent = FALSE) {
   if(is.null(limit)) {
     stop("`limit` must not be NULL")
   }
-  if(is.na(limit)) {
-    stop("`limit` must not be missing")
-  }
   if(length(limit) != 1) {
     stop("`limit` must have length == 1")
   }
-  if(!is.numeric(limit) || limit <= 0 ||
+  if(is.na(limit)) {
+    stop("`limit` must not be missing")
+  }
+  if(!is.numeric(limit) || limit < 0 ||
      # check is whole number
      abs(limit - round(limit)) >= .Machine$double.eps^0.5) {
     stop("`limit` must be a strictly positive integer")
@@ -287,11 +345,10 @@ result_completeness <- function(x, silent = FALSE) {
   as.integer(limit)
 }
 
-
-.ignore_empty_string <- function(x) {
-  if(x == "") {
-    NULL
-  } else {
-    x
-  }
+.validate_branch <- function(branch) {
+  stopifnot(length(branch) == 1)
+  stopifnot(!is.na(branch))
+  stopifnot(is.character(branch))
+  stopifnot(branch != "")
+  utils::URLencode(URL = branch, reserved = TRUE)
 }

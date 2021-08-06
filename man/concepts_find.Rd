@@ -2,7 +2,7 @@
 % Please edit documentation in R/wrapper.R
 \name{concepts_find}
 \alias{concepts_find}
-\title{Find SNOMED-CT concepts}
+\title{Find SNOMED CT concepts}
 \usage{
 concepts_find(
   term = NULL,
@@ -16,7 +16,7 @@ concepts_find(
 \arguments{
 \item{term}{a string containing search terms}
 
-\item{conceptIds}{a character vector of one or more SNOMED-CT codes
+\item{conceptIds}{a character vector of one or more SNOMED CT codes
 to search}
 
 \item{ecl}{a character expression constraint query (with full inference). Consult the
@@ -40,18 +40,18 @@ term or a list of concepts
 }
 \section{Disclaimer}{
 
-In order to use SNOMED-CT, a licence is required which depends both on the country you are
+In order to use SNOMED CT, a licence is required which depends both on the country you are
 based in, and the purpose of your work. See details on \link{snomedizer}.
 }
 
 \examples{
 # Free text search
-concepts_find("asthma")
+str(concepts_find("asthma"))
 
 # Retrieve multiple concepts
 concepts_find(conceptIds =  c("233604007", "68566005"))
 
-# Use the SNOMED-CT Expression Constraint Language
+# Use the SNOMED CT Expression Constraint Language
 concepts_find(
   ecl = paste(
     "<! 68566005 | Urinary tract infectious disease (disorder) |",

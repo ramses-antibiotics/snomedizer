@@ -19,7 +19,8 @@ the complete set of results on the server. If the REST request failed
 }
 \description{
 Check whether the server request returned all the results,
-i.e. whether the `limit` < results `total`.
+i.e. whether the total number of results is smaller or equal to the
+request \code{limit} parameter.
 }
 \examples{
 result_completeness(api_concepts(term = "pneumonia", limit = 10))

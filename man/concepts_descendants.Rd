@@ -31,13 +31,13 @@ a named list of data frames
 }
 \description{
 This function is a wrapper of \code{\link{api_concepts}} that
-fetches descendants of one or several concept identifiers using full SNOMED-CT
+fetches descendants of one or several concept identifiers using full SNOMED CT
 inference. The search can be restricted to children concepts using the
 \code{direct_descendants} argument.
 }
 \section{Disclaimer}{
 
-In order to use SNOMED-CT, a licence is required which depends both on the country you are
+In order to use SNOMED CT, a licence is required which depends both on the country you are
 based in, and the purpose of your work. See details on \link{snomedizer}.
 }
 

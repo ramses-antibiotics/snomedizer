@@ -4,7 +4,9 @@
 \name{drug_indications}
 \alias{drug_indications}
 \title{Sample of antibiotic prescription records}
-\format{An object of class \code{data.frame} with 403 rows and 2 columns.}
+\format{
+An object of class \code{data.frame} with 263 rows and 2 columns.
+}
 \usage{
 drug_indications
 }

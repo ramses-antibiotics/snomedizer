@@ -7,5 +7,5 @@ drug_indications <- drug_indications %>%
     prescription_id = 1:n(),
     indication
   )
-usethis::use_data(drug_indications)
+usethis::use_data(drug_indications, overwrite = T)
 

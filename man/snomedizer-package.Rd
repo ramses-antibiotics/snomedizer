@@ -4,11 +4,11 @@
 \name{snomedizer-package}
 \alias{snomedizer}
 \alias{snomedizer-package}
-\title{snomedizer: R Interface to the SNOMED CT Terminology Server REST API}
+\title{snomedizer: R Interface to the SNOMED-CT Terminology Server REST API}
 \description{
 \if{html}{\figure{logo.png}{options: align='right' alt='logo' width='120'}}
 
-Manipulate the SNOMED clinical ontology using the 
+Manipulate the SNOMED CT clinical ontology using the 
    SNOMED CT Terminology Server REST API <https://github.com/IHTSDO/snowstorm>.
 }
 \section{SNOMED-CT licensing}{

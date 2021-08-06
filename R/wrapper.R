@@ -1,11 +1,11 @@
 
 
-#' Find SNOMED-CT concepts
+#' Find SNOMED CT concepts
 #'
 #' @description A wrapper function for \code{\link{api_concepts}} searching for a
 #' term or a list of concepts
 #' @param term a string containing search terms
-#' @param conceptIds a character vector of one or more SNOMED-CT codes
+#' @param conceptIds a character vector of one or more SNOMED CT codes
 #' to search
 #' @param ecl a character expression constraint query (with full inference). Consult the
 #' \href{http://snomed.org/ecl}{Expression Constraint Language guide}
@@ -17,18 +17,18 @@
 #' \code{endpoint}, \code{branch} or \code{limit}
 #' @return a data frame
 #' @section Disclaimer:
-#' In order to use SNOMED-CT, a licence is required which depends both on the country you are
+#' In order to use SNOMED CT, a licence is required which depends both on the country you are
 #' based in, and the purpose of your work. See details on \link{snomedizer}.
 #' @export
 #' @family wrapper
 #' @examples
 #' # Free text search
-#' concepts_find("asthma")
+#' str(concepts_find("asthma"))
 #'
 #' # Retrieve multiple concepts
 #' concepts_find(conceptIds =  c("233604007", "68566005"))
 #'
-#' # Use the SNOMED-CT Expression Constraint Language
+#' # Use the SNOMED CT Expression Constraint Language
 #' concepts_find(
 #'   ecl = paste(
 #'     "<! 68566005 | Urinary tract infectious disease (disorder) |",
@@ -70,7 +70,7 @@ concepts_find <- function(term = NULL,
 #' Fetch descendants of one or more concepts
 #'
 #' @description This function is a wrapper of \code{\link{api_concepts}} that
-#' fetches descendants of one or several concept identifiers using full SNOMED-CT
+#' fetches descendants of one or several concept identifiers using full SNOMED CT
 #' inference. The search can be restricted to children concepts using the
 #' \code{direct_descendants} argument.
 #' @param conceptIds a character vector of concept identifiers
@@ -87,7 +87,7 @@ concepts_find <- function(term = NULL,
 #' @return a named list of data frames
 #' @export
 #' @section Disclaimer:
-#' In order to use SNOMED-CT, a licence is required which depends both on the country you are
+#' In order to use SNOMED CT, a licence is required which depends both on the country you are
 #' based in, and the purpose of your work. See details on \link{snomedizer}.
 #' @examples
 #' # This will trigger a warning using the default limit set by snomedizer_options_get("limit")
@@ -133,86 +133,44 @@ concepts_descendants <- function(conceptIds,
 
 #' Fetch descriptions of one or more concepts
 #'
-#' @description This function is a wrapper of \code{\link{api_concept_descriptions}} that
+#' @description This function is a wrapper of \code{\link{api_descriptions}} that
 #' fetches description of one or several concept identifiers.
 #' @param conceptIds a character vector of concept identifiers
-#' @param ... other valid arguments to function \code{\link{api_concept_descriptions}},
-#' for instance \code{endpoint}, \code{branch}.
-#'
+#' @param ... other optional arguments listed in \code{\link{api_operations}}, such as
+#' \code{endpoint}, \code{branch} or \code{limit}
 #' @return a named list of data frames
 #' @export
 #' @section Disclaimer:
-#' In order to use SNOMED-CT, a licence is required which depends both on the country you are
+#' In order to use SNOMED CT, a licence is required which depends both on the country you are
 #' based in, and the purpose of your work. See details on \link{snomedizer}.
 #' @examples
 #' pneumonia_descriptions <- concepts_descriptions(conceptIds = "233604007")
-#' str(pneumonia_descriptions$`233604007`)
+#' str(pneumonia_descriptions)
 concepts_descriptions <- function(conceptIds, ...) {
 
   stopifnot(is.vector(conceptIds))
-  progress_bar <- dplyr::progress_estimated(length(conceptIds))
-
-  x <- purrr::map(
-    conceptIds,
-    function(conceptId, ...) {
-      desc <- api_descriptions(concept = conceptId, ...)
-      progress_bar$tick()$print()
-
-      if(httr::http_error(desc)) {
-        return(httr::content(desc))
-      } else if(length(httr::content(desc)$items) == 0) {
-        return(NULL)
-      } else {
-        ignore <- result_completeness(desc)
-        return(result_flatten(desc))
-      }}, ...)
-  names(x) <- conceptIds
-
-  x
+  stopifnot(all(conceptIds != ""))
+  desc <- api_descriptions(conceptIds = conceptIds, ...)
+  if(httr::http_error(desc)) {
+    return(httr::content(desc))
+  } else if(length(httr::content(desc)$items) == 0) {
+    return(NULL)
+  } else {
+    ignore <- result_completeness(desc)
+    return(result_flatten(desc))
+  }
 }
 
-
-
-#' Fetch endpoint release version
-#'
-#' @param endpoint the URL of a SNOMED CT Terminology Server REST API endpoint.
-#'  See \code{\link{snomedizer_options}}.
-#' @param branch a string for the name of the API endpoint branch to use (most
-#' commonly \code{"MAIN"}). See \code{\link{snomedizer_options}}.
-#' @return a list containing two character strings: \code{rf2_date}
-#' (YYYYMMDD release date) and \code{rf2_month_year} (month and year string)
-#' @export
-release_version <- function(endpoint = snomedizer_options_get("endpoint"),
-                            branch = snomedizer_options_get("branch")) {
-
-  active <- term <- NULL
-
-  ct_version <- concepts_descriptions(
-    conceptIds = "138875005",
-    endpoint = endpoint,
-    branch = branch,
-    limit = 200
-  )[[1]]
-
-  ct_version <- dplyr::filter(ct_version,
-                              active == TRUE,
-                              grepl("version:", term))
-
-  list(
-    rf2_date = stringr::str_extract(ct_version$term, "[0-9]{6}"),
-    rf2_month_year = stringr::str_match(ct_version$term, "[(](.*) Release[)]$")[,2]
-  )
-}
-
-
-
-#' #' Get all SNOMED-CT infection concepts
+#' #' Get all SNOMED CT infection concepts
 #' #'
-#' #' @description Obtain all concepts belonging to the \rm{40733004 |Infectious disease (disorder)|}
-#' #'     SNOMED-CT concept together with the preferred name,
-#' #'
-#' #' @param limit an integer standing for the maximum number of results
-#' #'     to get. Default is set in \code{\link{default.snowstorm.limit}}
+#' #' @description Obtain all concepts belonging to the
+#' #' \code{40733004 |Infectious disease (disorder)|}
+#' #' SNOMED CT concept together with the preferred name,
+#' #' @param limit a positive integer for the maximum number of results to return.
+#' #' See \code{\link{snomedizer_options}}. The maximum limit on public endpoints
+#' #' is 10,000.
+#' #' @param ... optional arguments listed in \code{\link{api_operations}}, such as
+#' #' \code{endpoint}, \code{branch} or \code{limit}
 #' #'
 #' #' @return A data frame containing the following variables:
 #' #'     \itemize{
@@ -227,11 +185,15 @@ release_version <- function(endpoint = snomedizer_options_get("endpoint"),
 #' #' @export
 #' #'
 #' #' @examples
-#' #'    # To get all 6,769 infection codes in SNOMED-CT UK (as of December 2019)
-#' #'    inf_concepts <- snowstorm_fetch_infections(limit = 7000)
+#' #'    # To get all 6,769 infection codes in SNOMED CT UK (as of December 2019)
+#' #'    inf_concepts <- concept_infections(limit = 7000)
 #' #'    str(inf_concepts)
-#' snowstorm_fetch_infections <- function(limit = getOption("snowstorm.limit")) {
-#'   snowstorm_fetch_children("40733004", direct = F, limit = limit)
+#' concept_infections <- function(limit = 9000, ...) {
+#'   concepts_descendants(conceptIds = "40733004",
+#'                        direct_descendants = FALSE,
+#'                        limit = limit,
+#'                        ...)
 #' }
-#'
-#'
+
+
+

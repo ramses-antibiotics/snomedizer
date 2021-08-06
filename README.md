@@ -5,10 +5,13 @@
 
 <!-- badges: start -->
 
-[![Travis build
-status](https://travis-ci.org/ramses-antibiotics/snomedizer.svg?branch=master)](https://travis-ci.org/ramses-antibiotics/snomedizer)
+[![R build
+status](https://github.com/ramses-antibiotics/snomedizer/workflows/R-CMD-check/badge.svg?branch=master)](https://github.com/ramses-antibiotics/snomedizer/actions)
 [![Codecov test
 coverage](https://codecov.io/gh/ramses-antibiotics/snomedizer/branch/master/graph/badge.svg)](https://codecov.io/gh/ramses-antibiotics/snomedizer?branch=master)
+[![Project Status: WIP – Initial development is in progress, but there
+has not yet been a stable, usable release suitable for the
+public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
 <!-- badges: end -->
 
 <p class="lead">
@@ -42,10 +45,10 @@ devtools::install_github("ramses-antibiotics/snomedizer")
 `snomedizer` provides a direct interface to the SNOMED CT Terminology
 Server REST API.
 
-By default, the package uses the official [SNOMED International
-server](https://browser.ihtsdotools.org/snowstorm/snomed-ct/), which is
-subject to [terms & conditions use](#terms-&-conditions) and limited to
-reference purposes.
+By default, the package uses the public [SNOMED International
+server](https://browser.ihtsdotools.org/snowstorm/snomed-ct/) available
+for reference purposes **only** (see [terms &
+conditions](#terms--conditions)).
 
 For example, [`GET
 /branch/concepts`](https://snowstorm.ihtsdotools.org/snowstorm/snomed-ct/swagger-ui.html#!/Concepts/findConceptsUsingGET)
@@ -55,10 +58,10 @@ is implemented in `api_concepts()`:
 library(snomedizer)
 api_concepts(term = "pneumonia", activeFilter = TRUE)
 #> Response [https://snowstorm.ihtsdotools.org/snowstorm/snomed-ct/MAIN/concepts?term=pneumonia&limit=50&offset=0&activeFilter=TRUE]
-#>   Date: 2020-07-24 11:16
+#>   Date: 2021-01-13 17:38
 #>   Status: 200
-#>   Content-Type: application/json;charset=UTF-8
-#>   Size: 18.4 kB
+#>   Content-Type: application/json
+#>   Size: 18.5 kB
 #> {
 #>   "items" : [ {
 #>     "conceptId" : "233604007",
@@ -79,7 +82,7 @@ provide results as data frames:
 concepts_find(term = "pneumonia", limit = 5) %>% 
   dplyr::select(conceptId, fsn.term, pt.term) 
 #> Warning: 
-#> This server request returned just 5 of a total 562 results.
+#> This server request returned just 5 of a total 584 results.
 #> Please increase the server `limit` to fetch all results.
 #>   conceptId                         fsn.term            pt.term
 #> 1 233604007             Pneumonia (disorder)          Pneumonia
@@ -89,20 +92,39 @@ concepts_find(term = "pneumonia", limit = 5) %>%
 #> 5 278516003       Lobar pneumonia (disorder)    Lobar pneumonia
 ```
 
+## Development and new features
+
+Please share your experience as a user\!
+
+Do not hesitate to [get in touch on
+GitHub](https://github.com/ramses-antibiotics/snomedizer/issues) to
+report bugs or request new features.
+
 ## Terms & conditions
+
+### Server endpoint
 
 By default, `snomedizer` queries the [public SNOMED-CT terminology
 endpoint](https://snowstorm.ihtsdotools.org/snowstorm/snomed-ct/swagger-ui.html)
 hosted by SNOMED International.
 
+This server has no service level agreement and **MUST NOT be used as
+part of production systems in healthcare settings**, even if you hold a
+SNOMED CT licence.
+
+Please refer to the [Snowstorm
+documentation](https://github.com/IHTSDO/snowstorm/blob/master/docs/getting-started.md)
+for instructions on how to build a dedicated endpoint for production.
+
+### SNOMED CT Terminology
+
 In order to use SNOMED-CT terminology, a licence is required which
 depends both on the country you are based in, and the purpose of your
 work.
 
-SNOMED International allows access to public SNOMED-CT terminology
-servers to anyone for strict ‘reference purposes’ under the [SNOMED
-International SNOMED CT Browser License
-Agreement](https://browser.ihtsdotools.org/).
+SNOMED International maintains a public SNOMED-CT terminology server for
+strict ‘reference purposes’ under the [SNOMED International SNOMED CT
+Browser License Agreement](https://browser.ihtsdotools.org/).
 
 Use of SNOMED-CT terminology for data analysis or health care production
 systems is subject to other licences. Some users are eligible for free
@@ -112,16 +134,15 @@ licences:
     website](https://isd.digital.nhs.uk/trud3).
   - residents of other Member Countries and low-income countries are
     also eligible. More information can be found on the [SNOMED
-    International
-website](https://www.snomed.org/snomed-ct/get-snomed).
+    International website](https://www.snomed.org/snomed-ct/get-snomed).
 
 ## Funders
 
 <div style="display: table-cell;">
 
-<a href="https://www.nihr.ac.uk/" ><img height="65px" style="vertical-align: bottom;" alt="National Institute of Health Research" src="man/figures/partner-logos/NIHR.svg" ></a>
+<a href="https://www.nihr.ac.uk/"><img height="65px" style="vertical-align: bottom;" alt="National Institute of Health Research" src="man/figures/partner-logos/NIHR.svg" ></a>
   
-<a href="https://www.esrc.ukri.org" ><img height="70px" style="vertical-align: bottom; bottom;margin-bottom: -7px;" alt="Economic and Social Research Council" src="man/figures/partner-logos/ESRC.svg" ></a>
+<a href="https://esrc.ukri.org/"><img height="70px" style="vertical-align: bottom; bottom;margin-bottom: -7px;" alt="Economic and Social Research Council" src="man/figures/partner-logos/ESRC.svg" ></a>
   
 <a href="https://www.ucl.ac.uk/infection-immunity/people/professor-judith-breuer/precision-amr"><img style="vertical-align: bottom;margin-bottom: -20px;" alt="Precision AMR" src="man/figures/partner-logos/pAMR.jpg" height="100px"></a>
 

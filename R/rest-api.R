@@ -20,8 +20,16 @@
 #' commonly \code{"MAIN"}). See \code{\link{snomedizer_options}}.
 #' @param catch404 whether to display a warning if the API operation returns a
 #' '404 Not Found' status. Default is \code{TRUE}.
-#' @param concept character string of a SNOMED-CT concept id (for example:
-#' \code{"233604007"})
+#' @param characteristicType a character string indicating whether to include
+#' results for: \itemize{
+#'     \item all relationships: NULL (the default)
+#'     \item only stated relationships: "STATED_RELATIONSHIP"
+#'     \item only inferred relationships: "INFERRED_RELATIONSHIP"
+#'     \item only additional relationships: ""ADDITIONAL_RELATIONSHIP" (for
+#'     instance, \code{123005000 | Part of (attribute) |})
+#' }
+#' This parameter corresponds to \code{
+#' 900000000000449001 | Characteristic type (core metadata concept)}
 #' @param conceptId character string of a SNOMED-CT concept id (for example:
 #' \code{"233604007"})
 #' @param conceptIds a character vector of SNOMED-CT concept ids (for example:
@@ -39,17 +47,21 @@
 #' the count of descendant concepts based on stated or inferred relationships.
 #' Must be one of \code{"inferred"}, \code{"stated"}, or \code{"additional"}.
 #' Default is \code{NULL} for no descendant count reported.
+#' @param destination concept character string restricting the range of the
+#' relationships to be included in results
 #' @param ecl a character expression constraint query (with full relationship inference).
 #' Consult the \href{http://snomed.org/ecl}{Expression Constraint Language guide}
 #' for more detail.
 #' @param eclStated a character expression constraint query (limited to stated relationships).
 #' Consult the \href{http://snomed.org/ecl}{Expression Constraint Language guide}
 #' for more detail.
-#' @param endpoint the URL of a SNOMED CT Terminology Server REST API endpoint.
+#' @param endpoint URL of a SNOMED CT Terminology Server REST API endpoint.
 #'  See \code{\link{snomedizer_options}}.
 #' @param form a character string indicating which ancestors/parents or
 #' descendants/children to extract based on stated or inferred relationships.
 #' Must be one of \code{"inferred"} (default), \code{"stated"}, or \code{"additional"}.
+#' @param forBranch a character name of a single branch (eg \code{"MAIN"}) for which
+#' to fetch code systems results. The default (\code{NULL}) will return all code systems.
 #' @param groupByConcept a boolean indicating whether to group descriptions
 #' by concept. Default is \code{FALSE}.
 #' @param includeDescendantCount a boolean indicating whether a number of
@@ -68,6 +80,7 @@
 #' @param preferredOrAcceptableIn character vector of description language reference sets
 #' (example: \code{"900000000000509007"}).
 #' The description must be preferred OR acceptable in at least one of these to match.
+#' @param relationshipId string of a relationship concept
 #' @param searchMode a character string for the search mode. Must be either
 #' \code{"STANDARD"} (default) or \code{"REGEX"}.
 #' @param semanticTag character string of a description semantic tag
@@ -78,12 +91,24 @@
 #' to include (example: \code{c("attribute", "finding")}). See
 #' \code{api_descriptions_semantic_tags()} for a list of valid
 #' description semantic tags.
+#' @param shortName character name of a code system (eg \code{"SNOMEDCT"},
+#' \code{"SNOMEDCT-UK"})
+#' @param showFutureVersions a boolean indicating whether to include all code
+#' systems (\code{NULL}, the default), only future code systems (\code{TRUE}),
+#' or no future code systems (\code{FALSE})
+#' @param source a character vector of concepts to be included as
+#' sources defined by the relationship
 #' @param stated a boolean indicating whether to limit search to descendants
 #' whose relationship is stated rather than inferred. Default is \code{FALSE}.
 #' @param term character vector of terms to search
-#' @param type character vector of description types to include. See
-#' \code{api_concept_descendants("900000000000446008")} for valid
-#' description type inputs.
+#' @param type character vector of concept codes defining the type of description or
+#' the type of attribute/relationship to include, depending on the function:
+#' \itemize{
+#'    \item see \code{api_concept_descendants("900000000000446008")} for valid
+#'    description type concepts.
+#'    \item see \code{api_concept_descendants("106237007")} for valid
+#'    attributes (relationship types) concepts.
+#'  }
 #' @param ... other REST API parameters
 #' @importFrom httr parse_url build_url GET
 #' @return An \code{httr} \code{\link[httr]{response}()} object.
@@ -99,7 +124,8 @@
 #' api_concepts(conceptIds = c("233604007", "68566005"))
 #'
 #' # get the content of the server request
-#' httr::content(api_concepts(term = "pneumonia"))
+#' pneumonia <- httr::content(api_concepts(term = "pneumonia"), limit = 1)
+#' str(pneumonia$items[[1]])
 NULL
 
 #' @rdname api_operations
@@ -114,7 +140,8 @@ api_concept <- function(conceptId,
   stopifnot(length(conceptId) == 1)
 
   rest_url <- httr::parse_url(endpoint)
-  rest_url$path <- c(.ignore_empty_string(rest_url$path),
+
+  rest_url$path <- c(rest_url$path[rest_url$path != ""],
                      branch,
                      "concepts",
                      conceptId)
@@ -154,7 +181,7 @@ api_concepts <- function(
   limit <- .validate_limit(limit)
 
   rest_url <- httr::parse_url(endpoint)
-  rest_url$path <- c(.ignore_empty_string(rest_url$path),
+  rest_url$path <- c(rest_url$path[rest_url$path != ""],
                      branch,
                      "concepts")
   rest_url$query <- list(
@@ -198,7 +225,7 @@ api_concept_descendants <- function(
   limit <- .validate_limit(limit)
 
   rest_url <- httr::parse_url(endpoint)
-  rest_url$path <- c(.ignore_empty_string(rest_url$path),
+  rest_url$path <- c(rest_url$path[rest_url$path != ""],
                      branch,
                      "concepts",
                      conceptId,
@@ -232,7 +259,7 @@ api_concept_descriptions <- function(
   stopifnot(length(conceptId) == 1)
 
   rest_url <- httr::parse_url(endpoint)
-  rest_url$path <- c(.ignore_empty_string(rest_url$path),
+  rest_url$path <- c(rest_url$path[rest_url$path != ""],
                      branch,
                      "concepts",
                      conceptId,
@@ -253,7 +280,7 @@ api_concept_descriptions <- function(
 api_all_branches <- function(endpoint = snomedizer_options_get("endpoint"),
                              catch404 = TRUE) {
   rest_url <- httr::parse_url(endpoint)
-  rest_url$path <- c(.ignore_empty_string(rest_url$path),
+  rest_url$path <- c(rest_url$path[rest_url$path != ""],
                      "branches")
   rest_result <- GET(rest_url)
 
@@ -272,7 +299,7 @@ api_branch <- function(endpoint = snomedizer_options_get("endpoint"),
                        ...) {
 
   rest_url <- httr::parse_url(endpoint)
-  rest_url$path <- c(.ignore_empty_string(rest_url$path),
+  rest_url$path <- c(rest_url$path[rest_url$path != ""],
                      "branches",
                      branch)
   rest_url$query <- list(...)
@@ -297,7 +324,7 @@ api_branch_descendants <- function(
   ...) {
 
   rest_url <- httr::parse_url(endpoint)
-  rest_url$path <- c(.ignore_empty_string(rest_url$path),
+  rest_url$path <- c(rest_url$path[rest_url$path != ""],
                      "branches",
                      branch,
                      "children")
@@ -317,7 +344,7 @@ api_branch_descendants <- function(
 #' @rdname api_operations
 #' @export
 api_descriptions <- function(
-  concept,
+  conceptIds = NULL,
   endpoint = snomedizer_options_get("endpoint"),
   branch = snomedizer_options_get("branch"),
   offset = 0,
@@ -325,16 +352,16 @@ api_descriptions <- function(
   catch404 = TRUE,
   ...) {
 
-  stopifnot(is.character(concept))
-  stopifnot(length(concept) == 1)
+  stopifnot(is.character(conceptIds))
+  conceptIds <- .concatenate_array_parameter(conceptIds)
   limit <- .validate_limit(limit)
 
   rest_url <- httr::parse_url(endpoint)
-  rest_url$path <- c(.ignore_empty_string(rest_url$path),
+  rest_url$path <- c(rest_url$path[rest_url$path != ""],
                      branch,
                      "descriptions")
   rest_url$query <- list(
-    concept = concept,
+    conceptIds = conceptIds,
     offset = offset,
     limit = limit
   )
@@ -358,7 +385,7 @@ api_version <- function(
   catch404 = TRUE) {
 
   rest_url <- httr::parse_url(endpoint)
-  rest_url$path <- c(.ignore_empty_string(rest_url$path),
+  rest_url$path <- c(rest_url$path[rest_url$path != ""],
                      "version")
 
   rest_result <- GET(rest_url)
@@ -388,7 +415,7 @@ api_browser_concepts <- function(
   }
 
   rest_url <- httr::parse_url(endpoint)
-  rest_url$path <- c(.ignore_empty_string(rest_url$path),
+  rest_url$path <- c(rest_url$path[rest_url$path != ""],
                      "browser",
                      branch,
                      "concepts",
@@ -426,7 +453,7 @@ api_browser_concept_ancestors <- function(
   stopifnot(form %in% c("inferred", "stated", "additional"))
 
   rest_url <- httr::parse_url(endpoint)
-  rest_url$path <- c(.ignore_empty_string(rest_url$path),
+  rest_url$path <- c(rest_url$path[rest_url$path != ""],
                      "browser",
                      branch,
                      "concepts",
@@ -470,7 +497,7 @@ api_browser_concept_children <- function(
               !is.na(includeDescendantCount))
 
   rest_url <- httr::parse_url(endpoint)
-  rest_url$path <- c(.ignore_empty_string(rest_url$path),
+  rest_url$path <- c(rest_url$path[rest_url$path != ""],
                      "browser",
                      branch,
                      "concepts",
@@ -523,7 +550,7 @@ api_browser_concept_parents <- function(
               !is.na(includeDescendantCount))
 
   rest_url <- httr::parse_url(endpoint)
-  rest_url$path <- c(.ignore_empty_string(rest_url$path),
+  rest_url$path <- c(rest_url$path[rest_url$path != ""],
                      "browser",
                      branch,
                      "concepts",
@@ -594,7 +621,7 @@ api_browser_concept_descriptions <- function(
   limit <- .validate_limit(limit)
 
   rest_url <- httr::parse_url(endpoint)
-  rest_url$path <- c(.ignore_empty_string(rest_url$path),
+  rest_url$path <- c(rest_url$path[rest_url$path != ""],
                      "browser",
                      branch,
                      "descriptions")
@@ -636,7 +663,7 @@ api_descriptions_semantic_tags <- function(
   catch404 = TRUE) {
 
   rest_url <- httr::parse_url(endpoint)
-  rest_url$path <- c(.ignore_empty_string(rest_url$path),
+  rest_url$path <- c(rest_url$path[rest_url$path != ""],
                      branch,
                      "descriptions",
                      "semantictags")
@@ -648,6 +675,175 @@ api_descriptions_semantic_tags <- function(
   rest_result
 }
 
+#' @rdname api_operations
+#' @export
+api_relationships <- function(
+  endpoint = snomedizer_options_get("endpoint"),
+  branch = snomedizer_options_get("branch"),
+  active = NULL,
+  source = NULL,
+  type = NULL,
+  destination = NULL,
+  characteristicType = NULL,
+  limit = snomedizer_options_get("limit"),
+  offset = 0,
+  catch404 = TRUE,
+  ...) {
 
+  stopifnot(is.null(active) | length(active) == 1)
+  stopifnot(is.null(source) | length(source) == 1)
+  stopifnot(is.null(type) | length(type) == 1)
+  stopifnot(is.null(destination) | length(destination) == 1)
+
+  stopifnot(
+    is.null(characteristicType) |
+    characteristicType == "STATED_RELATIONSHIP" |
+    characteristicType == "INFERRED_RELATIONSHIP" |
+    characteristicType == "ADDITIONAL_RELATIONSHIP"
+  )
+
+  limit <- .validate_limit(limit)
+
+  rest_url <- httr::parse_url(endpoint)
+  rest_url$path <- c(rest_url$path[rest_url$path != ""],
+                     branch,
+                     "relationships")
+
+  rest_url$query <- list(
+    active = active,
+    source = source,
+    type = type,
+    destination = destination,
+    characteristicType = characteristicType,
+    limit = limit,
+    offset = offset
+  )
+
+  rest_url$query <- append(rest_url$query, list(...))
+  .check_rest_query_length1(rest_url)
+
+  rest_url <- httr::build_url(rest_url)
+  rest_result <- GET(rest_url)
+
+  if(catch404){
+    .catch_http_error(rest_result)
+  }
+
+  rest_result
+}
+
+
+#' @rdname api_operations
+#' @export
+api_relationship <- function(
+  endpoint = snomedizer_options_get("endpoint"),
+  branch = snomedizer_options_get("branch"),
+  relationshipId,
+  catch404 = TRUE,
+  ...) {
+
+  stopifnot(length(relationshipId) == 1)
+
+  rest_url <- httr::parse_url(endpoint)
+  rest_url$path <- c(rest_url$path[rest_url$path != ""],
+                     branch,
+                     "relationships",
+                     relationshipId)
+  .check_rest_query_length1(rest_url)
+
+  rest_url <- httr::build_url(rest_url)
+  rest_result <- GET(rest_url)
+
+  if(catch404){
+    .catch_http_error(rest_result)
+  }
+
+  rest_result
+}
+
+
+#' @rdname api_operations
+#' @export
+api_all_code_systems <- function(endpoint = snomedizer_options_get("endpoint"),
+                                 forBranch = NULL,
+                                 catch404 = TRUE) {
+
+  if( !is.null(forBranch) ) {
+    stopifnot(length(forBranch) == 1)
+    stopifnot(is.character(forBranch))
+  }
+
+  rest_url <- httr::parse_url(endpoint)
+  rest_url$path <- c(rest_url$path[rest_url$path != ""],
+                     "codesystems")
+  rest_url$query <- list(
+    forBranch = forBranch
+  )
+  rest_url <- httr::build_url(rest_url)
+  rest_result <- GET(rest_url)
+
+  if(catch404){
+    .catch_http_error(rest_result)
+  }
+
+  rest_result
+}
+
+
+#' @rdname api_operations
+#' @export
+api_code_system <- function(endpoint = snomedizer_options_get("endpoint"),
+                            shortName,
+                            catch404 = TRUE) {
+
+  stopifnot(length(shortName) == 1)
+  stopifnot(is.character(shortName))
+
+  rest_url <- httr::parse_url(endpoint)
+  rest_url$path <- c(rest_url$path[rest_url$path != ""],
+                     "codesystems",
+                     shortName)
+  rest_url <- httr::build_url(rest_url)
+  rest_result <- GET(rest_url)
+
+  if(catch404){
+    .catch_http_error(rest_result)
+  }
+
+  rest_result
+}
+
+
+#' @rdname api_operations
+#' @export
+api_code_system_all_versions <- function(endpoint = snomedizer_options_get("endpoint"),
+                                         shortName,
+                                         showFutureVersions = NULL,
+                                         catch404 = TRUE) {
+  stopifnot(length(shortName) == 1)
+  stopifnot(is.character(shortName))
+
+  if( !is.null(showFutureVersions) ) {
+    stopifnot(length(showFutureVersions)==1)
+    stopifnot(is.logical(showFutureVersions))
+  }
+
+  rest_url <- httr::parse_url(endpoint)
+  rest_url$path <- c(rest_url$path[rest_url$path != ""],
+                     "codesystems",
+                     shortName,
+                     "versions")
+  rest_url$query <- list(
+    showFutureVersions = showFutureVersions
+  )
+  rest_url <- httr::build_url(rest_url)
+  rest_result <- GET(rest_url)
+
+  if(catch404){
+    .catch_http_error(rest_result)
+  }
+
+  rest_result
+}
 
 

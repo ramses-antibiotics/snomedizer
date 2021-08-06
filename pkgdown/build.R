@@ -1,3 +1,4 @@
+#!/usr/bin/Rscript
 library(pkgdown)
 
 override_data_authors <- function (pkg = ".") {
@@ -48,13 +49,6 @@ swap_render_fun <- function() {
     "build_rmarkdown_format", build_rmarkdown_format2, ns = "pkgdown"
   )
 }
-
-
-
-
-
-# build_site()
-# deploy_to_branch(new_process = FALSE)
 
 build_site <- function(...) {
 
