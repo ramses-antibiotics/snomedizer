@@ -112,7 +112,7 @@ api_browser_concept_ancestors(
 api_browser_concept_children(
   conceptId,
   form = "inferred",
-  includeDescendantCount = FALSE,
+  includeDescendantCount = TRUE,
   endpoint = snomedizer_options_get("endpoint"),
   branch = snomedizer_options_get("branch"),
   catch404 = TRUE
