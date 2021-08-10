@@ -5,8 +5,7 @@ output:
   rmarkdown::html_vignette:
     toc: true
     toc_depth: 2
-    fig_caption: yes
-    df_print: tibble
+    fig_caption: yes 
 vignette: >
   %\VignetteIndexEntry{Mapping SNOMED CT concepts from free text}
   %\VignetteEngine{knitr::rmarkdown}
@@ -47,24 +46,22 @@ For this, the prescription indication must be extracted and grouped into categor
 library(snomedizer)
 str(drug_indications)
 ```
-
-
 In this example, we aim to identify the proportion of prescribing by type of infection.
 
+# Preparation
 
-# Setup
+## Environment setup
 
 We rely on several packages from the [`tidyverse`](https://www.tidyverse.org/learn/) to help manipulate structured data as well as string data (free-text).
 
 ```{r load_packages, message=FALSE, warning=FALSE}
-library(dplyr)     # relational data wrangling package 
-library(tidyr)     # tidy data
-library(stringr)   # to manipulate strings (free-text data) 
-library(tidytext)  # to manipulate strings (free-text data)
-library(stopwords) # lists common and uncharacteristics words to discard
-# library(magrittr)  # loads the pipe (`%>%`) operator
-
-
+library(dplyr)       # relational data wrangling package 
+library(tidyr)       # tidy data
+library(stringr)     # to manipulate strings (free-text data) 
+# library(tidytext)    # to manipulate strings (free-text data)
+library(stopwords)   # lists common and uncharacteristics words to discard
+library(data.table)  # faster processing
+library(text2vec)    # natural langage processing
 ```
 
 We connect to the July 2021 release branch on the official IHTSDO Snowstorm server.
@@ -90,7 +87,7 @@ snomedizer_options_set(endpoint = sct_server,
 </div>
 
 
-## Fetch concepts and descriptions
+## Fetching concepts and descriptions
 
 The first step is to fetch all SNOMED CT concepts that are relevant to the analysis. This vignette about antibiotic prescriptions is primarily interested in infectious diseases. The concepts of interest descend from the following SNOMED CT concepts, either through stated or inferred relationships:
 
@@ -130,214 +127,338 @@ The first step is to fetch all SNOMED CT concepts that are relevant to the analy
 </div>
 
 
-
-
- 
-
-
 We query the terminology server in two steps: (1) we retrieve and combine descendants of the three concepts cited above using <code>dplyr::bind_rows()</code>, then (2) retrieve descriptions of each of these concepts:
 
 ```{r fetch_infection_concepts_DONTRUN, eval=FALSE, include=TRUE}
 # (1) Fetch all concepts descending from 40733004, 128045006, or 128477000
-abx_indications_concepts <- concepts_descendants(
+snomed_concepts <- concepts_descendants(
   conceptIds = c("40733004 | Infectious disease (disorder) |",
                  "128045006 | Cellulitis (disorder) |",
                  "128477000 | Abscess (disorder) |")
 ) %>%
   bind_rows() %>%
   unique()
-#> |========================================================|100% ~0 s remaining
 
 # (2) Fetch all descriptions for these concepts
-abx_indications_concepts$descriptions <- concepts_descriptions(
-  conceptIds = abx_indications_concepts$conceptId)
-#> |========================================================|100% ~0 s remaining
+snomed_descriptions <- snomed_concepts %>% 
+  concepts_descriptions(conceptIds = .$conceptId) %>% 
+  bind_rows() # collapse into single data frame
+```
+
+```{r fetch_infection_concepts_RUN, include=FALSE}
+snomed_descriptions <- snomedizer:::abx_indications_descriptions
+snomed_concepts <- snomedizer:::abx_indications_concepts
 ```
 
 
-As most users will not have access to such a server, the output of the code chunk presented above can be found in the `infection_concepts` dataset included in `snomedizer`. As can be seen below, `infection_concepts` contains a total of `r nrow(infection_concepts)` concepts.
+`snomed_concepts` contains `r formatC(nrow(snomed_concepts), big.mark = ",")` concepts, with a total `r formatC(nrow(snomed_descriptions), big.mark = ",")` descriptions. Each concept has a minimum of 2 description records per concept: 1 fully specified name (FSN), and at least 1 (preferred) synonym. Some concepts will have more synonyms.
 
-```{r fetch_infection_concepts_RUN}
-# data("infection_concepts")
-# str(infection_concepts, max.level	= 1)
+```{r glimpse_concepts}
+snomed_concepts %>% 
+  select(conceptId, active, pt.term, total) %>% 
+  glimpse()
+
+snomed_descriptions %>% 
+  select(conceptId, descriptionId, term, active, type, 
+         acceptabilityMap.900000000000509007, total) %>% 
+  glimpse()
 ```
 
-The `descriptions` variable is a list of nested data frames consisting of a minimum of 2 description records per concept: 1 fully specified name, and at least 1 (preferred) synonym. Some concepts will have more synonyms.
 
-```{r head_infection_description1}
-# infection_concepts$descriptions[[10]] %>% 
-#   select(conceptId, descriptionId, term, type, acceptabilityMap.900000000000509007)
+# Named entity recognition
+
+To identify SNOMED CT concepts in the free text indications, we need to:
+
+1. simplify and tokenise the SNOMED CT descriptions
+2. clean typos, replace acronyms, and tokenise in the free text drug indication data
+3. compare the drug indication data with every SNOMED CT description
+
+Tokenisation involves separating individual words (or 'tokens') making up a character string into a vector.
+
+## Processing SNOMED CT description strings
+
+To make use of concept descriptions, we need to isolate and stardardise words making up the terminology. Only active synonyms are used (FSNs being redundant). After trimming punctuation, synonym descriptions are converted to lowercase.
+
+```{r clean_snomed_descriptions}
+snomed_descriptions_tokens <- snomed_descriptions %>% 
+  filter(active & type != "FSN") %>%
+  select(conceptId, descriptionId, term) %>%
+  mutate(text_processed = tolower(term))
+  # group_by(conceptId) %>%
+  # tidyr::nest() %>%
+  # transmute(conceptId, descriptions = data)
+
+snomed_cleaning_patterns <- matrix(c(
+    "[(]disorder[)]",                                     "",
+    "[(]disease[)]",                                      "",
+    "septicaemia",                                        "sepsis",
+    "septicemia",                                         "sepsis",
+    "post procedure",                                     "post_procedure",
+    "community[-\\s]acquired",                            "community_acquired",
+    "hospital[-\\s]acquired",                             "hospital_acquired",
+    "institution(ally)?[-\\s]acquired",                   "institution_acquired",
+    "guinea-worm",                                        "guinea worm",
+    "(initial|extensive|active)([[:blank:]])(stage)",     "\\1_\\3",
+    "\\bstage ([0-5])",                                   "stage_\\1",
+    "candidal",                                           "candida", #"F_CANDD",
+    "intra-abdominal|intraabdominal",                     "abdominal",
+    "(\\w)'s\\b",                                         "\\1",
+    "gram[-\\s]negative",                                 "gram_negative",
+    "gram[-\\s]positive",                                 "gram_postivie",
+    "[(),.]",                                             "",
+    "-",                                                  " "
+), ncol=2, byrow = TRUE)
+colnames(snomed_cleaning_patterns) <- c(
+  "pattern",
+  "replacement"
+)
+
+for(i in seq_len(nrow(snomed_cleaning_patterns))) {
+  snomed_descriptions_tokens$text_processed <- gsub(
+    snomed_cleaning_patterns[i, 1],
+    snomed_cleaning_patterns[i, 2],
+    snomed_descriptions_tokens$text_processed,
+    perl = TRUE
+  )
+}
+
 ```
-
-
-## Processing SNOMED CT concept description strings
-
-To make use of concept descriptions, we need to isolate and stardardise words making up the terminology. Only active synonyms are used (fully specified names being redundant). After trimming punctuation, synonym descriptions are converted to lowercase and **'tokenised'**, meaning individual words (or 'tokens') are separated into a vector.
-
-```{r}
-# infection_descriptions <- infection_concepts$descriptions %>%
-#   dplyr::bind_rows() %>%
-#   dplyr::filter(active, type != "FSN") %>%
-#   dplyr::transmute(
-#     conceptId,
-#     descriptionId,
-#     descriptionText = term,
-#     tokens_concept = stringr::str_split(tolower(descriptionText), " "),
-#     type,
-#     typeId,
-#     moduleId
-# )
-
-# infection_descriptions <- infection_concepts$descriptions %>%
-#   dplyr::bind_rows() %>%
-#   dplyr::filter(active, type != "FSN") %>%
-#   dplyr::transmute(
-#     conceptId,
-#     descriptionId,
-#     descriptionText = term
-# ) %>% 
-#   tidytext::unnest_tokens(output = snomed_tokens, input = descriptionText)
-# 
-# head(infection_descriptions)
-```
-
 
 The range of tokens is examined to identify **stop words**, that is, common words that can be eliminated, for instance prepositions. Stop words must be eliminated because they are not essential or characteristic components of a clinical term and thus make it more difficult to effectively map terminology. We also eliminate the words `"caused"` and `"due"`.
 
 
-```{r remove_snomed_stop_words}
+```{r tokenise_snomed_descriptions}
+snomed_descriptions_tokens <- transmute(
+  snomed_descriptions_tokens,
+  conceptId = conceptId,
+  token_raw = stringr::str_split(text_processed, pattern = " ")
+) %>%
+  unnest(cols = "token_raw") %>% 
+  filter(!token_raw %in% stopwords::stopwords(language = "en")) %>% 
+  filter(!token_raw %in% c("", " ", ".", "_", "+", "caused", "due")) %>% 
+  unique()
 
-# infection_descriptions <- infection_descriptions %>% 
-#   filter(!snomed_tokens %in% stopwords::stopwords(language = "en")) %>% 
-#   filter(!snomed_tokens %in% c("caused", "due"))
-# 
-# infection_descriptions %>% 
-#   group_by(snomed_tokens) %>% 
-#   summarise(n = n()) %>% arrange(-n) %>% 
-#   head(15)
-# snomed_unique_tokens <- tibble(
-#   tokens = unlist(infection_descriptions$tokens_concept)
-#   ) %>%
-#   group_by(tokens) %>%
-#   summarise(n = n()) %>%
-#   arrange(-n)
-# 
-# head(snomed_unique_tokens, 10)
+snomed_descriptions_tokens %>% 
+  group_by(token_raw) %>% 
+  summarise(n = n()) %>% 
+  arrange(-n) %>% 
+  head(30)
 ```
+
 
 The data frame is then condensed to have one row per `descriptionId` once again. It is now ready to be used.
 
-```{r condense_infection_descriptions}
-# infection_descriptions <-  infection_descriptions %>%  
-#   group_by(conceptId, descriptionId) %>% 
-#   summarise(snomed_tokens = list(snomed_tokens))
-# 
-# str(infection_descriptions, max.level = 1)
+```{r condense_snomed_descriptions}
+snomed_descriptions_tokens <- snomed_descriptions_tokens %>%
+  group_by(conceptId) %>%
+  summarise(text_processed = paste(token_raw, collapse = " "))
+
+str(snomed_descriptions_tokens)
 ```
 
 
-## Processing antibiotic prescription indication stricts
+## Processing antibiotic prescription indication strings
+
 
 The `drug_indications` dataset contains free text that was manually inputted by clinicians. Due to this, it requires more extensive cleaning than SNOMED CT concept descriptions. A new variable `indication_string` is generated for conversion to lowercase, punctuation cleaning and removal of add hoc concepts. This is particularly the case with information that does not map to SNOMED CT concepts, which must be extracted manually. In this case, prescriptions issued according to advice provided by a microbiologist are often marked with short formulae such as `"as per micro"` or `"d/w micro"` (discussed with microbiology).
 
+
 ```{r clean_drug_indications}
-# as_per_micro_pattern <- "(as per micro)|(d/w micro)|(micro advice)|(discussed with micro)|(micro approved)|(on advice of micro)"
+drug_indications$text_processed <- tolower(drug_indications$indication)
+
+indication_cleaning_patterns <- matrix(c(
+    "(as per )(dr [a-z]*|micro advice|micro spr on call|sensitivities|micro consultant|micro)", "",
+    "d/w micro", "",
+    "(\\w)([']s)",                            "\\1",
+    "[?();./,]",                              " ",
+    "[[:blank:]]{2,}",                        " ",
+    "\\buti\\b|\\buit\\b",                    "urinary tract infection",
+    "\\babdo\\b",                             "abdominal",
+    "pnuemonia|pneumoniae|pnemonia",          "pneumonia",
+    "post procedure",                         "post_procedure",
+    "postprocedure",                         "post_procedure",
+    "urosepsis",                              "sepsis due to urinary tract infection",
+    "\\bae\\b",                               "acute exacerbation",
+    "\\babx\\b",                               "antibiotic",
+    "\\sepssis\\b",                           "sepsis",
+    "antipfungal|anti-fungal",                "antifungal",
+    "abscesses",                              "abscess",
+    "appendectomy-|appendicetomy|appendicectomy", "appendectomy",
+    "appendiciits",                           "appendicitis",
+    "aquired",                                "acquired",
+    "hospital acquired",                      "hospital_acquired",
+    "community acquired",                     "community_acquired",
+    "celluitis|cellultis",                    "cellulitis",
+    "collitis",                               "colitis",
+    "\\bseporrhoeic\\b",                      "seborrhoeic",
+    "\\bgram neg(ative)?\\b",                 "gram_negative",
+    "\\bgram pos(itive)?\\b",                 "gram_positive",
+    "\\bg ?-ive\\b",                          "gram_negative",
+    "\\bg ?+ive\\b",                          "gram_positive",
+    "broncheictasis",                         "bronchiectasis",
+    # "e coli|e-coli",                          "B_ESCHR_COLI",
+    # "s aurea",                                "F_SCPLR_AURE",
+    # "c[.[:blank:]]?diff(icile)?|\\bcdi\\b",   "B_CRDDS_DFFC",
+    # "\\bcdi\\b",                              "B_CRDDS_DFFC",
+    "xcopd",                                  "exacerbation copd",
+    # "staph aureus",                           "B_STPHY_AURS",
+    # "staph a\\b",                             "B_STPHY_AURS",
+    "\\binfn\\b",                             "infection",
+    "tonsilitis|tonsilllitis|tonsilllits",    "tonsillitis",
+    "pyelonephr\\b",                          "pyelonephritis",
+    "unnknown",                               "unknown",
+    "crcl",                                   "creatinine clearance",
+    "other please type here",                 "",
+    "popst operative|post procedure|postop|post op|psot op", "post operative",
+    "\\bcap\\b",                              "community_acquired pneumonia",
+    "\\bhap\\b",                              "hospital_acquired pneumonia",
+    # "\\bgbs\\b|group b streptococcus|group b strep", "B_STRPT_GRPB",
+    "pseudomomonas",                          "pseudomonas",
+    "encocarditis",                           "endocarditis",
+    "\\bcf\\b",                               "cystic fibrosis",
+    "\\bpid\\b",                              "pelvic inflammatory disease",
+    "dearrhoea",                              "diarrhea",
+    "\\bnpenia\\b|\\bneut\\b|neutropenic|neutroepnic|nuetropenic", "neutropenic",
+    "\\bgnr\\b",                              "gram_negative rods",
+    "\\bhsv2?\\b",                            "herpes simplex virus",
+    "\\bvzv\\b",                              "varicella zoster virus",
+    # "e faecalis",                             "B_ENTRC_FCLS",
+    "iecpod",                                 "infective exacerbation copd",
+    "ipf",                                    "idiopathic pulmonary fibrosis",
+    "intra[[:blank:]-]?abdominal|intrabdominal",      "abdominal",
+    "infectino|infection:|infeectio",         "infection",
+    "inflcted",                               "infected",
+    "inplant",                                "implant",
+    "\\biud\\b",                              "intrauterine device",
+    "\\blrti\\b",                             "lower respiratory tract infection",
+    "cadidiasis",                             "candidiasis",
+    "calitis",                                "colitis",
+    "peri-chondritis",                        "perichondritis",
+    "non[-[:blank:]]neutropenic",             "",
+    "rectovesico",                            "rectovesical",
+    "recieved",                               "received",
+    "cultrure|cultures",                      "culture",
+    "abration",                               "abrasion",
+    "folliculitiis",                          "folliculitis",
+    "msu",                                    "mid stream urine",
+    "\\bsbp\\b",                              "spontaneous bacterial peritonitis",
+    "\\bproph\\b",                            "prophylaxis",
+    "supraglottits",                          "supraglottitis"
+    #,
+    # "mssa",                                   "methicillin sensitive B_STPHY_AURS infection"
+  ), ncol=2, byrow = TRUE)
+colnames(indication_cleaning_patterns) <- c(
+  "pattern",
+  "replacement"
+)
+
+for(i in seq_len(nrow(indication_cleaning_patterns))) {
+  drug_indications$text_processed <- gsub(
+    indication_cleaning_patterns[i, 1],
+    indication_cleaning_patterns[i, 2],
+    drug_indications$text_processed,
+    perl = TRUE
+  )
+}
 # 
-# drug_indications <- drug_indications %>%
-#   mutate(indication_string = str_remove(tolower(indication), "[?]")) %>%
-#   mutate(indication_string = trimws(str_replace_all(indication_string, "( )+|[(),]+", " "))) %>%
-#   mutate(as_per_micro = grepl(as_per_micro_pattern, indication_string)) %>% 
-#   mutate(indication_string = gsub(as_per_micro_pattern, "", indication_string)) %>% 
-#   mutate(freetext_tokens = stringr::str_split(indication_string, 
-#                                               pattern = "( )|(/)"))
-# 
-# head(drug_indications, 10)
+# system.time({
+#   for(i in seq_len(nrow(pathogen_names))) {
+#     indications$text_processed <- gsub(
+#       paste0("\\b", pathogen_names$token[i], "\\b"),
+#       pathogen_names$mo[i],
+#       indications$text_processed,
+#       perl = TRUE
+#     )
+#   }
+# })
+# system.time({
+#   for(i in seq_len(nrow(pathogen_geni))) {
+#     indications$text_processed <- gsub(
+#       paste0("\\b", pathogen_geni$token[i], "\\b"),
+#       pathogen_geni$mo[i],
+#       indications$text_processed,
+#       perl = TRUE
+#     )
+#   }
+# })
+
+drug_indications_tokens <- transmute(
+  drug_indications,
+  indication = indication,
+  text_id = 1:n(),
+  token_raw = stringr::str_split(text_processed, pattern = " ")
+) %>% 
+  unnest(cols = token_raw) %>% 
+  filter(!token_raw %in% stopwords::stopwords(language = "en")) %>% 
+  filter(!token_raw %in% c("", " ", ".", "_", "+")) %>% 
+  unique()
+
+drug_indications_tokens %>% 
+  group_by(token_raw) %>% 
+  summarise(n = n()) %>% 
+  arrange(-n) %>% 
+  head(30)
+
+
 ```
 
-```{r clean_drug_indications_tokens}
+```{r condense_drug_indications}
+drug_indications_tokens <- drug_indications_tokens %>%
+  group_by(text_id) %>%
+  summarise(text_processed = paste(token_raw, collapse = " "))
 
-# drug_indications <- drug_indications %>% 
-#   mutate(freetext_tokens = purrr::map(freetext_tokens, function(x) {
-#     x[x == "uti"] <- "urinary tract infection"
-#     x[x == "hap"] <- "hospital acquired pneumonia"
-#     x[x == "cap"] <- "community acquired pneumonia"
-#     x[x == "cdi"] <- "clostridium difficile infection"
-#     x[x == "cdiff"] <- "clostridium difficile infection"
-#     x[x == "lrti"] <- "lower respiratory tract infection"
-#     x[x == "rti"] <- "respiratory tract infection"
-#     x[x == "iv"] <- "intravenous"
-#     x[x == "csf"] <- "cerebrospinal fluid"
-#     x[x == "abx"] <- "antibiotic"
-#     x[x == "msu"] <- "mid stream urine"
-#     x[x == "resp"] <- "respiratory"
-#     x[x == "copd"] <- "chronic obstructive pulmonary disease"
-#     x[x == "xcopd"] <- "chronic obstructive pulmonary disease acute exacerbation"
-#     x[x == "infn"] <- "infection"
-#     x[x == "ae"] <- "acute exacerbation"
-#     x[x == "abdo"] <- "abdominal"
-#     x[x == "intra-abdo"] <- "intra-abdominal"
-#     x[x == "sbp"] <- "spontaneous bacterial peritonitis "
-#     x <- x[!grepl("^[[:punct:]]$", x)] 
-#     x <- gsub("(^[[:punct:]])|([[:punct:]]$)", "", x)
-#     
-#     x <- unlist(str_split(x, " ") )
-#     x <- x[!x %in% stopwords::stopwords(language = "en")]
-#     x <- x[!x %in% c("", "due", "caused")] 
-#     x
-#   }))
-# unique(unlist(drug_indications$freetext_tokens))
-# unique_tokens <- tibble(tokens = unlist(rx_indications$tokens_src)) %>%
-#   group_by(tokens) %>%
-#   summarise(n = n()) %>%
-#   arrange(-n)
-# 
- 
+str(drug_indications_tokens)
 ```
-
 
 ## Mapping SNOMED CT concepts
 
-blah
+We use consi
+
 ```{r}
-# concept_mapping <- tidyr::crossing(drug_indications, 
-#                                    infection_descriptions) %>% 
-#   mutate(overlap = purrr::map2_lgl(
-#     freetext_tokens, 
-#     snomed_tokens, 
-#     function(source, concept) {
-#     all(concept %in% source)
-#   })) %>% 
-#   filter(overlap) %>% 
-#   distinct(prescription_id, conceptId) 
 
-# drug_indications %>% 
-#   select(prescription_id, indication) %>% 
-#   left_join(concept_mapping) %>% 
-#   left_join(select(infection_concepts, conceptId, pt.term))
+it1 = itoken(snomed_descriptions_tokens$text_processed, progressbar = FALSE)
+it2 = itoken(drug_indications_tokens$text_processed, progressbar = FALSE)
+v = create_vocabulary(it1)
+# v = prune_vocabulary(v, doc_proportion_max = 0.1, term_count_min = 5)
+vectorizer = vocab_vectorizer(v)
 
-# concept_mapping <- mutate(
-#   concept_mapping,
-#   overlap_tot = purrr::map2_int(freetext_tokens, snomed_tokens, function(source, concept) {
-#     sum(concept %in% source)
-#   }),
-#   overlap_pct = purrr::map2_dbl(freetext_tokens, snomed_tokens, function(source, concept) {
-#     sum(concept %in% source)/length(concept)
-#   })) %>% 
-#   arrange(prescription_id, -overlap_pct)
-# 
-# concept_mapping %>%
-#   filter(overlap_pct > .5)  %>% 
-#   arrange(prescription_id, -overlap_pct) %>% 
-#    View()
-# 
-# concept_mapping  %>% group_by(indication) %>%
-#   arrange(-overlap_pct, -overlap_tot) %>%
-#   mutate(rank= 1:n()) %>%
-#   filter(rank <= 5) %>%
-#   ungroup() %>%
-#   View()
+dtm1 = create_dtm(it1, vectorizer)
+rownames(dtm1) <- snomed_descriptions_tokens$conceptId
+dtm2 = create_dtm(it2, vectorizer)
+rownames(dtm2) <- drug_indications_tokens$text_id
 ```
- 
+
+
+Blah
+
+```{r echo=TRUE}
+d1_d2_cos_sim = sim2(dtm1, dtm2, method = "cosine", norm = "l2")
+# consinlink <- reshape2::melt(as.matrix(d1_d2_cos_sim))
+# colnames(consinlink) <- c("conceptId", "text_id", "similarity")
+
+consinlink <- d1_d2_cos_sim %>%
+  as.matrix %>% 
+  data.frame() %>% 
+  mutate(conceptId = row.names(.)) %>% 
+  pivot_longer(tidyselect::starts_with("X"), 
+               names_to = "text_id",
+               names_prefix = "X",
+               values_to = "similarity")  
+consinlink <- consinlink %>% 
+  mutate(text_id = as.integer(text_id)) %>% 
+  left_join(drug_indications_tokens, by = "text_id") %>% 
+  left_join(select(snomed_concepts, conceptId, pt.term), by = "conceptId")
+
+consinlink <- arrange(consinlink, text_id, -similarity) %>% 
+  group_by(text_id) %>% 
+  mutate(top = row_number()) %>% 
+  ungroup()
+
+consinlink %>% 
+  filter(similarity > .5 | top == 1) 
+
+
+```
 
 
 ```{css, echo=FALSE }
