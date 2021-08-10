@@ -25,7 +25,8 @@ Imports:
     dplyr,
     stringr,
     httr,
-    methods
+    methods,
+    progress
 Suggests: 
     testthat,
     tidyr,
