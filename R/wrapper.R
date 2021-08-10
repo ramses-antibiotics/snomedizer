@@ -138,8 +138,10 @@ concepts_descendants <- function(conceptIds,
 #' @param conceptIds a character vector of concept identifiers
 #' @param ... other optional arguments listed in \code{\link{api_operations}}, such as
 #' \code{endpoint}, \code{branch} or \code{limit}
-#' @return a named list of data frames
+#' @return a named list of data frames sorted by \code{conceptIds}
 #' @export
+#' @section Note:
+#' Duplicate \code{conceptIds} will be removed.
 #' @section Disclaimer:
 #' In order to use SNOMED CT, a licence is required which depends both on the country you are
 #' based in, and the purpose of your work. See details on \link{snomedizer}.
@@ -150,16 +152,34 @@ concepts_descriptions <- function(conceptIds, ...) {
 
   stopifnot(is.vector(conceptIds))
   stopifnot(all(conceptIds != ""))
-  desc <- api_descriptions(conceptIds = conceptIds, ...)
 
-  if(httr::http_error(desc)) {
-    return(httr::content(desc))
-  } else if(length(httr::content(desc)$items) == 0) {
-    return(NULL)
-  } else {
-    ignore <- result_completeness(desc)
-    return(result_flatten(desc))
-  }
+  progress_bar <- dplyr::progress_estimated(trunc(length(conceptIds)/100)+1)
+  stopifnot(all(conceptIds != ""))
+  conceptIds <- sort(unique(conceptIds))
+
+  x <-  split(conceptIds, sort(trunc(seq_len(length(conceptIds))/100)))
+
+  x <- purrr::map(
+    .x = x,
+    .f = function(chunk, ...) {
+      desc <- api_descriptions(conceptIds = chunk, ...)
+      progress_bar$tick()$print()
+
+      if(httr::http_error(desc)) {
+        return(httr::content(desc))
+      } else if(length(httr::content(desc)$items) == 0) {
+        return(NULL)
+      } else {
+        ignore <- result_completeness(desc)
+        return(result_flatten(desc))
+      }},
+    ...
+  )
+
+  x <- dplyr::bind_rows(x)
+  x <- split(x, x$conceptId)
+
+  x
 }
 
 
@@ -186,7 +206,7 @@ release_version <- function(endpoint = snomedizer_options_get("endpoint"),
     endpoint = endpoint,
     branch = branch,
     limit = 1000
-  )
+  )[[1]]
 
   ct_version <- dplyr::filter(ct_version,
                               active == TRUE,
