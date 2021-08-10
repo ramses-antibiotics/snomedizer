@@ -22,7 +22,8 @@ Imports:
     purrr,
     dplyr,
     httr,
-    methods
+    methods,
+    progress
 Suggests: 
     testthat,
     knitr,

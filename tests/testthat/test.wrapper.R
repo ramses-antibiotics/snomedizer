@@ -30,7 +30,6 @@ test_that("concepts_find", {
 
 test_that("concepts_descendants", {
 
-
   infections <- concepts_descendants(conceptIds = c("233604007", "68566005"),
                                      direct_descendants = TRUE, activeFilter = TRUE)
   expect_false("882784691000119100" %in% infections$`233604007`$conceptId)

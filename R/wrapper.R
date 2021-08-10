@@ -103,7 +103,11 @@ concepts_descendants <- function(conceptIds,
   stopifnot(is.vector(conceptIds))
   stopifnot(all(direct_descendants %in% c(TRUE, FALSE)))
 
-  progress_bar <- dplyr::progress_estimated(length(conceptIds))
+  progress_bar <- progress::progress_bar$new(
+    format = "  [:bar] :percent :eta",
+    total = length(conceptIds)
+  )
+  progress_bar$tick(0)
 
   ecl = paste0(dplyr::if_else(direct_descendants, "<!", "<"), conceptIds)
 
@@ -114,7 +118,7 @@ concepts_descendants <- function(conceptIds,
       activeFilter = activeFilter,
       ...)
 
-    progress_bar$tick()$print()
+    progress_bar$tick()
 
     if(httr::http_error(descendants)) {
       return(httr::content(descendants))
@@ -125,6 +129,7 @@ concepts_descendants <- function(conceptIds,
       return(result_flatten(descendants))
     }
   }, ...)
+
   names(x) <- conceptIds
 
   x
@@ -153,7 +158,12 @@ concepts_descriptions <- function(conceptIds, ...) {
   stopifnot(is.vector(conceptIds))
   stopifnot(all(conceptIds != ""))
 
-  progress_bar <- dplyr::progress_estimated(trunc(length(conceptIds)/100)+1)
+  progress_bar <- progress::progress_bar$new(
+    format = "  [:bar] :percent :eta",
+    total = (trunc(length(conceptIds)/100) + 1)
+  )
+  progress_bar$tick(0)
+
   stopifnot(all(conceptIds != ""))
   conceptIds <- sort(unique(conceptIds))
 
@@ -163,7 +173,7 @@ concepts_descriptions <- function(conceptIds, ...) {
     .x = x,
     .f = function(chunk, ...) {
       desc <- api_descriptions(conceptIds = chunk, ...)
-      progress_bar$tick()$print()
+      progress_bar$tick()
 
       if(httr::http_error(desc)) {
         return(httr::content(desc))
