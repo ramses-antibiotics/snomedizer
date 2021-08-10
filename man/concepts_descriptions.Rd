@@ -13,12 +13,17 @@ concepts_descriptions(conceptIds, ...)
 \code{endpoint}, \code{branch} or \code{limit}}
 }
 \value{
-a named list of data frames
+a named list of data frames sorted by \code{conceptIds}
 }
 \description{
 This function is a wrapper of \code{\link{api_descriptions}} that
 fetches description of one or several concept identifiers.
 }
+\section{Note}{
+
+Duplicate \code{conceptIds} will be removed.
+}
+
 \section{Disclaimer}{
 
 In order to use SNOMED CT, a licence is required which depends both on the country you are

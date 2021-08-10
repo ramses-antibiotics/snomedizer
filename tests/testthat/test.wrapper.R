@@ -46,11 +46,24 @@ test_that("concepts_descendants", {
 # concepts_descriptions ---------------------------------------------------
 
 test_that("concepts_descriptions", {
-  infection_descriptions <- concepts_descriptions(conceptIds =  c("233604007",
-                                                                  "68566005"))
-  expect_true("Pneumonia" %in% infection_descriptions$term)
-  expect_true("Urinary tract infectious disease" %in% infection_descriptions$term)
+  infection_descriptions <- concepts_descriptions(
+    conceptIds =  c("68566005", "233604007")
+  )
+  expect_equal(
+    names(infection_descriptions),
+    c("233604007", "68566005")
+  )
+  expect_true("Pneumonia" %in% infection_descriptions[["233604007"]]$term)
+  expect_true("Urinary tract infectious disease" %in% infection_descriptions[["68566005"]]$term)
   expect_error(concepts_descriptions(""))
+
+  infection_descriptions <- concepts_descriptions(
+    conceptIds = rep(c("68566005", "233604007"), 100)
+  )
+  expect_equal(
+    names(infection_descriptions),
+    c("233604007", "68566005")
+  )
 })
 
 

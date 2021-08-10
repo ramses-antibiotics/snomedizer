@@ -13,4 +13,5 @@
 ^docs$
 ^pkgdown$
 ^\.github$
+^\.firebase$
 ^firebase\.json$
