@@ -21,6 +21,10 @@ navbar:
 
 
 reference:
+
+- title: SNOMED CT licence information
+  contents:
+  - snomedizer
 - title: Main functions
   desc:  User-friendly functions provided for every day tasks
   contents:
