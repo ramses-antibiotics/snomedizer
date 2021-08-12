@@ -125,15 +125,18 @@ We query the terminology server in two steps: (1) we retrieve and combine descen
 # (1) Fetch all concepts descending from 40733004, 128045006, or 128477000
 snomed_concepts <- concepts_descendants(
   conceptIds = c("40733004 | Infectious disease (disorder) |",
-                 "128045006 | Cellulitis (disorder) |",
+                 "128139000 | Inflammatory disorder (disorder) |",
                  "128477000 | Abscess (disorder) |")
+                 # "128045006 | Cellulitis (disorder) |",
+                 # "233604007 | Pneumonia (disorder) |")
 ) %>%
   bind_rows() %>%
   unique()
 
 # (2) Fetch all descriptions for these concepts
-snomed_descriptions <- snomed_concepts %>% 
-  concepts_descriptions(conceptIds = .$conceptId) %>% 
+snomed_descriptions <-  concepts_descriptions(
+  conceptIds = snomed_concepts$conceptId
+) %>% 
   bind_rows() # collapse into single data frame
 ```
 
@@ -186,17 +189,17 @@ snomed_cleaning_patterns <- matrix(c(
     "septicaemia",                                        "sepsis",
     "septicemia",                                         "sepsis",
     "post procedure",                                     "post_procedure",
+    "post operative",                                     "post_procedure",
+    "postprocedure",                                      "post_procedure",
+    "postoperative",                                      "post_procedure",
     "community[-\\s]acquired",                            "community_acquired",
     "hospital[-\\s]acquired",                             "hospital_acquired",
     "institution(ally)?[-\\s]acquired",                   "institution_acquired",
     "guinea-worm",                                        "guinea worm",
     "(initial|extensive|active)([[:blank:]])(stage)",     "\\1_\\3",
     "\\bstage ([0-5])",                                   "stage_\\1",
-    "candidal",                                           "candida", #"F_CANDD",
     "intra-abdominal|intraabdominal",                     "abdominal",
     "(\\w)'s\\b",                                         "\\1",
-    "gram[-\\s]negative",                                 "gram_negative",
-    "gram[-\\s]positive",                                 "gram_postivie",
     "[(),.]",                                             "",
     "-",                                                  " "
 ), ncol=2, byrow = TRUE)
@@ -222,7 +225,8 @@ The range of tokens is examined to identify **stop words**, that is, common word
 ```{r tokenise_snomed_descriptions}
 snomed_descriptions_tokens <- transmute(
   snomed_descriptions_tokens,
-  conceptId = conceptId,
+  conceptId,
+  descriptionId,
   token_raw = stringr::str_split(text_processed, pattern = " ")
 ) %>%
   unnest(cols = "token_raw") %>% 
@@ -242,10 +246,10 @@ The data frame is then condensed to have one row per `descriptionId` once again.
 
 ```{r condense_snomed_descriptions}
 snomed_descriptions_tokens <- snomed_descriptions_tokens %>%
-  group_by(conceptId) %>%
+  group_by(conceptId, descriptionId) %>%
   summarise(text_processed = paste(token_raw, collapse = " "))
 
-str(snomed_descriptions_tokens)
+glimpse(snomed_descriptions_tokens)
 ```
 
 
@@ -261,17 +265,59 @@ drug_indications$text_processed <- tolower(drug_indications$indication)
 indication_cleaning_patterns <- matrix(c(
     "(as per )(dr [a-z]*|micro advice|micro spr on call|sensitivities|micro consultant|micro)", "",
     "d/w micro", "",
+    "micro approved", "",
     "(\\w)([']s)",                            "\\1",
     "[?();./,]",                              " ",
     "[[:blank:]]{2,}",                        " ",
+    "other please type here",                 "",
+    
+    # Microorganisms
+    "\\bgram neg(ative)?\\b",                 "gram-negative",
+    "\\bgram pos(itive)?\\b",                 "gram-positive",
+    "\\bg ?-ive\\b",                          "gram-negative",
+    "\\bg ?+ive\\b",                          "gram-positive",
+    "g+ve cocci bc",                          "gram-positive cocci bacteremia",
+    "staph a\\b",                             "staphylococcus aureus",
+    "s aureus",                               "staphylococcus aureus",
+    "staph",                                  "staphylococcus",
+    "s aurea",                                "scopulariopsis aurea",
+    "\\bgbs\\b|group b streptococcus|group b strep", "streptococcus agalactiae",
+    "strep",                                  "streptococcus",
+    "e coli|e-coli",                          "escherichia coli",
+    "c[.[:blank:]]?diff(icile)?|\\bcdi\\b",   "clostridioides difficile",
+    "\\bcdi\\b",                              "clostridioides difficile",
+    "e faecalis",                             "enterococcus faecalis",
+    "mssa",                                   "methicillin sensitive staphylococcus aureus",
+    "mrsa",                                   "methicillin resistant staphylococcus aureus",
+    "pseudomomonas",                          "pseudomonas",
+    
+    # Acronyms
     "\\buti\\b|\\buit\\b",                    "urinary tract infection",
+    "craniocervical",                         "cranial cervical",
+    "\\bae\\b",                               "acute exacerbation",
+    "\\babx\\b",                              "antibiotic",
+    "xcopd",                                  "exacerbation copd",
+    "\\bcap\\b",                              "community_acquired pneumonia",
+    "\\bhap\\b",                              "hospital_acquired pneumonia",
+    "msu",                                    "mid stream urine",
+    "\\bgnr\\b",                              "gram-negative rods",
+    "\\bhsv2?\\b",                            "herpes simplex virus",
+    "\\bvzv\\b",                              "varicella zoster virus",
+    "esbl",                                   "extended spectrum beta-lactamase",
+    
+    # Others
+    "post procedure",                         "post_procedure",
+    "postprocedure",                          "post_procedure",
+    "popst operative|post procedure",         "post_procedure",
+    "\\bpostop\\b|post \\bop\\b",             "post_procedure",
+    "psot \\bop\\b|post-op|post surgical",    "post_procedure",
+    "quinsey",                                "quinsy",
+    "infected bilioma",                       "biliary infection",
+    "enteropathy",                            "intestinal infection",
+    "conjunctivits",                          "conjunctivitis",
     "\\babdo\\b",                             "abdominal",
     "pnuemonia|pneumoniae|pnemonia",          "pneumonia",
-    "post procedure",                         "post_procedure",
-    "postprocedure",                         "post_procedure",
     "urosepsis",                              "sepsis due to urinary tract infection",
-    "\\bae\\b",                               "acute exacerbation",
-    "\\babx\\b",                               "antibiotic",
     "\\sepssis\\b",                           "sepsis",
     "antipfungal|anti-fungal",                "antifungal",
     "abscesses",                              "abscess",
@@ -283,38 +329,17 @@ indication_cleaning_patterns <- matrix(c(
     "celluitis|cellultis",                    "cellulitis",
     "collitis",                               "colitis",
     "\\bseporrhoeic\\b",                      "seborrhoeic",
-    "\\bgram neg(ative)?\\b",                 "gram_negative",
-    "\\bgram pos(itive)?\\b",                 "gram_positive",
-    "\\bg ?-ive\\b",                          "gram_negative",
-    "\\bg ?+ive\\b",                          "gram_positive",
     "broncheictasis",                         "bronchiectasis",
-    # "e coli|e-coli",                          "B_ESCHR_COLI",
-    # "s aurea",                                "F_SCPLR_AURE",
-    # "c[.[:blank:]]?diff(icile)?|\\bcdi\\b",   "B_CRDDS_DFFC",
-    # "\\bcdi\\b",                              "B_CRDDS_DFFC",
-    "xcopd",                                  "exacerbation copd",
-    # "staph aureus",                           "B_STPHY_AURS",
-    # "staph a\\b",                             "B_STPHY_AURS",
     "\\binfn\\b",                             "infection",
     "tonsilitis|tonsilllitis|tonsilllits",    "tonsillitis",
     "pyelonephr\\b",                          "pyelonephritis",
     "unnknown",                               "unknown",
     "crcl",                                   "creatinine clearance",
-    "other please type here",                 "",
-    "popst operative|post procedure|postop|post op|psot op", "post operative",
-    "\\bcap\\b",                              "community_acquired pneumonia",
-    "\\bhap\\b",                              "hospital_acquired pneumonia",
-    # "\\bgbs\\b|group b streptococcus|group b strep", "B_STRPT_GRPB",
-    "pseudomomonas",                          "pseudomonas",
     "encocarditis",                           "endocarditis",
     "\\bcf\\b",                               "cystic fibrosis",
     "\\bpid\\b",                              "pelvic inflammatory disease",
     "dearrhoea",                              "diarrhea",
     "\\bnpenia\\b|\\bneut\\b|neutropenic|neutroepnic|nuetropenic", "neutropenic",
-    "\\bgnr\\b",                              "gram_negative rods",
-    "\\bhsv2?\\b",                            "herpes simplex virus",
-    "\\bvzv\\b",                              "varicella zoster virus",
-    # "e faecalis",                             "B_ENTRC_FCLS",
     "iecpod",                                 "infective exacerbation copd",
     "ipf",                                    "idiopathic pulmonary fibrosis",
     "intra[[:blank:]-]?abdominal|intrabdominal",      "abdominal",
@@ -332,12 +357,9 @@ indication_cleaning_patterns <- matrix(c(
     "cultrure|cultures",                      "culture",
     "abration",                               "abrasion",
     "folliculitiis",                          "folliculitis",
-    "msu",                                    "mid stream urine",
     "\\bsbp\\b",                              "spontaneous bacterial peritonitis",
     "\\bproph\\b",                            "prophylaxis",
     "supraglottits",                          "supraglottitis"
-    #,
-    # "mssa",                                   "methicillin sensitive B_STPHY_AURS infection"
   ), ncol=2, byrow = TRUE)
 colnames(indication_cleaning_patterns) <- c(
   "pattern",
@@ -415,7 +437,7 @@ v = create_vocabulary(it1)
 vectorizer = vocab_vectorizer(v)
 
 dtm1 = create_dtm(it1, vectorizer)
-rownames(dtm1) <- snomed_descriptions_tokens$conceptId
+rownames(dtm1) <- snomed_descriptions_tokens$descriptionId
 dtm2 = create_dtm(it2, vectorizer)
 rownames(dtm2) <- drug_indications_tokens$text_id
 ```
@@ -431,23 +453,28 @@ d1_d2_cos_sim = sim2(dtm1, dtm2, method = "cosine", norm = "l2")
 consinlink <- d1_d2_cos_sim %>%
   as.matrix %>% 
   data.frame() %>% 
-  mutate(conceptId = row.names(.)) %>% 
+  mutate(descriptionId = row.names(.)) %>% 
   pivot_longer(tidyselect::starts_with("X"), 
                names_to = "text_id",
                names_prefix = "X",
                values_to = "similarity")  
+
 consinlink <- consinlink %>% 
   mutate(text_id = as.integer(text_id)) %>% 
   left_join(drug_indications_tokens, by = "text_id") %>% 
-  left_join(select(snomed_concepts, conceptId, pt.term), by = "conceptId")
+  left_join(select(snomed_descriptions, conceptId, descriptionId, term), by = "descriptionId") %>% 
+  left_join(select(snomed_concepts, conceptId, pt.term), by = "conceptId") 
+
 
 consinlink <- arrange(consinlink, text_id, -similarity) %>% 
   group_by(text_id) %>% 
-  mutate(top = row_number()) %>% 
+  mutate(top = row_number(),
+         max_similarity = max(similarity)) %>% 
   ungroup()
 
 consinlink %>% 
-  filter(similarity > .5 | top == 1) 
+  filter(similarity == max_similarity | top == 1) %>% 
+  distinct(text_id, text_processed, conceptId, pt.term, similarity)
 
 
 ```
@@ -456,18 +483,10 @@ consinlink %>%
 ```{css, echo=FALSE }
 
 body {
-   # font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
   line-height: 1.4em;
   font-size: 16px
 }
-
-#   
-# .note {
-#   padding: 1em 1em 1em 4em;
-#   margin-bottom: 10px;
-#   background: #f5f5f5 5px center/3em no-repeat;
-# }
 
 .bd-callout {
   padding: 1.5em;
@@ -500,25 +519,14 @@ body {
   border-left-color: #5bc0de;
 }
 
-# .bd-callout-info h4 {
-#   color: #5bc0de;
-# }
-
 .bd-callout-warning {
   border-left-color: #f0ad4e;
 }
 
-# .bd-callout-warning h4 {
-#   color: #f0ad4e;
-# }
 
 .bd-callout-danger {
   border-left-color: #d9534f;
 }
-
-# .bd-callout-danger h4 {
-#   color: #d9534f;
-# }
 
 .bd-examples .img-thumbnail {
   margin-bottom: .75rem;

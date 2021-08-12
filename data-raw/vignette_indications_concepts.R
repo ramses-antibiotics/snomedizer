@@ -9,7 +9,7 @@ snomedizer_options_set(
 
 abx_indications_concepts <- concepts_descendants(
   conceptIds = c("40733004 | Infectious disease (disorder) |",
-                 "128045006 | Cellulitis (disorder) |",
+                 "128139000 | Inflammatory disorder (disorder) |",
                  "128477000 | Abscess (disorder) |")
 ) %>%
   dplyr::bind_rows() %>%
