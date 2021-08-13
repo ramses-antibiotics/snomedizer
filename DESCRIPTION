@@ -37,6 +37,7 @@ Suggests:
     tidytext,
     stopwords,
     pkgdown,
-    R.utils
+    R.utils,
+    text2vec
 RoxygenNote: 7.1.1
 VignetteBuilder: knitr

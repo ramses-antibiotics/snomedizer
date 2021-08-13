@@ -6,6 +6,7 @@ output:
     toc: true
     toc_depth: 2
     fig_caption: yes 
+    df_print: tibble
 vignette: >
   %\VignetteIndexEntry{Mapping SNOMED CT concepts from free text}
   %\VignetteEngine{knitr::rmarkdown}
@@ -50,10 +51,8 @@ We rely on several packages from the [`tidyverse`](https://www.tidyverse.org/lea
 library(dplyr)       # relational data wrangling package 
 library(tidyr)       # tidy data
 library(stringr)     # to manipulate strings (free-text data) 
-# library(tidytext)    # to manipulate strings (free-text data)
-library(stopwords)   # lists common and uncharacteristics words to discard
-library(data.table)  # faster processing
-library(text2vec)    # natural langage processing
+library(stopwords)   # lists common and uncharacteristic words to discard
+library(text2vec)    # natural language processing
 ```
 
 We connect to the July 2021 release branch on the official IHTSDO Snowstorm server.
@@ -127,8 +126,6 @@ snomed_concepts <- concepts_descendants(
   conceptIds = c("40733004 | Infectious disease (disorder) |",
                  "128139000 | Inflammatory disorder (disorder) |",
                  "128477000 | Abscess (disorder) |")
-                 # "128045006 | Cellulitis (disorder) |",
-                 # "233604007 | Pneumonia (disorder) |")
 ) %>%
   bind_rows() %>%
   unique()
@@ -179,9 +176,6 @@ snomed_descriptions_tokens <- snomed_descriptions %>%
   filter(active & type != "FSN") %>%
   select(conceptId, descriptionId, term) %>%
   mutate(text_processed = tolower(term))
-  # group_by(conceptId) %>%
-  # tidyr::nest() %>%
-  # transmute(conceptId, descriptions = data)
 
 snomed_cleaning_patterns <- matrix(c(
     "[(]disorder[)]",                                     "",
@@ -374,27 +368,6 @@ for(i in seq_len(nrow(indication_cleaning_patterns))) {
     perl = TRUE
   )
 }
-# 
-# system.time({
-#   for(i in seq_len(nrow(pathogen_names))) {
-#     indications$text_processed <- gsub(
-#       paste0("\\b", pathogen_names$token[i], "\\b"),
-#       pathogen_names$mo[i],
-#       indications$text_processed,
-#       perl = TRUE
-#     )
-#   }
-# })
-# system.time({
-#   for(i in seq_len(nrow(pathogen_geni))) {
-#     indications$text_processed <- gsub(
-#       paste0("\\b", pathogen_geni$token[i], "\\b"),
-#       pathogen_geni$mo[i],
-#       indications$text_processed,
-#       perl = TRUE
-#     )
-#   }
-# })
 
 drug_indications_tokens <- transmute(
   drug_indications,
@@ -433,7 +406,6 @@ We use consi
 it1 = itoken(snomed_descriptions_tokens$text_processed, progressbar = FALSE)
 it2 = itoken(drug_indications_tokens$text_processed, progressbar = FALSE)
 v = create_vocabulary(it1)
-# v = prune_vocabulary(v, doc_proportion_max = 0.1, term_count_min = 5)
 vectorizer = vocab_vectorizer(v)
 
 dtm1 = create_dtm(it1, vectorizer)
@@ -447,14 +419,12 @@ Blah
 
 ```{r echo=TRUE}
 d1_d2_cos_sim = sim2(dtm1, dtm2, method = "cosine", norm = "l2")
-# consinlink <- reshape2::melt(as.matrix(d1_d2_cos_sim))
-# colnames(consinlink) <- c("conceptId", "text_id", "similarity")
 
 consinlink <- d1_d2_cos_sim %>%
   as.matrix %>% 
   data.frame() %>% 
   mutate(descriptionId = row.names(.)) %>% 
-  pivot_longer(tidyselect::starts_with("X"), 
+  pivot_longer(starts_with("X"), 
                names_to = "text_id",
                names_prefix = "X",
                values_to = "similarity")  
