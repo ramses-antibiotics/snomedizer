@@ -4,10 +4,12 @@
 \alias{concepts_descriptions}
 \title{Fetch descriptions of one or more concepts}
 \usage{
-concepts_descriptions(conceptIds, ...)
+concepts_descriptions(conceptIds, encoding = "UTF-8", ...)
 }
 \arguments{
 \item{conceptIds}{a character vector of concept identifiers}
+
+\item{encoding}{HTTP charset parameter to use (default is \code{"UTF-8"})}
 
 \item{...}{other optional arguments listed in \code{\link{api_operations}}, such as
 \code{endpoint}, \code{branch} or \code{limit}}

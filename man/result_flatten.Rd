@@ -4,10 +4,12 @@
 \alias{result_flatten}
 \title{Flatten results from a server request}
 \usage{
-result_flatten(x)
+result_flatten(x, encoding = "UTF-8")
 }
 \arguments{
 \item{x}{an `httr` \code{\link[httr]{response}()} object}
+
+\item{encoding}{HTTP charset parameter to use (default is \code{"UTF-8"})}
 }
 \value{
 a data frame

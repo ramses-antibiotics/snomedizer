@@ -13,6 +13,7 @@
 #' @param activeFilter whether to restrict results to active concepts. Default is `TRUE`.
 #' Consult the \href{http://snomed.org/gl}{SNOMED glossary} for more detail.
 #' @param silent whether to hide warnings. Default is `FALSE`
+#' @param encoding HTTP charset parameter to use (default is \code{"UTF-8"})
 #' @param ... other optional arguments listed in \code{\link{api_operations}}, such as
 #' \code{endpoint}, \code{branch} or \code{limit}
 #' @return a data frame
@@ -41,6 +42,7 @@ concepts_find <- function(term = NULL,
                           ecl = NULL,
                           activeFilter = TRUE,
                           silent = FALSE,
+                          encoding = "UTF-8",
                           ...) {
 
 
@@ -62,7 +64,7 @@ concepts_find <- function(term = NULL,
     return(NULL)
   } else {
     ignore <- result_completeness(x)
-    return(result_flatten(x))
+    return(result_flatten(x, encoding = encoding))
   }
 }
 
@@ -81,6 +83,7 @@ concepts_find <- function(term = NULL,
 #' @param activeFilter a logical vector indicating whether to fetch active
 #' descendant concepts exclusively. The default is \code{TRUE}. If a single
 #' value is provided, it will be recycled.
+#' @param encoding HTTP charset parameter to use (default is \code{"UTF-8"})
 #' @param ... other valid arguments to function \code{\link{api_concepts}},
 #' for instance \code{endpoint}, \code{branch} or \code{limit}.
 #'
@@ -98,6 +101,7 @@ concepts_find <- function(term = NULL,
 concepts_descendants <- function(conceptIds,
                                  direct_descendants = FALSE,
                                  activeFilter = TRUE,
+                                 encoding = "UTF-8",
                                  ...) {
 
   stopifnot(is.vector(conceptIds))
@@ -126,7 +130,7 @@ concepts_descendants <- function(conceptIds,
       return(NULL)
     } else {
       ignore <- result_completeness(descendants)
-      return(result_flatten(descendants))
+      return(result_flatten(descendants, encoding = encoding))
     }
   }, ...)
 
@@ -141,6 +145,7 @@ concepts_descendants <- function(conceptIds,
 #' @description This function is a wrapper of \code{\link{api_descriptions}} that
 #' fetches description of one or several concept identifiers.
 #' @param conceptIds a character vector of concept identifiers
+#' @param encoding HTTP charset parameter to use (default is \code{"UTF-8"})
 #' @param ... other optional arguments listed in \code{\link{api_operations}}, such as
 #' \code{endpoint}, \code{branch} or \code{limit}
 #' @return a named list of data frames sorted by \code{conceptIds}
@@ -153,7 +158,9 @@ concepts_descendants <- function(conceptIds,
 #' @examples
 #' pneumonia_descriptions <- concepts_descriptions(conceptIds = "233604007")
 #' str(pneumonia_descriptions)
-concepts_descriptions <- function(conceptIds, ...) {
+concepts_descriptions <- function(conceptIds,
+                                  encoding = "UTF-8",
+                                  ...) {
 
   stopifnot(is.vector(conceptIds))
   stopifnot(all(conceptIds != ""))
@@ -171,7 +178,7 @@ concepts_descriptions <- function(conceptIds, ...) {
 
   x <- purrr::map(
     .x = x,
-    .f = function(chunk, ...) {
+    .f = function(chunk, encoding, ...) {
       desc <- api_descriptions(conceptIds = chunk, ...)
       progress_bar$tick()
 
@@ -181,8 +188,9 @@ concepts_descriptions <- function(conceptIds, ...) {
         return(NULL)
       } else {
         ignore <- result_completeness(desc)
-        return(result_flatten(desc))
+        return(result_flatten(desc, encoding = encoding))
       }},
+    encoding = encoding,
     ...
   )
 

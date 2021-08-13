@@ -221,6 +221,7 @@ snomedizer_version_compatibility <- function(
 #' nested server results from an \code{\link{api_operations}}
 #'  into a single non-nested data frame
 #' @param x an `httr` \code{\link[httr]{response}()} object
+#' @param encoding HTTP charset parameter to use (default is \code{"UTF-8"})
 #' @return a data frame
 #' @export
 #' @family utilities
@@ -230,8 +231,8 @@ snomedizer_version_compatibility <- function(
 #'    activeFilter = TRUE,
 #'    limit = 10))
 #' str(flattened_results)
-result_flatten <- function(x) {
-  x <- httr::content(x, as = "text", encoding = "ISO-8859-1")
+result_flatten <- function(x, encoding = "UTF-8") {
+  x <- httr::content(x, as = "text", encoding = encoding)
   x <- jsonlite::fromJSON(x, flatten = TRUE)
   empty_index <- sapply(x, length) == 0
   if(any(empty_index)) {
