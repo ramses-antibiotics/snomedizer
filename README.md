@@ -15,11 +15,9 @@ public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostat
 <!-- badges: end -->
 
 <p class="lead">
-
 <code>snomedizer</code> is an R package to manipulate the SNOMED
 clinical ontology using the [SNOMED CT Terminology Server REST
 API](https://github.com/IHTSDO/snowstorm).
-
 </p>
 
 ## Installation
@@ -50,28 +48,21 @@ server](https://browser.ihtsdotools.org/snowstorm/snomed-ct/) available
 for reference purposes **only** (see [terms &
 conditions](#terms--conditions)).
 
-For example, [`GET
-/branch/concepts`](https://snowstorm.ihtsdotools.org/snowstorm/snomed-ct/swagger-ui.html#!/Concepts/findConceptsUsingGET)
+For example,
+[`GET /branch/concepts`](https://snowstorm.ihtsdotools.org/snowstorm/snomed-ct/swagger-ui.html#!/Concepts/findConceptsUsingGET)
 is implemented in `api_concepts()`:
 
 ``` r
+library(dplyr)
 library(snomedizer)
 #> The following SNOMED CT Terminology Server has been selected:
 #> https://snowstorm.ihtsdotools.org/snowstorm/snomed-ct
 #> This server may be used for reference purposes only.
 #> It MUST NOT be used in production. Please refer to ?snomedizer for details.
-library(dplyr)
-#> 
-#> Attaching package: 'dplyr'
-#> The following objects are masked from 'package:stats':
-#> 
-#>     filter, lag
-#> The following objects are masked from 'package:base':
-#> 
-#>     intersect, setdiff, setequal, union
+
 api_concepts(term = "pneumonia", activeFilter = TRUE)
 #> Response [https://snowstorm.ihtsdotools.org/snowstorm/snomed-ct/MAIN/concepts?term=pneumonia&limit=50&offset=0&activeFilter=TRUE]
-#>   Date: 2021-08-06 17:27
+#>   Date: 2021-08-16 09:51
 #>   Status: 200
 #>   Content-Type: application/json
 #>   Size: 22 kB
@@ -95,7 +86,7 @@ provide results as data frames:
 concepts_find(term = "pneumonia", limit = 5) %>% 
   dplyr::select(conceptId, fsn.term, pt.term) 
 #> Warning: 
-#> This server request returned just 5 of a total 605 results.
+#> This server request returned just 5 of a total 606 results.
 #> Please increase the server `limit` to fetch all results.
 #>   conceptId                         fsn.term            pt.term
 #> 1 233604007             Pneumonia (disorder)          Pneumonia
@@ -107,7 +98,7 @@ concepts_find(term = "pneumonia", limit = 5) %>%
 
 ## Development and new features
 
-Please share your experience as a user\!
+Please share your experience as a user!
 
 Do not hesitate to [get in touch on
 GitHub](https://github.com/ramses-antibiotics/snomedizer/issues) to
@@ -143,9 +134,9 @@ Use of SNOMED CT terminology for data analysis or health care production
 systems is subject to other licences. Some users are eligible for free
 licences:
 
-  - UK-based users can obtain a licence free of charge on the [NHS TRUD
+-   UK-based users can obtain a licence free of charge on the [NHS TRUD
     website](https://isd.digital.nhs.uk/trud3).
-  - residents of other Member Countries and low-income countries are
+-   residents of other Member Countries and low-income countries are
     also eligible. More information can be found on the [SNOMED
     International website](https://www.snomed.org/snomed-ct/get-snomed).
 

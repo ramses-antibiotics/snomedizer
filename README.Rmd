@@ -11,6 +11,7 @@ knitr::opts_chunk$set(
   fig.path = "man/figures/README-",
   out.width = "100%"
 )
+library(dplyr)
 ```
 
 # <img src="man/figures/logo.png" align="right" width="150px"/><code>snomedizer</code>: R Interface to the SNOMED CT Terminology Server REST API
@@ -52,8 +53,9 @@ By default, the package uses the public [SNOMED International server](https://br
 For example, [`GET /branch/concepts`](https://snowstorm.ihtsdotools.org/snowstorm/snomed-ct/swagger-ui.html#!/Concepts/findConceptsUsingGET) is implemented in `api_concepts()`:
 
 ```{r api_concepts_pneumonia}
-library(snomedizer)
 library(dplyr)
+library(snomedizer)
+
 api_concepts(term = "pneumonia", activeFilter = TRUE)
 ```
 

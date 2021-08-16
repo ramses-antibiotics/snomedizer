@@ -16,8 +16,8 @@ vignette: >
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-library(snomedizer)
 library(dplyr)
+library(snomedizer)
 ```
 
 # Overview
@@ -45,14 +45,13 @@ The best ways to learn more about SNOMED CT are:
 
 It allows you to perform the same operations you would on the [SNOMED International Browser](https://browser.ihtsdotools.org/).
 
-`snomedizer` is based on [Snowstorm](https://github.com/IHTSDO/snowstorm/), the SNOMED International. Snowstorm is also the back-end terminology server for the [SNOMED International Browser](https://browser.ihtsdotools.org/).
-
+`snomedizer` is based on [Snowstorm](https://github.com/IHTSDO/snowstorm/), the official SNOMED CT Terminology Server. Snowstorm is the back-end terminology service for both the [SNOMED International Browser](https://browser.ihtsdotools.org/) and the SNOMED International Authoring Platform.
 
 # Rapid introduction to SNOMED CT
 
 SNOMED CT contains rich knowledge about medical concepts.
 
-Try for yourself in the quick exercise below:
+Try for yourself with the quick exercise below:
 
 1. Go to the [SNOMED CT International Browser](https://browser.ihtsdotools.org/) 
 2. In the 'Search' tab, type in `40600002` 
@@ -67,9 +66,25 @@ Try for yourself in the quick exercise below:
 
 # How to perform advanced queries (ECL)
 
-SNOMED CT has a query language called [ECL (Expression Constraint Language)]( http://snomed.org/ecl). It is a very powerful tool to apply logics to learn new facts from a concept.
+SNOMED CT has a query language named ['ECL' (Expression Constraint Language)](http://snomed.org/ecl). ECL enables users to perform logical queries and learn new facts from any SNOMED CT concept.
 
-It relies on logical operators listed in this [ECL quick reference table](https://confluence.ihtsdotools.org/display/DOCECL/Appendix+D+-+ECL+Quick+reference).
+ECL relies on logical operators listed in this [ECL quick reference table](https://confluence.ihtsdotools.org/display/DOCECL/Appendix+D+-+ECL+Quick+reference).
+
+You can submit ECL queries in snomedizer using the `concepts_find()` function:
+
+```{r setup_snomedizer }
+# Connect to the SNOMED International endpoint 
+# (see licence conditions in `vignette("snomedizer")`).
+snomedizer_options_set(
+  endpoint = "https://snowstorm.ihtsdotools.org/snowstorm/snomed-ct", 
+  branch = "MAIN/2021-07-31"
+)
+
+## fetch all pneumonia concepts
+pneumo_concepts <- concepts_find(ecl = "<<233604007 | Pneumonia (disorder) |")
+glimpse(pneumo_concepts)
+```
+
 
 <div class="bd-callout bd-callout-info">
 <h4>Trying ECL in the web browser</h4>
@@ -87,22 +102,16 @@ It relies on logical operators listed in this [ECL quick reference table](https:
 </div>
 
 
-## Finding relevant urine specimens
+# Examples
 
-Urine tests are very common in hospitals, for instance for bacterial cultures. Let us assume we access a laboratory database in which all bacterial cultures are stored with SNOMED CT codes for the specimen type. There are many types of urine samples, such as morning urines, mid-stream samples, etc. Some are not good samples: for example, urine catheter samples are often contaminated and give poor information.
+## 1. Search for relevant urine specimens
 
-Let's try and fetch all the codes corresponding to urine specimens, which are descendants of `122575003 | Urine specimen (specimen) |`, while excluding the ones from urinary catheters (`122565001 | Urinary catheter specimen (specimen) |`).
+Urine tests are very common in hospitals, for instance to perform microbial cultures. Let's assume we access a laboratory database in which all bacterial cultures are stored with SNOMED CT codes for the specimen type.
 
-First, connect to the SNOMED International endpoint (see licence conditions in `vignette("snomedizer")`).
+There are many types of urine samples, eg: samples of morning urine, mid-stream urine, etc. Some are not optimal samples: for example, urine catheter samples are often contaminated and may give poor information. Let's try and
 
-```{r setup_snomedizer, echo = FALSE}
-library(dplyr)
-library(snomedizer)
-snomedizer_options_set(
-  endpoint = "https://snowstorm.ihtsdotools.org/snowstorm/snomed-ct", 
-  branch = "MAIN/2021-07-31"
-)
-```
+* fetch all the codes corresponding to urine specimens: they are descendants of `122575003 | Urine specimen (specimen) |`
+* while excluding the ones from urinary catheters (`122565001 | Urinary catheter specimen (specimen) |`).
 
 First, we need to query descendant concepts. This can be done using `concepts_descendants()`. But we can also use the `<<` operator (known as `descendantOrSelfOf`) using ECL. All the expressions below are equivalent.
 
@@ -113,7 +122,7 @@ urine_specimens <- concepts_find(ecl = "<<122575003 | Urine specimen (specimen) 
 glimpse(urine_specimens[, c("conceptId", "pt.term")])
 ```
 
-We obtain 40 concepts. But these do include some catheter-related infections:
+We obtain 40 concepts. But these include some samples obtained from catheters:
 
 ```{r demo_urine_2}
 urine_specimens %>% 
@@ -125,46 +134,47 @@ To exclude those, we make use of the `MINUS` operator in ECL:
 
 ```{r demo_urine_3}
 urine_specimens <- concepts_find(
-  ecl = "<<122575003 | Urine specimen (specimen) | MINUS (
-     <<122565001 | Urinary catheter specimen (specimen) |  OR
-     <<447589008 | Urine specimen obtained by single catheterization of bladder (specimen) | 
-  )")
+  ecl = "
+  <<122575003 | Urine specimen (specimen) | MINUS 
+     ( <<122565001 | Urinary catheter specimen (specimen) |  OR
+       <<447589008 | Urine specimen obtained by single catheterization of bladder (specimen) | )
+  ")
 glimpse(urine_specimens[, c("conceptId", "pt.term")])
 ```
 
 This now gives us the set of 34 target concepts.
 
-*Note:* For guidance on ECL operators such as `MINUS` or `OR`, consult the [ECL quick reference table](https://confluence.ihtsdotools.org/display/DOCECL/Appendix+D+-+ECL+Quick+reference).
+*Note:* For guidance on ECL operators such as `MINUS` or `OR`, see the [ECL quick reference table](https://confluence.ihtsdotools.org/display/DOCECL/Appendix+D+-+ECL+Quick+reference).
 
 
-## Finding the dose of a medical product
+## 2. Find the dose of a medical product
 
 Let's assume you have electronic prescription records referenced to SNOMED CT medical products. We come across a prescription for SNOMED CT code `374646004`, which references Amoxicillin 500 mg oral tablets, and want to extract the antibiotic type, dose and unit.
 
-Note that medical product definitions vary considerably across SNOMED CT editions. In this example, we shall use the United States Edition.
+*Note:* medical product definitions vary considerably across SNOMED CT editions. In this example, we will use the United States Edition.
 
 We want to extract *attributes*, which are SNOMED CT relationships giving characteristics of a concept. Attributes can be queries using the `.` (dot) operator.
 
-Let's first look at the antibiotic, which is expressed by attribute `762949000 | Has precise active ingredient (attribute) |`.
+First, let's look at the antibiotic, which is expressed by attribute `762949000 | Has precise active ingredient (attribute) |`.
 
 ```{r find_amox_drug}
-concepts_find(ecl="374646004.(<<762705008 | Concept model object attribute (attribute) |) ", branch="MAIN/SNOMEDCT-US", ) %>% 
+concepts_find(ecl="374646004.(<<762705008 | Concept model object attribute (attribute) |) ", 
+              branch="MAIN/SNOMEDCT-US") %>% 
   select(conceptId, fsn.term)
 ```
 
-We could query other attributes one after the other (or chain them with `OR` operators). But here, the simplest way is to extract all concept attributes which descend from `762705008 | Concept model object attribute (attribute) |`.
+We could query other attributes sequentially (or chain them with `OR` operators in a single ECL expression). But here, the simplest way is to extract all attributes. We do this by remembering that attributes are merely SNOMED CT concepts descending from `762705008 | Concept model object attribute (attribute) |`.
 
 ```{r find_amox_attributes}
 drug_attributes <- concepts_find(
   ecl="374646004.(<<762705008 | Concept model object attribute (attribute) |) ", 
   branch="MAIN/SNOMEDCT-US/2021-03-01")
-
 drug_attributes$fsn.term
 ```
 
 However, this approach only provides the value of the attribute, not the attribute name.
 
-A more complex, but effective solution involves using Snowstorm's special REST endpoint `GET /{branch}/relationships`. For this, we call this endpoint directly using a low-level function `api_relationships()`. Like all low-level `api_operations`, it is necessary to specify that only active concepts should be returned, and flatten the output. We also remove the `116680003 | Is a |` attribute which is not relevant to us.
+A more complex, but effective approach involves a special REST endpoint in Snowstorm: [`GET /{branch}/relationships`](https://snowstorm.ihtsdotools.org/snowstorm/snomed-ct/swagger-ui.html#!/Relationships/findRelationshipsUsingGET). We can issue a request to this endpoint directly using the low-level function `api_relationships()`. Like all low-level `api_operations`, it is necessary to (1) explicitly request only active concepts, and (2) flatten the output into a data frame. We shall also exclude `116680003 | Is a |` attributes (which express inheritance from parent concepts) as they are not relevant in this instance.
 
 ```{r}
 drug_attributes <- api_relationships(
@@ -181,11 +191,11 @@ drug_attributes %>%
   
 ```
 
-## Finding all diseased caused by a type of bacterium
+## 3. Find all diseases caused by a type of bacterium
 
-Let's extract all infections that can be caused by bacteria of `106544002 | Family Enterobacteriaceae (organism) |`.
+Let's extract all infections that can be caused by bacteria belonging to `106544002 | Family Enterobacteriaceae (organism) |`.
 
-Here, we use the refine `:` operator. 
+To do this, we use the refine `:` operator. 
 
 ```{r find_enterobac_infections, paged.print=FALSE}
 enterobac_infections <- concepts_find(
@@ -198,14 +208,18 @@ enterobac_infections %>%
   select(conceptId, pt.term)
 ``` 
 
-*Bonus exercise:* Now, extract all body systems that can be infected by the family Enterobacteriaceae.
+*Bonus exercise:* Now, extract all body structures that can be infected by the family *Enterobacteriaceae*. Tip: you will need the reversed refine operator `: R`.
 
+<!-- <<123037004 | Body structure (body structure) |  : R  363698007 |Finding site|  =
+(<<40733004 | Infectious disease (disorder) | :  
+             246075003 |Causative agent|  =  <<106544002)
+-->
 
-## Finding synonyms of a concept
+## 4. Find synonyms of a concept
 
-Some concepts may have a lot of different names.
+Some concepts may have many different names.
 
-Let's extract the synonyms of candidiasis:
+Let's extract synonyms of 'candidiasis':
 
 ```{r syn_78048006}
 concepts_descriptions(conceptIds = "78048006") %>% 
@@ -213,6 +227,8 @@ concepts_descriptions(conceptIds = "78048006") %>%
   filter(type == "SYNONYM") %>% 
   select(term)
 ```
+
+Condition `type == "SYNONYM"` is there to remove the redundant fully specified name 'Candidiasis (disorder)'.
 
 We can also search for those terms in, say, Spanish, by querying the branch containing the Spanish Edition.
 
@@ -222,8 +238,6 @@ concepts_descriptions(conceptIds = "78048006", branch = "MAIN/SNOMEDCT-ES/2021-0
   filter(type == "SYNONYM" & lang == "es") %>% 
   select(term)
 ```
-
-
 
 
 
