@@ -1,6 +1,6 @@
 Package: snomedizer
 Type: Package
-Title: R Interface to the SNOMED CT Terminology Server REST API
+Title: R Interface to the SNOMED-CT Terminology Server REST API
 Version: 0.1.0
 Authors@R: c(
     person(given = "Peter",
@@ -10,26 +10,34 @@ Authors@R: c(
            comment = c(ORCID = "0000-0002-8942-9836")),
     person("University College London", role = c("cph")))
 Description: Manipulate the SNOMED CT clinical ontology using the 
-   SNOMED CT Terminology Server REST API <https://github.com/IHTSDO/snowstorm>.
+   SNOMED International Terminology Server REST API <https://github.com/IHTSDO/snowstorm>.
 URL: https://github.com/ramses-antibiotics/snomedizer
 BugReports: https://github.com/ramses-antibiotics/snomedizer/issues
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
+Depends:
+    R (>= 3.0.0)
 Imports: 
     jsonlite,
     curl,
     purrr,
     dplyr,
+    stringr,
     httr,
     methods,
     progress
 Suggests: 
     testthat,
+    tidyr,
     knitr,
+    magrittr,
     rmarkdown,
     covr,
+    tidytext,
+    stopwords,
     pkgdown,
-    R.utils
+    R.utils,
+    text2vec
 RoxygenNote: 7.1.1
 VignetteBuilder: knitr

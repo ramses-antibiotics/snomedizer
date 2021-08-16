@@ -101,3 +101,19 @@ test_that(".validate_branch", {
 test_that("snomedizer_version_compatibility", {
   expect_true(snomedizer_version_compatibility())
 })
+
+
+# .validate_branch --------------------------------------------------------
+
+test_that(".validate_branch", {
+  expect_equal(.validate_branch("MAIN"), "MAIN")
+  expect_equal(.validate_branch("MAIN/SNOMEDCT-GB"), "MAIN%2FSNOMEDCT-GB")
+  expect_error(.validate_branch(""))
+})
+
+# snomedizer_version_compatibility ----------------------------------------
+
+test_that("snomedizer_version_compatibility", {
+  expect_true(snomedizer_version_compatibility(), "logical")
+})
+

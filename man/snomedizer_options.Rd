@@ -57,6 +57,7 @@ To learn how to set environment variables in `.Rprofile` or `.Renviron`, see
 Other utilities: 
 \code{\link{result_completeness}()},
 \code{\link{result_flatten}()},
-\code{\link{snomed_public_endpoint_suggest}()}
+\code{\link{snomed_public_endpoint_suggest}()},
+\code{\link{snomedizer_version_compatibility}()}
 }
 \concept{utilities}

@@ -40,7 +40,6 @@ test_that("concepts_descendants", {
   expect_true("882784691000119100" %in% infections$`233604007`$conceptId)
 
   expect_warning(concepts_descendants(conceptIds = "blurgh"))
-
 })
 
 
@@ -75,5 +74,4 @@ test_that("release_version", {
   expect_equal(ct_version$rf2_date, "20210731")
   expect_equal(ct_version$rf2_month_year, "July 2021")
 })
-
 

@@ -10,6 +10,7 @@ concepts_find(
   ecl = NULL,
   activeFilter = TRUE,
   silent = FALSE,
+  encoding = "UTF-8",
   ...
 )
 }
@@ -27,6 +28,8 @@ for more detail.}
 Consult the \href{http://snomed.org/gl}{SNOMED glossary} for more detail.}
 
 \item{silent}{whether to hide warnings. Default is `FALSE`}
+
+\item{encoding}{HTTP charset parameter to use (default is \code{"UTF-8"})}
 
 \item{...}{other optional arguments listed in \code{\link{api_operations}}, such as
 \code{endpoint}, \code{branch} or \code{limit}}
@@ -59,5 +62,11 @@ concepts_find(
     "< 87628006 | Bacterial infectious disease (disorder) |"
     )
   )
+}
+\seealso{
+Other wrapper: 
+\code{\link{concepts_descendants}()},
+\code{\link{concepts_descriptions}()},
+\code{\link{release_version}()}
 }
 \concept{wrapper}
