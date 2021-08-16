@@ -11,7 +11,7 @@ An object of class \code{data.frame} with 262 rows and 2 columns.
 drug_indications
 }
 \description{
-Dataset containing 403 records of free-text therapy indications
+Dataset containing records of free-text therapy indications
 filled in by doctors when prescription antibiotics
 }
 \details{
