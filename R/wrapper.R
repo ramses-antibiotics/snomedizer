@@ -243,37 +243,3 @@ release_version <- function(endpoint = snomedizer_options_get("endpoint"),
   )
 }
 
-#' #' Get all SNOMED CT infection concepts
-#' #'
-#' #' @description Obtain all concepts belonging to the
-#' #' \code{40733004 |Infectious disease (disorder)|}
-#' #' SNOMED CT concept together with the preferred name,
-#' #' @param limit a positive integer for the maximum number of results to return.
-#' #' See \code{\link{snomedizer_options}}. The maximum limit on public endpoints
-#' #' is 10,000.
-#' #' @param ... optional arguments listed in \code{\link{api_operations}}, such as
-#' #' \code{endpoint}, \code{branch} or \code{limit}
-#' #'
-#' #' @return A data frame containing the following variables:
-#' #'     \itemize{
-#' #'       \item[conceptId] a character vector of SNOMED CT conceptIds
-#' #'       \item[term] a character vector of fully specified names
-#' #'       \item[causalAgent] a factor characterising the pathogen causing the infection:
-#' #'           bacterial, fungal, viral, unspecified
-#' #'       \item[onset] a factor characterising the onset of disease: community or healthcare
-#' #'       \item[class1] a character vector containing the conceptId of
-#' #'          a parent SNOMED CT concept.
-#' #'     }
-#' #' @export
-#' #'
-#' #' @examples
-#' #'    # To get all 6,769 infection codes in SNOMED CT UK (as of December 2019)
-#' #'    inf_concepts <- concept_infections(limit = 7000)
-#' #'    str(inf_concepts)
-#' concept_infections <- function(limit = 9000, ...) {
-#'   concepts_descendants(conceptIds = "40733004",
-#'                        direct_descendants = FALSE,
-#'                        limit = limit,
-#'                        ...)
-#' }
-
