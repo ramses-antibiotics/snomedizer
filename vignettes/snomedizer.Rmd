@@ -47,7 +47,7 @@ It allows you to perform the same operations you would on the [SNOMED Internatio
 
 `snomedizer` is based on [Snowstorm](https://github.com/IHTSDO/snowstorm/), the official SNOMED CT Terminology Server. Snowstorm is the back-end terminology service for both the [SNOMED International Browser](https://browser.ihtsdotools.org/) and the SNOMED International Authoring Platform.
 
-# Rapid introduction to SNOMED CT
+# Introduction to SNOMED CT
 
 SNOMED CT contains rich knowledge about medical concepts.
 
