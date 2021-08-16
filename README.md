@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# <img src="man/figures/logo.png" align="right" width="150px"/><code>snomedizer</code>: R Interface to the SNOMED CT Terminology Server REST API
+# <img src="man/figures/logo.png" align="right" width="170px"/>snomedizer: R Interface to the SNOMED CT Terminology Server REST API
 
 <!-- badges: start -->
 
@@ -14,11 +14,7 @@ has not yet been a stable, usable release suitable for the
 public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
 <!-- badges: end -->
 
-<p class="lead">
-<code>snomedizer</code> is an R package to manipulate the SNOMED
-clinical ontology using the [SNOMED CT Terminology Server REST
-API](https://github.com/IHTSDO/snowstorm).
-</p>
+<p class="lead">Manipulate the SNOMED CT clinical ontology using the <a href="https://github.com/IHTSDO/snowstorm">SNOMED International Terminology Server REST API</a>.</p>
 
 ## Installation
 
@@ -48,8 +44,8 @@ server](https://browser.ihtsdotools.org/snowstorm/snomed-ct/) available
 for reference purposes **only** (see [terms &
 conditions](#terms--conditions)).
 
-For example,
-[`GET /branch/concepts`](https://snowstorm.ihtsdotools.org/snowstorm/snomed-ct/swagger-ui.html#!/Concepts/findConceptsUsingGET)
+For example, [`GET
+/branch/concepts`](https://snowstorm.ihtsdotools.org/snowstorm/snomed-ct/swagger-ui.html#!/Concepts/findConceptsUsingGET)
 is implemented in `api_concepts()`:
 
 ``` r
@@ -62,7 +58,7 @@ library(snomedizer)
 
 api_concepts(term = "pneumonia", activeFilter = TRUE)
 #> Response [https://snowstorm.ihtsdotools.org/snowstorm/snomed-ct/MAIN/concepts?term=pneumonia&limit=50&offset=0&activeFilter=TRUE]
-#>   Date: 2021-08-16 09:51
+#>   Date: 2021-08-16 16:36
 #>   Status: 200
 #>   Content-Type: application/json
 #>   Size: 22 kB
@@ -98,7 +94,7 @@ concepts_find(term = "pneumonia", limit = 5) %>%
 
 ## Development and new features
 
-Please share your experience as a user!
+Please share your experience as a user\!
 
 Do not hesitate to [get in touch on
 GitHub](https://github.com/ramses-antibiotics/snomedizer/issues) to
@@ -134,9 +130,9 @@ Use of SNOMED CT terminology for data analysis or health care production
 systems is subject to other licences. Some users are eligible for free
 licences:
 
--   UK-based users can obtain a licence free of charge on the [NHS TRUD
+  - UK-based users can obtain a licence free of charge on the [NHS TRUD
     website](https://isd.digital.nhs.uk/trud3).
--   residents of other Member Countries and low-income countries are
+  - residents of other Member Countries and low-income countries are
     also eligible. More information can be found on the [SNOMED
     International website](https://www.snomed.org/snomed-ct/get-snomed).
 

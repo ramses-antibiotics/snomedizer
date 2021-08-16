@@ -21,16 +21,17 @@ navbar:
 
 
 reference:
+- title: SNOMED CT licence information
+  contents:
+  - snomedizer
 - title: Main functions
   desc:  User-friendly functions provided for every day tasks
   contents:
-  - starts_with("concepts_")
+  - has_concept("wrapper")
 - title: Utilities
   desc: Useful functions to set parameters and handle server requests
   contents:
-  - starts_with("snomed_")
-  - starts_with("snomedizer_")
-  - starts_with("result_")
+  - has_concept("utilities")
 - title: API operations
   desc:  Like-for-like interfaces with the SNOMED CT Terminology Server API operations
   contents:

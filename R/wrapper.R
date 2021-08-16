@@ -88,6 +88,7 @@ concepts_find <- function(term = NULL,
 #' for instance \code{endpoint}, \code{branch} or \code{limit}.
 #'
 #' @return a named list of data frames
+#' @family wrapper
 #' @export
 #' @section Disclaimer:
 #' In order to use SNOMED CT, a licence is required which depends both on the country you are
@@ -149,6 +150,7 @@ concepts_descendants <- function(conceptIds,
 #' @param ... other optional arguments listed in \code{\link{api_operations}}, such as
 #' \code{endpoint}, \code{branch} or \code{limit}
 #' @return a named list of data frames sorted by \code{conceptIds}
+#' @family wrapper
 #' @export
 #' @section Note:
 #' Duplicate \code{conceptIds} will be removed.
@@ -212,6 +214,7 @@ concepts_descriptions <- function(conceptIds,
 #' commonly \code{"MAIN"}). See \code{\link{snomedizer_options}}.
 #' @return a list containing two character strings: \code{rf2_date}
 #' (YYYYMMDD release date) and \code{rf2_month_year} (month and year string)
+#' @family wrapper
 #' @references \href{SNOMED CT Release File Specifications}{http://snomed.org/rfs}
 #' @export
 release_version <- function(endpoint = snomedizer_options_get("endpoint"),

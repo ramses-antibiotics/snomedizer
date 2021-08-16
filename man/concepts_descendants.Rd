@@ -51,3 +51,10 @@ pneumonia_concepts <- concepts_descendants(conceptIds = "233604007")
 pneumonia_concepts <- concepts_descendants(conceptIds = "233604007", limit = 300)
 head(pneumonia_concepts$`233604007`)
 }
+\seealso{
+Other wrapper: 
+\code{\link{concepts_descriptions}()},
+\code{\link{concepts_find}()},
+\code{\link{release_version}()}
+}
+\concept{wrapper}

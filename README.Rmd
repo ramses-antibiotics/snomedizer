@@ -1,8 +1,24 @@
 ---
-output: github_document
+output: 
+  github_document:
+    md_extensions: +raw_html-markdown_in_html_blocks+raw_attribute
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
+
+# <img src="man/figures/logo.png" align="right" width="170px"/>snomedizer: R Interface to the SNOMED CT Terminology Server REST API
+
+<!-- badges: start -->
+[![R build status](https://github.com/ramses-antibiotics/snomedizer/workflows/R-CMD-check/badge.svg?branch=master)](https://github.com/ramses-antibiotics/snomedizer/actions)
+[![Codecov test coverage](https://codecov.io/gh/ramses-antibiotics/snomedizer/branch/master/graph/badge.svg)](https://codecov.io/gh/ramses-antibiotics/snomedizer?branch=master)
+[![Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
+<!-- badges: end -->
+
+
+
+```{=html}
+<p class="lead">Manipulate the SNOMED CT clinical ontology using the <a href="https://github.com/IHTSDO/snowstorm">SNOMED International Terminology Server REST API</a>.</p>
+```
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
@@ -14,20 +30,10 @@ knitr::opts_chunk$set(
 library(dplyr)
 ```
 
-# <img src="man/figures/logo.png" align="right" width="150px"/><code>snomedizer</code>: R Interface to the SNOMED CT Terminology Server REST API
 
-<!-- badges: start -->
-[![R build status](https://github.com/ramses-antibiotics/snomedizer/workflows/R-CMD-check/badge.svg?branch=master)](https://github.com/ramses-antibiotics/snomedizer/actions)
-[![Codecov test coverage](https://codecov.io/gh/ramses-antibiotics/snomedizer/branch/master/graph/badge.svg)](https://codecov.io/gh/ramses-antibiotics/snomedizer?branch=master)
-[![Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
-<!-- badges: end -->
-
-<p class="lead">
-<code>snomedizer</code> is an R package to manipulate the SNOMED clinical ontology using the 
-   [SNOMED CT Terminology Server REST API](https://github.com/IHTSDO/snowstorm).
-</p>
 
 ## Installation
+
 
 <!-- 
 You can install the released version of snomedizer from [CRAN](https://CRAN.R-project.org) with:
@@ -36,6 +42,7 @@ You can install the released version of snomedizer from [CRAN](https://CRAN.R-pr
 install.packages("snomedizer")
 ```
 -->
+
 
 You can install the development version from [GitHub](https://github.com/ramses-antibiotics/snomedizer) with:
 

@@ -9,7 +9,7 @@
 \if{html}{\figure{logo.png}{options: align='right' alt='logo' width='120'}}
 
 Manipulate the SNOMED CT clinical ontology using the 
-   SNOMED CT Terminology Server REST API <https://github.com/IHTSDO/snowstorm>.
+   SNOMED International Terminology Server REST API <https://github.com/IHTSDO/snowstorm>.
 }
 \section{SNOMED CT licensing}{
 
