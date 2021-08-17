@@ -23,3 +23,11 @@ with `snomedizer`'s supported version. The SNOMED CT terminology server API
 is continuously developed and may introduce breaking changes in REST operations
 and parameters.
 }
+\seealso{
+Other utilities: 
+\code{\link{result_completeness}()},
+\code{\link{result_flatten}()},
+\code{\link{snomed_public_endpoint_suggest}()},
+\code{\link{snomedizer_options}}
+}
+\concept{utilities}

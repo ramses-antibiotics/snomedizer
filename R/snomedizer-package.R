@@ -7,18 +7,27 @@
 #' SNOMED CT terminology server hosted by IHSTO to anyone for reference purpose, uses for data
 #' analysis or health care production systems is subject to other licences.
 #'
-#' UK-based users can apply for such a licence free of charge on the
-#' \href{https://isd.digital.nhs.uk/trud3}{NHS TRUD website}.
+#' SNOMED International allows access to public SNOMED-CT terminology servers to anyone
+#' for strict 'reference purposes' under the \href{https://browser.ihtsdotools.org/}{SNOMED
+#' International SNOMED CT Browser License Agreement} (see section below).
 #'
-#' Residents of other Member Countries and low income countries are also eligible for
-#' licences free of costs. More information can be found on the
-#' \href{https://www.snomed.org/snomed-ct/get-snomed}{SNOMED International website}.
+#' Use of SNOMED CT terminology for data analysis or health care production systems is
+#' subject to other licences. Some users are eligible for free licences:
+#' \itemize{
+#'   \item{UK-based users can obtain a licence free of charge on the
+#'   \href{https://isd.digital.nhs.uk/trud3}{NHS TRUD website}}
+#'   \item{residents of other Member Countries and low-income countries are also eligible.
+#'   More information can be found on
+#'   \href{https://www.snomed.org/snomed-ct/get-snomed}{SNOMED International's website}.}
+#' }
 #'
 #' @section Licensing for reference use:
 #'
 #' \code{snomedizer} contains examples and documentation that makes uses of an IHSTO public
 #' API endpoint restricted to reference uses such as testing or browsing the terminology.
-#' It is subject to the \href{https://browser.ihtsdotools.org/}{SNOMED International SNOMED CT Browser License Agreement} reproduced below:
+#' It is subject to the
+#' \href{https://browser.ihtsdotools.org/}{SNOMED International Browser License Agreement}
+#' reproduced below:
 #'
 #' \enumerate{
 #' \item The meaning of the terms “Affiliate”, or “Data Analysis System”, “Data Creation System”,

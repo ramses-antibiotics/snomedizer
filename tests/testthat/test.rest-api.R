@@ -153,18 +153,19 @@ test_that("api_browser_concept_ancestors", {
 # api_browser_concept_children --------------------------------------------
 
 test_that("api_browser_concept_children", {
-
-  pneumo_children <- httr::content(api_browser_concept_children(conceptId = "233604007"))
-  expect_false(exists("descendantCount", pneumo_children[[1]]))
-  expect_false(exists("isLeafStated", pneumo_children[[1]]))
-  expect_true(exists("isLeafInferred", pneumo_children[[1]]))
-  pneumo_children <- httr::content(api_browser_concept_children(conceptId = "233604007",
+  uti_children <- httr::content(api_browser_concept_children(conceptId = "233604007"))
+  # descendantCount = TRUE by default unlike snowstorm default.
+  expect_true(exists("descendantCount", uti_children[[1]]))
+  expect_false(exists("isLeafStated", uti_children[[1]]))
+  expect_true(exists("isLeafInferred", uti_children[[1]]))
+  uti_children <- httr::content(api_browser_concept_children(conceptId = "68566005",
                                                                 form = "stated",
-                                                                includeDescendantCount = TRUE))
-  expect_true(exists("descendantCount", pneumo_children[[1]]))
-  expect_true(exists("isLeafStated", pneumo_children[[1]]) &
-                pneumo_children[[1]]$isLeafStated)
-  expect_false(exists("isLeafInferred", pneumo_children[[1]]))
+                                                                includeDescendantCount = FALSE))
+  # descendantCount = TRUE by default unlike snowstorm default.
+  expect_false(exists("descendantCount", uti_children[[1]]))
+  expect_true(exists("isLeafStated", uti_children[[1]]) &
+                uti_children[[1]]$isLeafStated)
+  expect_false(exists("isLeafInferred", uti_children[[1]]))
 
 
   expect_error(api_browser_concept_children(conceptId = "233604007",

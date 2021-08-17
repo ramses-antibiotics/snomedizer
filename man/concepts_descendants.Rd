@@ -8,6 +8,7 @@ concepts_descendants(
   conceptIds,
   direct_descendants = FALSE,
   activeFilter = TRUE,
+  encoding = "UTF-8",
   ...
 )
 }
@@ -16,12 +17,14 @@ concepts_descendants(
 
 \item{direct_descendants}{a logical vector indicating whether to fetch
 direct descendants (children) of the \code{conceptIds} exclusively or all
-descendants. The default is \code{FALSE}. If a single
+descendants (including children). The default is \code{FALSE}. If a single
 value is provided, it will be recycled.}
 
 \item{activeFilter}{a logical vector indicating whether to fetch active
 descendant concepts exclusively. The default is \code{TRUE}. If a single
 value is provided, it will be recycled.}
+
+\item{encoding}{HTTP charset parameter to use (default is \code{"UTF-8"})}
 
 \item{...}{other valid arguments to function \code{\link{api_concepts}},
 for instance \code{endpoint}, \code{branch} or \code{limit}.}
@@ -48,3 +51,10 @@ pneumonia_concepts <- concepts_descendants(conceptIds = "233604007")
 pneumonia_concepts <- concepts_descendants(conceptIds = "233604007", limit = 300)
 head(pneumonia_concepts$`233604007`)
 }
+\seealso{
+Other wrapper: 
+\code{\link{concepts_descriptions}()},
+\code{\link{concepts_find}()},
+\code{\link{release_version}()}
+}
+\concept{wrapper}

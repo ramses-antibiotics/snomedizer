@@ -4,10 +4,12 @@
 \alias{result_flatten}
 \title{Flatten results from a server request}
 \usage{
-result_flatten(x)
+result_flatten(x, encoding = "UTF-8")
 }
 \arguments{
 \item{x}{an `httr` \code{\link[httr]{response}()} object}
+
+\item{encoding}{HTTP charset parameter to use (default is \code{"UTF-8"})}
 }
 \value{
 a data frame
@@ -28,6 +30,7 @@ str(flattened_results)
 Other utilities: 
 \code{\link{result_completeness}()},
 \code{\link{snomed_public_endpoint_suggest}()},
-\code{\link{snomedizer_options}}
+\code{\link{snomedizer_options}},
+\code{\link{snomedizer_version_compatibility}()}
 }
 \concept{utilities}
