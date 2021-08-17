@@ -2,6 +2,12 @@ destination: docs
 template:
   params:
     bootswatch: flatly
+  opengraph:
+    image:
+      src: man/figures/logo.png
+      alt: "snomedizer: R Interface to the SNOMED CT Terminology Server REST API"
+    twitter:
+      card: summary
 
 url: https://snomedizer.web.app
 
