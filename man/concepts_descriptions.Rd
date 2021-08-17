@@ -4,12 +4,14 @@
 \alias{concepts_descriptions}
 \title{Fetch descriptions of one or more concepts}
 \usage{
-concepts_descriptions(conceptIds, encoding = "UTF-8", ...)
+concepts_descriptions(conceptIds, encoding = "UTF-8", silent = FALSE, ...)
 }
 \arguments{
 \item{conceptIds}{a character vector of concept identifiers}
 
 \item{encoding}{HTTP charset parameter to use (default is \code{"UTF-8"})}
+
+\item{silent}{whether to hide progress bar. Default is \code{FALSE}}
 
 \item{...}{other optional arguments listed in \code{\link{api_operations}}, such as
 \code{endpoint}, \code{branch} or \code{limit}}

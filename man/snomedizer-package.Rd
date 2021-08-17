@@ -23,7 +23,7 @@ SNOMED International allows access to public SNOMED-CT terminology servers to an
 for strict 'reference purposes' under the \href{https://browser.ihtsdotools.org/}{SNOMED
 International SNOMED CT Browser License Agreement} (see section below).
 
-Use of SNOMED-CT terminology for data analysis or health care production systems is
+Use of SNOMED CT terminology for data analysis or health care production systems is
 subject to other licences. Some users are eligible for free licences:
 \itemize{
   \item{UK-based users can obtain a licence free of charge on the
@@ -39,7 +39,9 @@ subject to other licences. Some users are eligible for free licences:
 
 \code{snomedizer} contains examples and documentation that makes uses of an IHSTO public
 API endpoint restricted to reference uses such as testing or browsing the terminology.
-It is subject to the \href{https://browser.ihtsdotools.org/}{SNOMED International SNOMED CT Browser License Agreement} reproduced below:
+It is subject to the
+\href{https://browser.ihtsdotools.org/}{SNOMED International Browser License Agreement}
+reproduced below:
 
 \enumerate{
 \item The meaning of the terms “Affiliate”, or “Data Analysis System”, “Data Creation System”,
