@@ -22,6 +22,22 @@ test_that("concepts_find", {
     )
   )
   expect_equal(ecl_query_concept$conceptId, "312124009")
+
+  # test when both ecl and conceptIds are provided
+  disjoint <- concepts_find(
+    ecl = "<<40733004", #Infectious disease
+    conceptIds = c("233604007", # Pneumonia
+                   "40733004")
+  )
+  expect_equal(disjoint$conceptId, "40733004")
+
+  included <- concepts_find(
+    ecl = "<<40733004", #Infectious disease
+    conceptIds = c("312342009", # INFECTIVE pneumonia
+                   "40733004")
+  )
+  expect_equal(sort(included$conceptId),
+               c("312342009", "40733004"))
 })
 
 
