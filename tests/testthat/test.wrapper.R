@@ -40,14 +40,34 @@ test_that("concepts_find", {
                c("312342009", "40733004"))
 })
 
-
+test_that("concepts_find (batch)", {
+  concepts <- concepts_find(ecl = "<233604007", limit = 300)
+  concepts_batch <- concepts_find(
+    conceptIds = concepts$conceptId,
+    limit = 300,
+    silent = TRUE
+  )
+  concepts_batch <- concepts_find(
+    conceptIds = concepts$conceptId,
+    limit = 300,
+    silent = FALSE
+  )
+  expect_equal(sort(concepts$conceptId),
+               sort(concepts_batch$conceptId))
+})
 
 # concepts_descendants ----------------------------------------------------
 
 test_that("concepts_descendants", {
 
   infections <- concepts_descendants(conceptIds = c("233604007", "68566005"),
-                                     direct_descendants = TRUE, activeFilter = TRUE)
+                                     direct_descendants = TRUE,
+                                     activeFilter = TRUE,
+                                     silent = TRUE)
+  infections <- concepts_descendants(conceptIds = c("233604007", "68566005"),
+                                     direct_descendants = TRUE,
+                                     activeFilter = TRUE,
+                                     silent = FALSE)
   expect_false("882784691000119100" %in% infections$`233604007`$conceptId)
   expect_false("1469007" %in% infections$`68566005`$conceptId)
   expect_true("422747000" %in% infections$`68566005`$conceptId)
@@ -57,7 +77,6 @@ test_that("concepts_descendants", {
 
   expect_warning(concepts_descendants(conceptIds = "blurgh"))
 })
-
 
 # concepts_descriptions ---------------------------------------------------
 
@@ -72,16 +91,28 @@ test_that("concepts_descriptions", {
   expect_true("Pneumonia" %in% infection_descriptions[["233604007"]]$term)
   expect_true("Urinary tract infectious disease" %in% infection_descriptions[["68566005"]]$term)
   expect_error(concepts_descriptions(""))
-
-  infection_descriptions <- concepts_descriptions(
-    conceptIds = rep(c("68566005", "233604007"), 100)
-  )
-  expect_equal(
-    names(infection_descriptions),
-    c("233604007", "68566005")
-  )
 })
 
+test_that("concepts_descriptions (batch)", {
+
+  concepts <- concepts_find(ecl = "<233604007", limit = 300)
+
+  infection_descriptions <- concepts_descriptions(
+    conceptIds = concepts$conceptId,
+    limit = 500,
+    silent = TRUE
+  )
+  infection_descriptions <- concepts_descriptions(
+    conceptIds = concepts$conceptId,
+    limit = 500,
+    silent = FALSE
+  )
+  expect_equal(
+    sort(names(infection_descriptions)),
+    sort(concepts$conceptId)
+  )
+
+})
 
 # release_version ---------------------------------------------------------
 

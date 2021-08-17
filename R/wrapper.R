@@ -12,8 +12,8 @@
 #' for more detail.
 #' @param activeFilter whether to restrict results to active concepts. Default is `TRUE`.
 #' Consult the \href{http://snomed.org/gl}{SNOMED glossary} for more detail.
-#' @param silent whether to hide warnings. Default is `FALSE`
 #' @param encoding HTTP charset parameter to use (default is \code{"UTF-8"})
+#' @param silent whether to hide progress bar. Default is \code{FALSE}
 #' @param ... other optional arguments listed in \code{\link{api_operations}}, such as
 #' \code{endpoint}, \code{branch} or \code{limit}
 #' @return a data frame
@@ -41,8 +41,8 @@ concepts_find <- function(term = NULL,
                           conceptIds = NULL,
                           ecl = NULL,
                           activeFilter = TRUE,
-                          silent = FALSE,
                           encoding = "UTF-8",
+                          silent = FALSE,
                           ...) {
 
 
@@ -50,22 +50,75 @@ concepts_find <- function(term = NULL,
     stop("At least `term` or `conceptIds` or `ecl` must be provided.")
   }
 
-  x <- api_concepts(
-    term = term,
-    conceptIds = conceptIds,
-    ecl = ecl,
-    activeFilter = activeFilter,
-    ...
-  )
-
-  if(httr::http_error(x)) {
-    return(httr::content(x))
-  } else if(length(httr::content(x)$items) == 0) {
-    return(NULL)
-  } else {
-    ignore <- result_completeness(x)
-    return(result_flatten(x, encoding = encoding))
+  if( !is.null(conceptIds) ) {
+    conceptIds <- sort(unique(conceptIds))
   }
+
+  if( !is.null(conceptIds) && length(unique(conceptIds)) > 100 ) {
+
+    if( !silent ) {
+      progress_bar <- progress::progress_bar$new(
+        format = "  [:bar] :percent :eta",
+        total = (trunc(length(conceptIds)/100) + 1)
+      )
+      progress_bar$tick(0)
+    }
+
+    conceptIds <-  split(conceptIds, sort(trunc(seq_len(length(conceptIds))/100)))
+
+    x <- purrr::map(
+      .x = conceptIds,
+      .f = function(chunk,
+                    term,
+                    ecl,
+                    activeFilter,
+                    encoding,
+                    silent,
+                    ...) {
+        conc <- api_concepts(conceptIds = chunk, ...)
+        if( !silent ) {
+          progress_bar$tick()
+        }
+        if(httr::http_error(conc)) {
+          return(httr::content(conc))
+        } else if(length(httr::content(conc)$items) == 0) {
+          return(NULL)
+        } else {
+          ignore <- result_completeness(conc)
+          return(result_flatten(conc, encoding = encoding))
+        }},
+      term = term,
+      ecl = ecl,
+      activeFilter = activeFilter,
+      encoding = encoding,
+      silent = silent,
+      ...
+    )
+
+    x <- dplyr::bind_rows(x)
+
+    x
+
+  } else {
+    x <- api_concepts(
+      term = term,
+      conceptIds = conceptIds,
+      ecl = ecl,
+      activeFilter = activeFilter,
+      ...
+    )
+
+    if(httr::http_error(x)) {
+      return(httr::content(x))
+    } else if(length(httr::content(x)$items) == 0) {
+      return(NULL)
+    } else {
+      ignore <- result_completeness(x)
+      return(result_flatten(x, encoding = encoding))
+    }
+  }
+
+  x
 }
 
 
@@ -84,6 +137,7 @@ concepts_find <- function(term = NULL,
 #' descendant concepts exclusively. The default is \code{TRUE}. If a single
 #' value is provided, it will be recycled.
 #' @param encoding HTTP charset parameter to use (default is \code{"UTF-8"})
+#' @param silent whether to hide progress bar. Default is \code{FALSE}
 #' @param ... other valid arguments to function \code{\link{api_concepts}},
 #' for instance \code{endpoint}, \code{branch} or \code{limit}.
 #'
@@ -103,27 +157,33 @@ concepts_descendants <- function(conceptIds,
                                  direct_descendants = FALSE,
                                  activeFilter = TRUE,
                                  encoding = "UTF-8",
+                                 silent = FALSE,
                                  ...) {
 
   stopifnot(is.vector(conceptIds))
   stopifnot(all(direct_descendants %in% c(TRUE, FALSE)))
+  conceptIds <- sort(unique(conceptIds))
 
-  progress_bar <- progress::progress_bar$new(
-    format = "  [:bar] :percent :eta",
-    total = length(conceptIds)
-  )
-  progress_bar$tick(0)
+  if ( !silent ) {
+    progress_bar <- progress::progress_bar$new(
+      format = "  [:bar] :percent :eta",
+      total = length(conceptIds)
+    )
+    progress_bar$tick(0)
+  }
 
   ecl = paste0(dplyr::if_else(direct_descendants, "<!", "<"), conceptIds)
 
   x <- purrr::pmap(list(ecl, activeFilter),
-                    function(ecl, activeFilter, ...) {
+                    function(ecl, activeFilter, silent, ...) {
     descendants <- api_concepts(
       ecl = ecl,
       activeFilter = activeFilter,
       ...)
 
-    progress_bar$tick()
+    if ( !silent ) {
+      progress_bar$tick()
+    }
 
     if(httr::http_error(descendants)) {
       return(httr::content(descendants))
@@ -133,7 +193,7 @@ concepts_descendants <- function(conceptIds,
       ignore <- result_completeness(descendants)
       return(result_flatten(descendants, encoding = encoding))
     }
-  }, ...)
+  }, silent = silent, ...)
 
   names(x) <- conceptIds
 
@@ -147,6 +207,7 @@ concepts_descendants <- function(conceptIds,
 #' fetches description of one or several concept identifiers.
 #' @param conceptIds a character vector of concept identifiers
 #' @param encoding HTTP charset parameter to use (default is \code{"UTF-8"})
+#' @param silent whether to hide progress bar. Default is \code{FALSE}
 #' @param ... other optional arguments listed in \code{\link{api_operations}}, such as
 #' \code{endpoint}, \code{branch} or \code{limit}
 #' @return a named list of data frames sorted by \code{conceptIds}
@@ -162,16 +223,19 @@ concepts_descendants <- function(conceptIds,
 #' str(pneumonia_descriptions)
 concepts_descriptions <- function(conceptIds,
                                   encoding = "UTF-8",
+                                  silent = FALSE,
                                   ...) {
 
   stopifnot(is.vector(conceptIds))
   stopifnot(all(conceptIds != ""))
 
-  progress_bar <- progress::progress_bar$new(
-    format = "  [:bar] :percent :eta",
-    total = (trunc(length(conceptIds)/100) + 1)
-  )
-  progress_bar$tick(0)
+  if( !silent ) {
+    progress_bar <- progress::progress_bar$new(
+      format = "  [:bar] :percent :eta",
+      total = (trunc(length(conceptIds)/100) + 1)
+    )
+    progress_bar$tick(0)
+  }
 
   stopifnot(all(conceptIds != ""))
   conceptIds <- sort(unique(conceptIds))
@@ -180,9 +244,11 @@ concepts_descriptions <- function(conceptIds,
 
   x <- purrr::map(
     .x = x,
-    .f = function(chunk, encoding, ...) {
+    .f = function(chunk, encoding, silent, ...) {
       desc <- api_descriptions(conceptIds = chunk, ...)
-      progress_bar$tick()
+      if ( !silent ) {
+        progress_bar$tick()
+      }
 
       if(httr::http_error(desc)) {
         return(httr::content(desc))
@@ -193,6 +259,7 @@ concepts_descriptions <- function(conceptIds,
         return(result_flatten(desc, encoding = encoding))
       }},
     encoding = encoding,
+    silent = silent,
     ...
   )
 

@@ -9,8 +9,8 @@ concepts_find(
   conceptIds = NULL,
   ecl = NULL,
   activeFilter = TRUE,
-  silent = FALSE,
   encoding = "UTF-8",
+  silent = FALSE,
   ...
 )
 }
@@ -27,9 +27,9 @@ for more detail.}
 \item{activeFilter}{whether to restrict results to active concepts. Default is `TRUE`.
 Consult the \href{http://snomed.org/gl}{SNOMED glossary} for more detail.}
 
-\item{silent}{whether to hide warnings. Default is `FALSE`}
-
 \item{encoding}{HTTP charset parameter to use (default is \code{"UTF-8"})}
+
+\item{silent}{whether to hide progress bar. Default is \code{FALSE}}
 
 \item{...}{other optional arguments listed in \code{\link{api_operations}}, such as
 \code{endpoint}, \code{branch} or \code{limit}}
