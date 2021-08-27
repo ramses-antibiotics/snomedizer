@@ -1,6 +1,6 @@
 Package: snomedizer
 Type: Package
-Title: R Interface to the SNOMED-CT Terminology Server REST API
+Title: R Interface to the SNOMED CT Terminology Server REST API
 Version: 0.1.0
 Authors@R: c(
     person(given = "Peter",

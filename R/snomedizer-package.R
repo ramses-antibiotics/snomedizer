@@ -7,7 +7,7 @@
 #' SNOMED CT terminology server hosted by IHSTO to anyone for reference purpose, uses for data
 #' analysis or health care production systems is subject to other licences.
 #'
-#' SNOMED International allows access to public SNOMED-CT terminology servers to anyone
+#' SNOMED International allows access to public SNOMED CT terminology servers to anyone
 #' for strict 'reference purposes' under the \href{https://browser.ihtsdotools.org/}{SNOMED
 #' International SNOMED CT Browser License Agreement} (see section below).
 #'

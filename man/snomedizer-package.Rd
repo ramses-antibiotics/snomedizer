@@ -4,7 +4,7 @@
 \name{snomedizer-package}
 \alias{snomedizer}
 \alias{snomedizer-package}
-\title{snomedizer: R Interface to the SNOMED-CT Terminology Server REST API}
+\title{snomedizer: R Interface to the SNOMED CT Terminology Server REST API}
 \description{
 \if{html}{\figure{logo.png}{options: align='right' alt='logo' width='120'}}
 
@@ -19,7 +19,7 @@ based in, and the purpose of your work. Although SNOMED International allows acc
 SNOMED CT terminology server hosted by IHSTO to anyone for reference purpose, uses for data
 analysis or health care production systems is subject to other licences.
 
-SNOMED International allows access to public SNOMED-CT terminology servers to anyone
+SNOMED International allows access to public SNOMED CT terminology servers to anyone
 for strict 'reference purposes' under the \href{https://browser.ihtsdotools.org/}{SNOMED
 International SNOMED CT Browser License Agreement} (see section below).
 
