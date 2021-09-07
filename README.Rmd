@@ -100,6 +100,14 @@ Use of SNOMED CT terminology for data analysis or health care production systems
 - UK-based users can obtain a licence free of charge on the [NHS TRUD website](https://isd.digital.nhs.uk/trud3).
 - residents of other Member Countries and low-income countries are also eligible. More information can be found on the [SNOMED International website](https://www.snomed.org/snomed-ct/get-snomed).
 
+### Licence
+
+Copyright © 2020 University College London
+
+This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
 
 ## Funders
 
