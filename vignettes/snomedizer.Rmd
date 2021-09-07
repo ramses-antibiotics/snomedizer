@@ -1,0 +1,304 @@
+---
+title: "snomedizer: R Interface to the SNOMED CT Terminology Server REST API"
+date: '`r format(Sys.Date(), "%d %B %Y")`'
+output: 
+  rmarkdown::html_vignette:
+    toc: true
+    always_allow_html: yes
+    df_print: tibble
+vignette: >
+  %\VignetteIndexEntry{snomedizer: R Interface to the SNOMED CT Terminology Server REST API}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+library(snomedizer)
+```
+
+# Overview
+
+## What is SNOMED CT?
+
+SNOMED CT is an international ontology of clinical terms. You can think of it as an encyclopedia on all things that are talked about in medicine, for instance: anatomical structures, diagnoses, medications, tests,  surgical procedures, pathogens such as SARS-CoV-2 or *Candidida auris*, or even clinical findings, such as a high temperature.
+
+SNOMED CT is used mainly in the UK:
+
+* to record information about patient care in general practice and hospitals
+* to analyse electronic health records, in particular medical notes.
+
+Increasingly, other countries are contributing towards and using SNOMED CT.
+
+The best ways to learn more about SNOMED CT are:
+
+* the [SNOMED International Browser](https://browser.ihtsdotools.org/)
+* the [SNOMED CT for Data Analysts](https://elearning.ihtsdotools.org/enrol/index.php?id=26) free online learning course
+* the official [SNOMED CT Starter Guide](http://snomed.org/sg), particularly chapters [5. Logical Model](http://snomed.org/sg/5.+SNOMED+CT+Logical+Model) and [6. Concept Model](http://snomed.org/sg/6.+SNOMED+CT+Concept+Model)..
+
+## What is snomedizer?
+
+`snomedizer` is an R package to query and manipulate the SNOMED CT terminology.
+
+It allows you to perform the same operations you would on the [SNOMED International Browser](https://browser.ihtsdotools.org/).
+
+`snomedizer` is based on [Snowstorm](https://github.com/IHTSDO/snowstorm/), the official SNOMED CT Terminology Server. Snowstorm is the back-end terminology service for both the [SNOMED International Browser](https://browser.ihtsdotools.org/) and the SNOMED International Authoring Platform.
+
+# Introduction to SNOMED CT
+
+SNOMED CT contains rich knowledge about medical concepts.
+
+Try for yourself with the quick exercise below:
+
+1. Go to the [SNOMED CT International Browser](https://browser.ihtsdotools.org/) 
+2. In the 'Search' tab, type in `40600002` 
+3. Click on 'Pneumococcal bronchitis' in the result list
+4. In the right panel ('Concept Details'), click the 'Details' tab
+5. Look for the relationships: the ontology defines that this concept is a bronchitis, and that the pathological process is infectious (non-infective bronchites exist). It also specifies that the pathogen is *Streptococcus pneumoniae*
+6. Now click on the 'Diagram' tab. The same information is displayed graphically. Purple boxes refer to `116680003 | Is a (attribute) |` relationships, while yellow boxes notate other attributes of the concept.
+7. In the 'Refsets' tab, you will see that this concept is mapped to ICD-10 code J20.2.
+8. Bonus: Search for `9861002` and inspect the various tabs. As you can see, SNOMED CT knows that *Streptococcus pneumoniae* is the scientific name of pneumonoccus, and that it is a gram-positive baterium of genus *Streptococcus*.
+
+<div class="figure"><img src="40600002_diagram.svg" style="width:100.0%" alt="Concept diagram: raw (unprocessed) electronic prescribing records"></div>
+
+# How to perform advanced queries (ECL)
+
+SNOMED CT has a query language named ['ECL' (Expression Constraint Language)](http://snomed.org/ecl). ECL enables users to perform logical queries and learn new facts from any SNOMED CT concept.
+
+ECL relies on logical operators listed in this [ECL quick reference table](https://confluence.ihtsdotools.org/display/DOCECL/Appendix+D+-+ECL+Quick+reference).
+
+You can submit ECL queries in snomedizer using the `concepts_find()` function:
+
+```{r setup_snomedizer }
+# Connect to the SNOMED International endpoint 
+# (see licence conditions in `vignette("snomedizer")`).
+snomedizer_options_set(
+  endpoint = "https://snowstorm.ihtsdotools.org/snowstorm/snomed-ct", 
+  branch = "MAIN/2021-07-31"
+)
+
+## fetch all pneumonia concepts
+pneumo_concepts <- concepts_find(ecl = "<<233604007 | Pneumonia (disorder) |")
+glimpse(pneumo_concepts)
+```
+
+
+<div class="bd-callout bd-callout-info">
+<h4>Trying ECL in the web browser</h4>
+<p>You do not need R or snomedizer to query SNOMED CT as demonstrated in this section.</p>
+<p>You can instead use your web browser:</p>
+<ul>
+<li>Navigate to the [SNOMED International Browser](https://browser.ihtsdotools.org/)</li>
+<li>Accept the licence conditions</li>
+<li>Click on the 'Expression Constraint Queries' tab in the right panel</li>
+<li>Paste ECL queries from this vignette into the 'Expression...' box as shown below</li>
+<li>Press 'Execute'.</li>
+</ul>
+<div class="figure"><img src="browser_ECL_box.png" style="width:60%" alt="SNOMED International Browser ECL interface"></div>
+</p>
+</div>
+
+
+# Examples
+
+## 1. Search for relevant urine specimens
+
+Urine tests are very common in hospitals, for instance to perform microbial cultures. Let's assume we access a laboratory database in which all bacterial cultures are stored with SNOMED CT codes for the specimen type.
+
+There are many types of urine samples, eg: samples of morning urine, mid-stream urine, etc. Some are not optimal samples: for example, urine catheter samples are often contaminated and may give poor information. Let's try and
+
+* fetch all the codes corresponding to urine specimens: they are descendants of `122575003 | Urine specimen (specimen) |`
+* while excluding the ones from urinary catheters (`122565001 | Urinary catheter specimen (specimen) |`).
+
+First, we need to query descendant concepts. This can be done using `concepts_descendants()`. But we can also use the `<<` operator (known as `descendantOrSelfOf`) using ECL. All the expressions below are equivalent.
+
+```{r demo_urine_1}
+urine_specimens <- concepts_descendants(conceptIds = "122575003")
+urine_specimens <- concepts_find(ecl = "<<122575003")
+urine_specimens <- concepts_find(ecl = "<<122575003 | Urine specimen (specimen) |")
+glimpse(urine_specimens[, c("conceptId", "pt.term")])
+```
+
+We obtain 40 concepts. But these include some samples obtained from catheters:
+
+```{r demo_urine_2}
+urine_specimens %>% 
+  filter(grepl("catheter", pt.term)) %>% 
+  select(pt.term)
+```
+
+To exclude those, we make use of the `MINUS` operator in ECL:
+
+```{r demo_urine_3}
+urine_specimens <- concepts_find(
+  ecl = "
+  <<122575003 | Urine specimen (specimen) | MINUS 
+     ( <<122565001 | Urinary catheter specimen (specimen) |  OR
+       <<447589008 | Urine specimen obtained by single catheterization of bladder (specimen) | )
+  ")
+glimpse(urine_specimens[, c("conceptId", "pt.term")])
+```
+
+This now gives us the set of 34 target concepts.
+
+*Note:* For guidance on ECL operators such as `MINUS` or `OR`, see the [ECL quick reference table](https://confluence.ihtsdotools.org/display/DOCECL/Appendix+D+-+ECL+Quick+reference).
+
+
+## 2. Find the dose of a medical product
+
+Let's assume you have electronic prescription records referenced to SNOMED CT medical products. We come across a prescription for SNOMED CT code `374646004`, which references Amoxicillin 500 mg oral tablets, and want to extract the antibiotic type, dose and unit.
+
+*Note:* medical product definitions vary considerably across SNOMED CT editions. In this example, we will use the United States Edition.
+
+We want to extract *attributes*, which are SNOMED CT relationships giving characteristics of a concept. Attributes can be queries using the `.` (dot) operator.
+
+First, let's look at the antibiotic, which is expressed by attribute `762949000 | Has precise active ingredient (attribute) |`.
+
+```{r find_amox_drug}
+concepts_find(ecl="374646004.(<<762705008 | Concept model object attribute (attribute) |) ", 
+              branch="MAIN/SNOMEDCT-US") %>% 
+  select(conceptId, fsn.term)
+```
+
+We could query other attributes sequentially (or chain them with `OR` operators in a single ECL expression). But here, the simplest way is to extract all attributes. We do this by remembering that attributes are merely SNOMED CT concepts descending from `762705008 | Concept model object attribute (attribute) |`.
+
+```{r find_amox_attributes}
+drug_attributes <- concepts_find(
+  ecl="374646004.(<<762705008 | Concept model object attribute (attribute) |) ", 
+  branch="MAIN/SNOMEDCT-US/2021-03-01")
+drug_attributes$fsn.term
+```
+
+However, this approach only provides the value of the attribute, not the attribute name.
+
+A more complex, but effective approach involves a special REST endpoint in Snowstorm: [`GET /{branch}/relationships`](https://snowstorm.ihtsdotools.org/snowstorm/snomed-ct/swagger-ui.html#!/Relationships/findRelationshipsUsingGET). We can issue a request to this endpoint directly using the low-level function `api_relationships()`. Like all low-level `api_operations`, it is necessary to (1) explicitly request only active concepts, and (2) flatten the output into a data frame. We shall also exclude `116680003 | Is a |` attributes (which express inheritance from parent concepts) as they are not relevant in this instance.
+
+```{r}
+drug_attributes <- api_relationships(
+  source = "374646004", 
+  active = TRUE, 
+  branch="MAIN/SNOMEDCT-US/2021-03-01"
+) %>% 
+  snomedizer::result_flatten()
+
+drug_attributes %>% 
+  filter(type.pt.term != "Is a") %>% 
+  select(type.fsn.term, target.pt.term) %>% 
+  arrange(type.fsn.term)
+  
+```
+
+## 3. Find all diseases caused by a type of bacterium
+
+Let's extract all infections that can be caused by bacteria belonging to `106544002 | Family Enterobacteriaceae (organism) |`.
+
+To do this, we use the refine `:` operator. 
+
+```{r find_enterobac_infections, paged.print=FALSE}
+enterobac_infections <- concepts_find(
+  ecl="<<40733004 | Infectious disease (disorder) | :  
+             246075003 |Causative agent|  =  <<106544002",
+  limit = 5000
+)
+
+enterobac_infections %>% 
+  select(conceptId, pt.term)
+``` 
+
+*Bonus exercise:* Now, extract all body structures that can be infected by the family *Enterobacteriaceae*. Tip: you will need the reversed refine operator `: R`.
+
+<!-- <<123037004 | Body structure (body structure) |  : R  363698007 |Finding site|  =
+(<<40733004 | Infectious disease (disorder) | :  
+             246075003 |Causative agent|  =  <<106544002)
+-->
+
+## 4. Find synonyms of a concept
+
+Some concepts may have many different names.
+
+Let's extract synonyms of 'candidiasis':
+
+```{r syn_78048006}
+concepts_descriptions(conceptIds = "78048006") %>% 
+  .[["78048006"]] %>% 
+  filter(type == "SYNONYM") %>% 
+  select(term)
+```
+
+Condition `type == "SYNONYM"` is there to remove the redundant fully specified name 'Candidiasis (disorder)'.
+
+We can also search for those terms in, say, Spanish, by querying the branch containing the Spanish Edition.
+
+```{r syn_78048006_fr}
+concepts_descriptions(conceptIds = "78048006", branch = "MAIN/SNOMEDCT-ES/2021-04-30") %>% 
+  .[["78048006"]] %>% 
+  filter(type == "SYNONYM" & lang == "es") %>% 
+  select(term)
+```
+
+
+
+```{css, echo=FALSE }
+
+body {
+  font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+  line-height: 1.4em;
+  font-size: 16px
+}
+
+.bd-callout {
+  padding: 1.5em;
+  margin-top: 2em;
+  margin-bottom: 2em;
+  border: 1px solid #eee;
+  border-left-width: .25rem;
+  border-radius: .25rem;
+}
+
+.bd-callout h4, h3 {
+  padding-top: 0;
+  margin-top: 0;
+  margin-bottom: .25rem;
+}
+ 
+.bd-callout p:last-child {
+  margin-bottom: 0;
+}
+
+.bd-callout code {
+  border-radius: .25rem;
+}
+
+.bd-callout + .bd-callout {
+  margin-top: -.25rem;
+}
+
+.bd-callout-info {
+  border-left-color: #5bc0de;
+}
+
+.bd-callout-warning {
+  border-left-color: #f0ad4e;
+}
+
+
+.bd-callout-danger {
+  border-left-color: #d9534f;
+}
+
+.bd-examples .img-thumbnail {
+  margin-bottom: .75rem;
+}
+
+.bd-examples h4 {
+  margin-bottom: .25rem;
+}
+
+.bd-examples p {
+  margin-bottom: 1.25rem;
+}
+```
+
