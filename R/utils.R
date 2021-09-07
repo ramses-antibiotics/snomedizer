@@ -4,28 +4,28 @@
 #' @description Functions to get and set \code{snomedizer} default endpoint and other options
 #' @param option.name the name of an option to return. If NULL (the default),
 #' \code{snomedizer_options_get()} returns a list of all options.
-#' @param endpoint URL of a SNOMED CT Terminology Server REST API endpoint.
-#' When the package is loaded, this option is set to the current environment variable
-#' \code{SNOMEDIZER_ENDPOINT} if it exists, or to
-#' \code{\link{snomed_public_endpoint_suggest}()} otherwise.
-#' @param branch string for the branch to use on the SNOMED CT Terminology Server REST API
-#' endpoint. Set to `"MAIN"` by default when the package is loaded.
-#' @param limit integer for the maximum number of results to return. Set to 50 by default
-#' when the package is loaded.
-#' @details  The SNOMED REST API requires several parameters which are
-#' set to default values when this package is launched:
-#' \itemize{
-#'    \item{endpoint} this is the address of the SNOWSTORM terminology server
-#'    to be used. When \code{snomedizer} is loaded, it is set to the current
-#'    environment variable \code{SNOMEDIZER_ENDPOINT}. If no such
-#'     the SNOMED CT version maintained by the official
-#'         SNOWSTORM server.
-#'    \item{branch} a branch name. If no branch name is provided and that none
-#'    has previously been set, a default "MAIN" will be used, pointing to the most
-#'         up-to-date edition of SNOMED CT International Edition.
-#'    \item{limit} an integer stating the the maximum number of results fetched.
-#'    This is set to 50 by default.
+#' @param endpoint address of a SNOMED CT Terminology Server REST API endpoint
+#' @param branch string for the branch name to use on endpoint, for instance
+#' \code{"MAIN"} for the root branch (usually the latest release of
+#' SNOMED CT's International Edition), or \code{"MAIN/2017-07-31"} for a past release.
+#' To obtain a list of all branches available on the current endpoint,
+#' see \code{\link{api_branch}()}
+#' @param limit integer for the maximum number of results to return.
+#' @section Default settings and environment variables:
+#'
+#' When loaded, the snomedizer package will look up for settings provided
+#' to the following environment variables:
+#' \describe{
+#'    \item{\code{SNOMEDIZER_ENDPOINT}}{for the \code{endpoint}. If this variable
+#'    is not specified, snomedizer uses
+#'    \code{\link{snomed_public_endpoint_suggest}()} to pick a public endpoint.}
+#'    \item{\code{SNOMEDIZER_BRANCH}}{for the \code{branch}. If this variable is
+#'    not specified, snomedizer chooses branch \code{"MAIN"} by default.}
+#'    \item{\code{SNOMEDIZER_LIMIT}}{for the \code{limit}. If this variable is
+#'    not specified, snomedizer sets the limit to 50 by default.
+#'    The maximum is 10,000.}
 #' }
+#'
 #' @family utilities
 #' @return The factory setting of the target API parameter.
 #' @seealso To learn how to set environment variables in `.Rprofile` or `.Renviron`, see
@@ -329,14 +329,11 @@ result_completeness <- function(x, silent = FALSE) {
 
 
 .validate_limit <- function(limit) {
-  if(is.null(limit)) {
-    stop("`limit` must not be NULL")
+  if(is.null(limit) | is.na(limit)) {
+    stop("`limit` must not be NULL or missing")
   }
   if(length(limit) != 1) {
     stop("`limit` must have length == 1")
-  }
-  if(is.na(limit)) {
-    stop("`limit` must not be missing")
   }
   if(!is.numeric(limit) || limit < 0 ||
      # check is whole number
@@ -344,16 +341,34 @@ result_completeness <- function(x, silent = FALSE) {
     stop("`limit` must be a strictly positive integer")
   }
   if(limit > 10000){
-    warning("Please not the maximum limit on public endpoints is 10,000.")
+    # This is controlled by Java class
+    # org.snomed.snowstorm.rest.ControllerHelper
+    # https://github.com/IHTSDO/snowstorm/blob/master/src/main/java/org/snomed/snowstorm/rest/ControllerHelper.java#L183
+    warning("Please note the maximum limit on public endpoints is 10,000.")
   }
 
   as.integer(limit)
 }
 
 .validate_branch <- function(branch) {
+
+  # See snowstorm documentation
+  # https://github.com/IHTSDO/snowstorm/blob/master/docs/branching-and-merging.md
+
+  # Branch names are controlled by Java class
+  # io.kaicode.elasticvc.api.BranchService
+  # https://github.com/kaicode/elasticvc/blob/master/src/main/java/io/kaicode/elasticvc/api/BranchService.java#L75
+  # They are hierarchical.
+  # The root branch is "MAIN"
+  # Derived SNOMED CT Editions branch off, eg "MAIN/SNOMEDCT-UK"
+  # Past releases branch off too, eg "MAIN/2017-07-31" and "MAIN/SNOMEDCT-UK/2017-07-31"
+
   stopifnot(length(branch) == 1)
   stopifnot(!is.na(branch))
   stopifnot(is.character(branch))
   stopifnot(branch != "")
+  if ( !grepl("^MAIN", branch) ) {
+    stop("snowstorm branches must begin with `MAIN`")
+  }
   utils::URLencode(URL = branch, reserved = TRUE)
 }
