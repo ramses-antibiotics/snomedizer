@@ -2,7 +2,8 @@
 #' Set SNOMED CT endpoint and other \code{snomedizer} options
 #'
 #' @description Functions to get and set \code{snomedizer} default endpoint and other options
-#' @param option.name the name of an option to return. If NULL (the default),
+#' @param option.name name of a single option to return: \code{"endpoint"},
+#' \code{"branch"}, or \code{"limit"}. If \code{NULL} (the default),
 #' \code{snomedizer_options_get()} returns a list of all options.
 #' @param endpoint address of a SNOMED CT Terminology Server REST API endpoint
 #' @param branch string for the branch name to use on endpoint, for instance
@@ -38,17 +39,26 @@ NULL
 #' @rdname snomedizer_options
 #' @export
 snomedizer_options_get <- function(option.name = NULL){
+
+  if ( !is.null(option.name) &&
+       option.name != "endpoint" &&
+       option.name != "branch" &&
+       option.name != "limit" ) {
+    stop("`option.name` must be of length 1 and equal to \"endpoint\", \"branch\" or \"limit\"")
+  }
+
   default_options <- list(
     endpoint = getOption("snomedizer.endpoint"),
     branch = getOption("snomedizer.branch"),
     limit = getOption("snomedizer.limit")
   )
+
   if ( any(is.null(default_options)) ) {
     print(default_options)
-    warning("Invalid snomedizer default options. See `snomedizer_options_set()`")
+    warning("Invalid snomedizer default options. See `?snomedizer_options_set`")
   }
 
-  if (length(option.name) == 1) {
+  if ( !is.null(option.name) ) {
     return(
       default_options[[
         grep(option.name, names(default_options))
@@ -349,7 +359,7 @@ result_completeness <- function(x, silent = FALSE) {
 
 
 .validate_limit <- function(limit) {
-  if(is.null(limit) | is.na(limit)) {
+  if(is.null(limit) || is.na(limit)) {
     stop("`limit` must not be NULL or missing")
   }
   if(length(limit) != 1) {

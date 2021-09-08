@@ -11,7 +11,8 @@ snomedizer_options_get(option.name = NULL)
 snomedizer_options_set(endpoint = NULL, branch = NULL, limit = NULL)
 }
 \arguments{
-\item{option.name}{the name of an option to return. If NULL (the default),
+\item{option.name}{name of a single option to return: \code{"endpoint"},
+\code{"branch"}, or \code{"limit"}. If \code{NULL} (the default),
 \code{snomedizer_options_get()} returns a list of all options.}
 
 \item{endpoint}{address of a SNOMED CT Terminology Server REST API endpoint}
