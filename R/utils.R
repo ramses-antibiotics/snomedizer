@@ -124,12 +124,11 @@ snomedizer_options_set <- function(endpoint = NULL,
 #' @family utilities
 #' @export
 snomed_public_endpoint_suggest <- function() {
-  snomed_public_endpoints <- gsub("/*$", "", list(
-    "https://snowstorm.ihtsdotools.org/snowstorm/snomed-ct/",
-    "https://browser.ihtsdotools.org/snowstorm/snomed-ct/",
-    "https://snowstorm.test-nictiz.nl/",
-    "https://snowstorm.msal.gov.ar/"
-  ))
+
+  snomed_public_endpoints <- gsub(
+    "/*$", "",
+    snomed_public_endpoint_list()
+  )
 
   for(i in seq_along(snomed_public_endpoints)) {
     endpoint_answers <- try(httr::http_error(snomed_public_endpoints[[i]]))
@@ -148,6 +147,27 @@ snomed_public_endpoint_suggest <- function() {
   }
 }
 
+
+#' List of public SNOMED CT endpoints
+#'
+#' @description List a range of know public SNOMED CT Terminology Server
+#' REST API endpoint. To select a currently active endpoint, see
+#' \code{\link{snomed_public_endpoint_suggest}()}
+#' @return a vector of URLs
+#' @family utilities
+#' @export
+snomed_public_endpoint_list <- function() {
+
+  as.list(
+    readLines(
+      system.file(
+        package = "snomedizer",
+        "public_snomed_endpoints"
+      )
+    )
+  )
+
+}
 
 #' Test a SNOMED CT endpoint
 #'

@@ -27,6 +27,7 @@ and parameters.
 Other utilities: 
 \code{\link{result_completeness}()},
 \code{\link{result_flatten}()},
+\code{\link{snomed_public_endpoint_list}()},
 \code{\link{snomed_public_endpoint_suggest}()},
 \code{\link{snomedizer_options}}
 }
