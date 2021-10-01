@@ -192,7 +192,8 @@ api_code_system(
 api_code_system_all_versions(
   endpoint = snomedizer_options_get("endpoint"),
   shortName,
-  showFutureVersions = NULL,
+  showFutureVersions = FALSE,
+  showInternalReleases = FALSE,
   catch404 = TRUE
 )
 }
@@ -337,8 +338,12 @@ to fetch code systems results. The default (\code{NULL}) will return all code sy
 \code{"SNOMEDCT-UK"})}
 
 \item{showFutureVersions}{a boolean indicating whether to include all code
-systems (\code{NULL}, the default), only future code systems (\code{TRUE}),
-or no future code systems (\code{FALSE})}
+systems (\code{NULL}), only future code systems (\code{TRUE}),
+or no future code systems (\code{FALSE}, the default)}
+
+\item{showInternalReleases}{a boolean indicating whether to include all
+terminology releases (\code{NULL}), only internal releases (\code{TRUE}), or
+only external releases (\code{FALSE}, the default)}
 }
 \value{
 An \code{httr} \code{\link[httr]{response}()} object.

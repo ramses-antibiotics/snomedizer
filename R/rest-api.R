@@ -94,8 +94,11 @@
 #' @param shortName character name of a code system (eg \code{"SNOMEDCT"},
 #' \code{"SNOMEDCT-UK"})
 #' @param showFutureVersions a boolean indicating whether to include all code
-#' systems (\code{NULL}, the default), only future code systems (\code{TRUE}),
-#' or no future code systems (\code{FALSE})
+#' systems (\code{NULL}), only future code systems (\code{TRUE}),
+#' or no future code systems (\code{FALSE}, the default)
+#' @param showInternalReleases a boolean indicating whether to include all
+#' terminology releases (\code{NULL}), only internal releases (\code{TRUE}), or
+#' only external releases (\code{FALSE}, the default)
 #' @param source a character vector of concepts to be included as
 #' sources defined by the relationship
 #' @param stated a boolean indicating whether to limit search to descendants
@@ -817,7 +820,8 @@ api_code_system <- function(endpoint = snomedizer_options_get("endpoint"),
 #' @export
 api_code_system_all_versions <- function(endpoint = snomedizer_options_get("endpoint"),
                                          shortName,
-                                         showFutureVersions = NULL,
+                                         showFutureVersions = FALSE,
+                                         showInternalReleases = FALSE,
                                          catch404 = TRUE) {
   stopifnot(length(shortName) == 1)
   stopifnot(is.character(shortName))
@@ -825,6 +829,11 @@ api_code_system_all_versions <- function(endpoint = snomedizer_options_get("endp
   if( !is.null(showFutureVersions) ) {
     stopifnot(length(showFutureVersions)==1)
     stopifnot(is.logical(showFutureVersions))
+  }
+
+  if( !is.null(showInternalReleases) ) {
+    stopifnot(length(showInternalReleases)==1)
+    stopifnot(is.logical(showInternalReleases))
   }
 
   rest_url <- httr::parse_url(endpoint)
