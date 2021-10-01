@@ -80,6 +80,14 @@
 #' @param preferredOrAcceptableIn character vector of description language reference sets
 #' (example: \code{"900000000000509007"}).
 #' The description must be preferred OR acceptable in at least one of these to match.
+#' @param referenceSet a string for a reference set identifier or ECL expression
+#' can be used to limit the reference sets searched. Example: \code{"<723564002"}
+#' @param referenceSetModule a string identifier for a SNOMED CT module containing
+#' the reference sets to include. An ECL expression can be used to limit
+#' the modules searched, for example: \code{"<900000000000445007"}
+#' @param referencedComponentId a character vector of identifiers of
+#' SNOMED CT components to be included. For Map Reference Sets, this refers
+#' to the SNOMED CT concept that is mapped to the other terminology or code system
 #' @param relationshipId string of a relationship concept
 #' @param searchMode a character string for the search mode. Must be either
 #' \code{"STANDARD"} (default) or \code{"REGEX"}.
@@ -855,3 +863,53 @@ api_code_system_all_versions <- function(endpoint = snomedizer_options_get("endp
 }
 
 
+#' @rdname api_operations
+#' @export
+api_browser_members <- function(
+  referenceSet = NULL,
+  referenceSetModule = NULL,
+  referencedComponentId = NULL,
+  active = NULL,
+  offset = NULL,
+  endpoint = snomedizer_options_get("endpoint"),
+  branch = snomedizer_options_get("branch"),
+  limit = snomedizer_options_get("limit"),
+  catch404 = TRUE
+) {
+
+  # get /browser/{branch}/members
+  # RF2 reference set descriptor data structure
+  # https://confluence.ihtsdotools.org/display/DOCRELFMT/5.2.11+Reference+Set+Descriptor
+
+
+  stopifnot(length(referenceSet) == 1 | is.null(referenceSet))
+  stopifnot(length(referenceSetModule) == 1 | is.null(referenceSetModule))
+  stopifnot(is.null(offset) | length(offset) == 1)
+  referencedComponentId <- .concatenate_array_parameter(referencedComponentId)
+  limit <- .validate_limit(limit)
+
+  rest_url <- httr::parse_url(endpoint)
+  rest_url$path <- c(rest_url$path[rest_url$path != ""],
+                     "browser",
+                     branch,
+                     "members")
+  rest_url$query <- list(
+
+    referenceSet = referenceSet,
+    module = referenceSetModule,
+    referencedComponentId = referencedComponentId,
+    active = active,
+    offset = offset,
+    limit = limit
+  )
+  .check_rest_query_length1(rest_url)
+
+  rest_url <- httr::build_url(rest_url)
+  rest_result <- GET(rest_url)
+
+  if(catch404){
+    .catch_http_error(rest_result)
+  }
+
+  rest_result
+}

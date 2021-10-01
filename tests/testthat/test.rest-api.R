@@ -300,3 +300,42 @@ test_that("api_code_system_all_versions", {
     "SNOMEDCT" %in% result_flatten(api_code_system_all_versions(shortName = "SNOMEDCT"))$shortName
   )
 })
+
+
+# api_browser_members ----------------------------------------------------
+
+test_that("api_browser_members includes ICD10 map", {
+  refsets <- httr::content(api_browser_members())
+  refsets <- dplyr::bind_rows(lapply(refsets$referenceSets, as.data.frame))
+  expect_true("447562003" %in% refsets$id)
+})
+
+test_that("api_browser_members filtering by RefSet member", {
+  refsets <- httr::content(api_browser_members(referencedComponentId = "49436004"))
+  refsets <- dplyr::bind_rows(lapply(refsets$referenceSets, as.data.frame))
+  expect_true("447562003" %in% refsets$id)
+})
+
+test_that("api_browser_members filtering by RefSet member and module", {
+  refsets <- httr::content(api_browser_members(
+    referencedComponentId = "49436004",
+    referenceSetModule = "<900000000000445007"
+    ))
+  refsets <- dplyr::bind_rows(lapply(refsets$referenceSets, as.data.frame))
+  expect_true("447562003" %in% refsets$id)
+
+  refsets <- httr::content(api_browser_members(
+    referencedComponentId = "49436004",
+    referenceSetModule = "900000000000445007"
+  ))
+  expect_length(refsets$referenceSets, 0)
+})
+
+test_that("api_browser_members filtering by RefSet member and RefSet", {
+  refsets <- httr::content(api_browser_members(
+    referencedComponentId = "49436004",
+    referenceSet = "447562003"
+  ))
+  refsets <- dplyr::bind_rows(lapply(refsets$referenceSets, as.data.frame))
+  expect_equal(refsets$id, "447562003")
+})

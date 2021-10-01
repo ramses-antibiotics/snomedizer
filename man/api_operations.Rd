@@ -22,6 +22,7 @@
 \alias{api_all_code_systems}
 \alias{api_code_system}
 \alias{api_code_system_all_versions}
+\alias{api_browser_members}
 \title{SNOMED CT Terminology Server REST API operations}
 \usage{
 api_concept(
@@ -196,6 +197,18 @@ api_code_system_all_versions(
   showInternalReleases = FALSE,
   catch404 = TRUE
 )
+
+api_browser_members(
+  referenceSet = NULL,
+  referenceSetModule = NULL,
+  referencedComponentId = NULL,
+  active = NULL,
+  offset = NULL,
+  endpoint = snomedizer_options_get("endpoint"),
+  branch = snomedizer_options_get("branch"),
+  limit = snomedizer_options_get("limit"),
+  catch404 = TRUE
+)
 }
 \arguments{
 \item{conceptId}{character string of a SNOMED CT concept id (for example:
@@ -344,6 +357,17 @@ or no future code systems (\code{FALSE}, the default)}
 \item{showInternalReleases}{a boolean indicating whether to include all
 terminology releases (\code{NULL}), only internal releases (\code{TRUE}), or
 only external releases (\code{FALSE}, the default)}
+
+\item{referenceSet}{a string for a reference set identifier or ECL expression
+can be used to limit the reference sets searched. Example: \code{"<723564002"}}
+
+\item{referenceSetModule}{a string identifier for a SNOMED CT module containing
+the reference sets to include. An ECL expression can be used to limit
+the modules searched, for example: \code{"<900000000000445007"}}
+
+\item{referencedComponentId}{a character vector of identifiers of
+SNOMED CT components to be included. For Map Reference Sets, this refers
+to the SNOMED CT concept that is mapped to the other terminology or code system}
 }
 \value{
 An \code{httr} \code{\link[httr]{response}()} object.
