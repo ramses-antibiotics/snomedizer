@@ -270,6 +270,129 @@ concepts_descriptions <- function(conceptIds,
 }
 
 
+#' Map SNOMED CT concepts to other terminology or code systems
+#'
+#' @description A wrapper function for the \code{\link{api_members}()} function.
+#' @param concept_ids an optional character vector of one or more SNOMED CT concept
+#' identifiers to be mapped
+#' @param target_code an optional character code designated the concept code in
+#' the other terminology or code system
+#' @param map_refset_id character identifier of a SNOMED CT Map Reference Set.
+#' The default is \code{"447562003"}
+#' @param active whether to restrict results to active concepts. Default is \code{TRUE}.
+#' @param encoding HTTP charset parameter to use (default is \code{"UTF-8"})
+#' @param silent whether to hide progress bar. Default is \code{FALSE}
+#' @param ... other optional arguments listed in \code{\link{api_operations}}, such as
+#' \code{endpoint}, \code{branch} or \code{limit}
+#'
+#' @return a data frame of SNOMED CT concepts mapped to another code system
+#' @export
+#'
+#' @examples
+#' # find SNOMED CT codes corresponding to urinary tract infections N39.0
+#' uti_concepts <- concepts_map(target_code = "N39.0")
+#' dplyr::select(uti_concepts,
+#'               referencedComponentId,
+#'               referencedComponent.pt.term,
+#'               additionalFields.mapTarget,
+#'               additionalFields.mapAdvice)
+#'
+#' # map SNOMED CT codes to ICD=10 codes
+#' map_icd10 <- concepts_map(concept_ids = c("431308006", "312124009", "53084003"))
+#' dplyr::select(map_icd10,
+#'               referencedComponentId,
+#'               referencedComponent.pt.term,
+#'               additionalFields.mapTarget,
+#'               additionalFields.mapAdvice)
+concepts_map <- function(concept_ids = NULL,
+                         target_code = NULL,
+                         map_refset_id = "447562003",
+                         active = TRUE,
+                         encoding = "UTF-8",
+                         silent = FALSE,
+                         ...) {
+
+  if( !is.null(concept_ids) ) {
+    concept_ids <- sort(unique(concept_ids))
+  }
+
+  if( !is.null(concept_ids) && length(unique(concept_ids)) > 100 ) {
+
+    if( !silent ) {
+      progress_bar <- progress::progress_bar$new(
+        format = "  [:bar] :percent :eta",
+        total = (trunc(length(concept_ids)/100) + 1)
+      )
+      progress_bar$tick(0)
+    }
+
+    concept_ids <- split(concept_ids, sort(trunc(seq_len(length(concept_ids))/100)))
+
+    x <- purrr::map(
+      .x = concept_ids,
+      .f = function(chunk,
+                    referenceSet,
+                    active,
+                    mapTarget,
+                    encoding,
+                    silent,
+                    ...) {
+        conc <- api_members(referencedComponentId = chunk,
+                            referenceSet = referenceSet,
+                            active = active,
+                            mapTarget = mapTarget,
+                            ...)
+        if( !silent ) {
+          progress_bar$tick()
+        }
+        if(httr::http_error(conc)) {
+          return(httr::content(conc))
+        } else if(length(httr::content(conc)$items) == 0) {
+          return(NULL)
+        } else {
+          ignore <- result_completeness(conc)
+          concepts <- httr::content(conc, encoding = encoding)
+          concepts <- lapply(concepts[["items"]], as.data.frame)
+          concepts <- dplyr::bind_rows(concepts)
+          return(concepts)
+        }},
+      referenceSet = map_refset_id,
+      active = active,
+      mapTarget = target_code,
+      encoding = encoding,
+      silent = silent,
+      ...
+    )
+
+    x <- dplyr::bind_rows(x)
+
+    return(x)
+
+  } else {
+    x <- api_members(
+      referencedComponentId = concept_ids,
+      referenceSet = map_refset_id,
+      active = active,
+      mapTarget = target_code,
+      ...
+    )
+
+    if(httr::http_error(x)) {
+      return(httr::content(x))
+    } else if(length(httr::content(x)$items) == 0) {
+      return(NULL)
+    } else {
+      ignore <- result_completeness(x)
+      concepts <- httr::content(x, encoding = encoding)
+      concepts <- lapply(concepts[["items"]], as.data.frame)
+      concepts <- dplyr::bind_rows(concepts)
+      return(concepts)
+    }
+  }
+}
+
+
+
 #' Fetch SNOMED CT RF2 release version
 #'
 #' @description Provides the date of the release of the specified endpoint
@@ -312,4 +435,3 @@ release_version <- function(endpoint = snomedizer_options_get("endpoint"),
     )
   )
 }
-

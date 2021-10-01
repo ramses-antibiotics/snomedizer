@@ -23,6 +23,7 @@
 \alias{api_code_system}
 \alias{api_code_system_all_versions}
 \alias{api_browser_members}
+\alias{api_members}
 \title{SNOMED CT Terminology Server REST API operations}
 \usage{
 api_concept(
@@ -209,6 +210,22 @@ api_browser_members(
   limit = snomedizer_options_get("limit"),
   catch404 = TRUE
 )
+
+api_members(
+  referenceSet = NULL,
+  referenceSetModule = NULL,
+  referencedComponentId = NULL,
+  active = NULL,
+  offset = NULL,
+  targetComponent = NULL,
+  mapTarget = NULL,
+  owlExpression.conceptId = NULL,
+  owlExpression.gci = NULL,
+  endpoint = snomedizer_options_get("endpoint"),
+  branch = snomedizer_options_get("branch"),
+  limit = snomedizer_options_get("limit"),
+  catch404 = TRUE
+)
 }
 \arguments{
 \item{conceptId}{character string of a SNOMED CT concept id (for example:
@@ -368,6 +385,24 @@ the modules searched, for example: \code{"<900000000000445007"}}
 \item{referencedComponentId}{a character vector of identifiers of
 SNOMED CT components to be included. For Map Reference Sets, this refers
 to the SNOMED CT concept that is mapped to the other terminology or code system}
+
+\item{targetComponent}{string identifier the target code
+(concept or description) in an Association Reference Set. Consult the
+\href{Association Reference Set data structure}{https://confluence.ihtsdotools.org/display/DOCRELFMT/5.2.5+Association+Reference+Set}
+for detail.}
+
+\item{mapTarget}{target code to which the SNOMED CT concept represented the
+\code{referencedComponentId} is mapped in the target code system, classification,
+or terminology (eg ICD-10). This is only used for Map Reference Sets}
+
+\item{owlExpression.conceptId}{a string for a concept identifier within an
+owlExpression. Consult the
+\href{SNOMED CT OWL Guide}{http://snomed.org/owl} for detail.}
+
+\item{owlExpression.gci}{a boolean indicating whether to return axiom members
+with a GCI owlExpression (\code{TRUE}), without (\code{FALSE}), or all members
+(\code{NULL}, the default). Consult the
+\href{SNOMED CT OWL Guide}{http://snomed.org/owl} for detail.}
 }
 \value{
 An \code{httr} \code{\link[httr]{response}()} object.

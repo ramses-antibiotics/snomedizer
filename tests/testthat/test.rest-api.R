@@ -339,3 +339,25 @@ test_that("api_browser_members filtering by RefSet member and RefSet", {
   refsets <- dplyr::bind_rows(lapply(refsets$referenceSets, as.data.frame))
   expect_equal(refsets$id, "447562003")
 })
+
+# api_members ------------------------------------------------------------
+
+test_that("api_members find all concepts within ICD N39.0 urinary tract inf", {
+  uti_concepts <- httr::content(api_members(mapTarget = "N39.0",
+                                            referenceSet = "447562003"))
+  uti_concepts <- dplyr::bind_rows(lapply(uti_concepts$items, as.data.frame))
+  expect_true(all(
+    c("61373006", "4800001") %in% uti_concepts$referencedComponent.conceptId
+  ))
+})
+
+test_that("api_members find ICD code(s) corresponding to bacteriuria", {
+  bacteriuria <- httr::content(api_members(referenceSet = "447562003",
+                                           referencedComponentId = "61373006"))
+  bacteriuria <- dplyr::bind_rows(lapply(bacteriuria$items, as.data.frame))
+  expect_equal(
+    bacteriuria$additionalFields.mapTarget,
+    "N39.0"
+  )
+})
+

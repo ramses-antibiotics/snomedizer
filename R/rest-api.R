@@ -71,9 +71,19 @@
 #' @param limit a positive integer for the maximum number of results to return.
 #' See \code{\link{snomedizer_options}}. The maximum limit on public endpoints
 #' is 10,000.
+#' @param mapTarget target code to which the SNOMED CT concept represented the
+#' \code{referencedComponentId} is mapped in the target code system, classification,
+#' or terminology (eg ICD-10). This is only used for Map Reference Sets
 #' @param module character vector of SNOMED CT modules to include (example:
 #' \code{"900000000000207008"})
 #' @param offset an integer indicating the number of results to skip
+#' @param owlExpression.conceptId a string for a concept identifier within an
+#' owlExpression. Consult the
+#' \href{SNOMED CT OWL Guide}{http://snomed.org/owl} for detail.
+#' @param owlExpression.gci a boolean indicating whether to return axiom members
+#' with a GCI owlExpression (\code{TRUE}), without (\code{FALSE}), or all members
+#' (\code{NULL}, the default). Consult the
+#' \href{SNOMED CT OWL Guide}{http://snomed.org/owl} for detail.
 #' @param preferredIn character vector of description language reference sets
 #' (example: \code{"900000000000509007"}).
 #' The description must be preferred in at least one of these to match.
@@ -111,6 +121,10 @@
 #' sources defined by the relationship
 #' @param stated a boolean indicating whether to limit search to descendants
 #' whose relationship is stated rather than inferred. Default is \code{FALSE}.
+#' @param targetComponent string identifier the target code
+#' (concept or description) in an Association Reference Set. Consult the
+#' \href{Association Reference Set data structure}{https://confluence.ihtsdotools.org/display/DOCRELFMT/5.2.5+Association+Reference+Set}
+#' for detail.
 #' @param term character vector of terms to search
 #' @param type character vector of concept codes defining the type of description or
 #' the type of attribute/relationship to include, depending on the function:
@@ -881,7 +895,6 @@ api_browser_members <- function(
   # RF2 reference set descriptor data structure
   # https://confluence.ihtsdotools.org/display/DOCRELFMT/5.2.11+Reference+Set+Descriptor
 
-
   stopifnot(length(referenceSet) == 1 | is.null(referenceSet))
   stopifnot(length(referenceSetModule) == 1 | is.null(referenceSetModule))
   stopifnot(is.null(offset) | length(offset) == 1)
@@ -913,3 +926,66 @@ api_browser_members <- function(
 
   rest_result
 }
+
+
+#' @rdname api_operations
+#' @export
+api_members <- function(
+  referenceSet = NULL,
+  referenceSetModule = NULL,
+  referencedComponentId = NULL,
+  active = NULL,
+  offset = NULL,
+  targetComponent = NULL,
+  mapTarget = NULL,
+  owlExpression.conceptId = NULL,
+  owlExpression.gci = NULL,
+  endpoint = snomedizer_options_get("endpoint"),
+  branch = snomedizer_options_get("branch"),
+  limit = snomedizer_options_get("limit"),
+  catch404 = TRUE
+) {
+
+  # get /{branch}/members
+  # RF2 reference set descriptor data structure
+  # https://confluence.ihtsdotools.org/display/DOCRELFMT/5.2.11+Reference+Set+Descriptor
+
+  stopifnot(length(referenceSet) == 1 | is.null(referenceSet))
+  stopifnot(length(referenceSetModule) == 1 | is.null(referenceSetModule))
+  stopifnot(length(targetComponent) == 1 | is.null(targetComponent))
+  stopifnot(length(mapTarget) == 1 | is.null(mapTarget))
+  stopifnot(length(owlExpression.conceptId) == 1 | is.null(owlExpression.conceptId))
+  stopifnot(length(owlExpression.gci) == 1 | is.null(owlExpression.gci))
+  stopifnot(is.null(offset) | length(offset) == 1)
+  referencedComponentId <- .concatenate_array_parameter(referencedComponentId)
+  limit <- .validate_limit(limit)
+
+  rest_url <- httr::parse_url(endpoint)
+  rest_url$path <- c(rest_url$path[rest_url$path != ""],
+                     branch,
+                     "members")
+  rest_url$query <- list(
+    referenceSet = referenceSet,
+    module = referenceSetModule,
+    referencedComponentId = referencedComponentId,
+    active = active,
+    offset = offset,
+    targetComponent = targetComponent,
+    mapTarget = mapTarget,
+    owlExpression.conceptId = owlExpression.conceptId,
+    owlExpression.gci = owlExpression.gci,
+    limit = limit
+  )
+  .check_rest_query_length1(rest_url)
+
+  rest_url <- httr::build_url(rest_url)
+  rest_result <- GET(rest_url)
+
+  if(catch404){
+    .catch_http_error(rest_result)
+  }
+
+  rest_result
+}
+
+
