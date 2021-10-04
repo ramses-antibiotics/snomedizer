@@ -37,7 +37,7 @@ The default is \code{"447562003"}}
 a data frame of SNOMED CT concepts mapped to another code system
 }
 \description{
-A wrapper function for the \code{\link{api_members}()} function.
+A wrapper function for the \code{\link{api_refset_members}()} function.
 }
 \examples{
 # find SNOMED CT codes corresponding to urinary tract infections N39.0

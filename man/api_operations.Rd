@@ -22,8 +22,8 @@
 \alias{api_all_code_systems}
 \alias{api_code_system}
 \alias{api_code_system_all_versions}
-\alias{api_browser_members}
-\alias{api_members}
+\alias{api_browser_refset_members}
+\alias{api_refset_members}
 \title{SNOMED CT Terminology Server REST API operations}
 \usage{
 api_concept(
@@ -199,7 +199,7 @@ api_code_system_all_versions(
   catch404 = TRUE
 )
 
-api_browser_members(
+api_browser_refset_members(
   referenceSet = NULL,
   referenceSetModule = NULL,
   referencedComponentId = NULL,
@@ -211,7 +211,7 @@ api_browser_members(
   catch404 = TRUE
 )
 
-api_members(
+api_refset_members(
   referenceSet = NULL,
   referenceSetModule = NULL,
   referencedComponentId = NULL,

@@ -272,7 +272,7 @@ concepts_descriptions <- function(conceptIds,
 
 #' Map SNOMED CT concepts to other terminology or code systems
 #'
-#' @description A wrapper function for the \code{\link{api_members}()} function.
+#' @description A wrapper function for the \code{\link{api_refset_members}()} function.
 #' @param concept_ids an optional character vector of one or more SNOMED CT concept
 #' identifiers to be mapped
 #' @param target_code an optional character code designated the concept code in
@@ -337,11 +337,13 @@ concepts_map <- function(concept_ids = NULL,
                     encoding,
                     silent,
                     ...) {
-        conc <- api_members(referencedComponentId = chunk,
-                            referenceSet = referenceSet,
-                            active = active,
-                            mapTarget = mapTarget,
-                            ...)
+        conc <- api_refset_members(
+          referencedComponentId = chunk,
+          referenceSet = referenceSet,
+          active = active,
+          mapTarget = mapTarget,
+          ...
+        )
         if( !silent ) {
           progress_bar$tick()
         }
@@ -369,7 +371,7 @@ concepts_map <- function(concept_ids = NULL,
     return(x)
 
   } else {
-    x <- api_members(
+    x <- api_refset_members(
       referencedComponentId = concept_ids,
       referenceSet = map_refset_id,
       active = active,

@@ -879,7 +879,7 @@ api_code_system_all_versions <- function(endpoint = snomedizer_options_get("endp
 
 #' @rdname api_operations
 #' @export
-api_browser_members <- function(
+api_browser_refset_members <- function(
   referenceSet = NULL,
   referenceSetModule = NULL,
   referencedComponentId = NULL,
@@ -930,7 +930,7 @@ api_browser_members <- function(
 
 #' @rdname api_operations
 #' @export
-api_members <- function(
+api_refset_members <- function(
   referenceSet = NULL,
   referenceSetModule = NULL,
   referencedComponentId = NULL,
