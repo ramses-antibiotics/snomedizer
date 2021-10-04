@@ -388,7 +388,7 @@ to the SNOMED CT concept that is mapped to the other terminology or code system}
 
 \item{targetComponent}{string identifier the target code
 (concept or description) in an Association Reference Set. Consult the
-\href{Association Reference Set data structure}{https://confluence.ihtsdotools.org/display/DOCRELFMT/5.2.5+Association+Reference+Set}
+\href{https://confluence.ihtsdotools.org/display/DOCRELFMT/5.2.5+Association+Reference+Set}{Association Reference Set data structure}
 for detail.}
 
 \item{mapTarget}{target code to which the SNOMED CT concept represented the
@@ -397,12 +397,12 @@ or terminology (eg ICD-10). This is only used for Map Reference Sets}
 
 \item{owlExpression.conceptId}{a string for a concept identifier within an
 owlExpression. Consult the
-\href{SNOMED CT OWL Guide}{http://snomed.org/owl} for detail.}
+\href{http://snomed.org/owl}{SNOMED CT OWL Guide} for detail.}
 
 \item{owlExpression.gci}{a boolean indicating whether to return axiom members
 with a GCI owlExpression (\code{TRUE}), without (\code{FALSE}), or all members
 (\code{NULL}, the default). Consult the
-\href{SNOMED CT OWL Guide}{http://snomed.org/owl} for detail.}
+\href{http://snomed.org/owl}{SNOMED CT OWL Guide} for detail.}
 }
 \value{
 An \code{httr} \code{\link[httr]{response}()} object.

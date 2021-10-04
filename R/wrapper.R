@@ -206,8 +206,8 @@ concepts_descendants <- function(conceptIds,
 #' @description This function is a wrapper of \code{\link{api_descriptions}} that
 #' fetches description of one or several concept identifiers.
 #' @param conceptIds a character vector of concept identifiers
-#' @param encoding HTTP charset parameter to use (default is \code{"UTF-8"})
-#' @param silent whether to hide progress bar. Default is \code{FALSE}
+#' @param encoding HTTP charset parameter to use. Default is \code{"UTF-8"}.
+#' @param silent whether to hide progress bar. Default is \code{FALSE}.
 #' @param ... other optional arguments listed in \code{\link{api_operations}}, such as
 #' \code{endpoint}, \code{branch} or \code{limit}
 #' @return a named list of data frames sorted by \code{conceptIds}
@@ -272,13 +272,15 @@ concepts_descriptions <- function(conceptIds,
 
 #' Map SNOMED CT concepts to other terminology or code systems
 #'
-#' @description A wrapper function for the \code{\link{api_refset_members}()} function.
+#' @description A wrapper function for the \code{\link{api_refset_members}()} function
+#' to query Map Reference Sets, in particular the map to the World Health Organisation
+#' International Classification of Diseases 10th Revision (ICD-10).
 #' @param concept_ids an optional character vector of one or more SNOMED CT concept
 #' identifiers to be mapped
 #' @param target_code an optional character code designated the concept code in
 #' the other terminology or code system
 #' @param map_refset_id character identifier of a SNOMED CT Map Reference Set.
-#' The default is \code{"447562003"}
+#' The default is \code{"447562003"} for the ICD-10 Map Reference Set.
 #' @param active whether to restrict results to active concepts. Default is \code{TRUE}.
 #' @param encoding HTTP charset parameter to use (default is \code{"UTF-8"})
 #' @param silent whether to hide progress bar. Default is \code{FALSE}
@@ -288,16 +290,19 @@ concepts_descriptions <- function(conceptIds,
 #' @return a data frame of SNOMED CT concepts mapped to another code system
 #' @export
 #'
+#' @seealso World Health Organisation \href{https://icd.who.int/browse10/2016/en}{International Classification of Diseases 10th Revision}
+#' @seealso SNOMED International \href{https://confluence.ihtsdotools.org/display/DOCRELFMT/5.2.10+Complex+and+Extended+Map+Reference+Sets}{Map Reference Sets}
+#' @seealso SNOMED International \href{http://snomed.org/icd10map}{ICD-10 Mapping Technical Guide}
 #' @examples
-#' # find SNOMED CT codes corresponding to urinary tract infections N39.0
+#' # find SNOMED CT codes corresponding to ICD-10 code N39.0 urinary tract infections
 #' uti_concepts <- concepts_map(target_code = "N39.0")
-#' dplyr::select(uti_concepts,
-#'               referencedComponentId,
-#'               referencedComponent.pt.term,
-#'               additionalFields.mapTarget,
-#'               additionalFields.mapAdvice)
+#' str(dplyr::select(uti_concepts,
+#'                   referencedComponentId,
+#'                   referencedComponent.pt.term,
+#'                   additionalFields.mapTarget,
+#'                   additionalFields.mapAdvice))
 #'
-#' # map SNOMED CT codes to ICD=10 codes
+#' # map SNOMED CT codes to ICD-10
 #' map_icd10 <- concepts_map(concept_ids = c("431308006", "312124009", "53084003"))
 #' dplyr::select(map_icd10,
 #'               referencedComponentId,

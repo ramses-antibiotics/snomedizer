@@ -22,7 +22,7 @@ identifiers to be mapped}
 the other terminology or code system}
 
 \item{map_refset_id}{character identifier of a SNOMED CT Map Reference Set.
-The default is \code{"447562003"}}
+The default is \code{"447562003"} for the ICD-10 Map Reference Set.}
 
 \item{active}{whether to restrict results to active concepts. Default is \code{TRUE}.}
 
@@ -37,22 +37,31 @@ The default is \code{"447562003"}}
 a data frame of SNOMED CT concepts mapped to another code system
 }
 \description{
-A wrapper function for the \code{\link{api_refset_members}()} function.
+A wrapper function for the \code{\link{api_refset_members}()} function
+to query Map Reference Sets, in particular the map to the World Health Organisation
+International Classification of Diseases 10th Revision (ICD-10).
 }
 \examples{
-# find SNOMED CT codes corresponding to urinary tract infections N39.0
+# find SNOMED CT codes corresponding to ICD-10 code N39.0 urinary tract infections
 uti_concepts <- concepts_map(target_code = "N39.0")
-dplyr::select(uti_concepts,
-              referencedComponentId,
-              referencedComponent.pt.term,
-              additionalFields.mapTarget,
-              additionalFields.mapAdvice)
+str(dplyr::select(uti_concepts,
+                  referencedComponentId,
+                  referencedComponent.pt.term,
+                  additionalFields.mapTarget,
+                  additionalFields.mapAdvice))
 
-# map SNOMED CT codes to ICD=10 codes
+# map SNOMED CT codes to ICD-10
 map_icd10 <- concepts_map(concept_ids = c("431308006", "312124009", "53084003"))
 dplyr::select(map_icd10,
               referencedComponentId,
               referencedComponent.pt.term,
               additionalFields.mapTarget,
               additionalFields.mapAdvice)
+}
+\seealso{
+World Health Organisation \href{https://icd.who.int/browse10/2016/en}{International Classification of Diseases 10th Revision}
+
+SNOMED International \href{https://confluence.ihtsdotools.org/display/DOCRELFMT/5.2.10+Complex+and+Extended+Map+Reference+Sets}{Map Reference Sets}
+
+SNOMED International \href{http://snomed.org/icd10map}{ICD-10 Mapping Technical Guide}
 }

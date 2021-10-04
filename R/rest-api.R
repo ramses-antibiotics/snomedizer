@@ -79,11 +79,11 @@
 #' @param offset an integer indicating the number of results to skip
 #' @param owlExpression.conceptId a string for a concept identifier within an
 #' owlExpression. Consult the
-#' \href{SNOMED CT OWL Guide}{http://snomed.org/owl} for detail.
+#' \href{http://snomed.org/owl}{SNOMED CT OWL Guide} for detail.
 #' @param owlExpression.gci a boolean indicating whether to return axiom members
 #' with a GCI owlExpression (\code{TRUE}), without (\code{FALSE}), or all members
 #' (\code{NULL}, the default). Consult the
-#' \href{SNOMED CT OWL Guide}{http://snomed.org/owl} for detail.
+#' \href{http://snomed.org/owl}{SNOMED CT OWL Guide} for detail.
 #' @param preferredIn character vector of description language reference sets
 #' (example: \code{"900000000000509007"}).
 #' The description must be preferred in at least one of these to match.
@@ -123,7 +123,7 @@
 #' whose relationship is stated rather than inferred. Default is \code{FALSE}.
 #' @param targetComponent string identifier the target code
 #' (concept or description) in an Association Reference Set. Consult the
-#' \href{Association Reference Set data structure}{https://confluence.ihtsdotools.org/display/DOCRELFMT/5.2.5+Association+Reference+Set}
+#' \href{https://confluence.ihtsdotools.org/display/DOCRELFMT/5.2.5+Association+Reference+Set}{Association Reference Set data structure}
 #' for detail.
 #' @param term character vector of terms to search
 #' @param type character vector of concept codes defining the type of description or
