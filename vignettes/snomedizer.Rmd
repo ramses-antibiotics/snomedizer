@@ -201,7 +201,7 @@ However, this approach only provides the value of the attribute, not the attribu
 
 A more complex, but effective approach involves a special REST endpoint in Snowstorm: [`GET /{branch}/relationships`](https://snowstorm.ihtsdotools.org/snowstorm/snomed-ct/swagger-ui.html#!/Relationships/findRelationshipsUsingGET). We can issue a request to this endpoint directly using the low-level function `api_relationships()`. Like all low-level `api_operations`, it is necessary to (1) explicitly request only active concepts, and (2) flatten the output into a data frame. We shall also exclude `116680003 | Is a |` attributes (which express inheritance from parent concepts) as they are not relevant in this instance.
 
-```{r}
+```{r drug_attributes}
 drug_attributes <- api_relationships(
   source = "374646004", 
   active = TRUE, 
@@ -213,7 +213,6 @@ drug_attributes %>%
   filter(type.pt.term != "Is a") %>% 
   select(type.fsn.term, target.pt.term) %>% 
   arrange(type.fsn.term)
-  
 ```
 
 ## 3. Find all diseases caused by a type of bacterium
@@ -273,6 +272,42 @@ concepts_descriptions(conceptIds = "78048006", branch = "MAIN/SNOMEDCT-ES/2021-0
   select(term)
 ```
 
+
+## 5. Map SNOMED CT concept codes to ICD-10
+
+SNOMED CT International Edition provides maps to other terminologies and code systems via [Map Reference Sets](https://confluence.ihtsdotools.org/display/DOCRELFMT/5.2.10+Complex+and+Extended+Map+Reference+Sets).
+
+Once such map is a map to the World Health Organisation [International Classification of Diseases and Related Health Problems 10th Revision](https://icd.who.int/browse10/2016/en) (ICD-10). At the time of writing, the Reference Set `447562003 | ICD-10 complex map reference set (foundation metadata concept) |` provides a link to zero, one, or several codes of the ICD-10 2016 Edition for concepts descending from:
+
+* `404684003 |clinical finding|`, 
+* `272379006 |event|` and 
+* `243796009 |situation with explicit context|`.
+
+For more information, please consult the [ICD-10 Mapping Technical Guide](http://snomed.org/icd10map).
+
+For example, let's extract the ICD-10 code corresponding to `721104000 | Sepsis due to urinary tract infection (disorder) |`:
+
+```{r map_urosepsis}
+concepts_map(map_refset_id = "447562003", concept_ids = "721104000") %>% 
+  select(additionalFields.mapTarget, additionalFields.mapAdvice)
+```
+
+This points us to two ICD-10 codes:
+
+* `A41.9 Sepsis, unspecified`
+* `N39.0 Urinary tract infection, site not specified`, with a disclaimer indicating that the target ICD-10 code can be extended. On examination, the [ICD-10 documentation](https://icd.who.int/browse10/2016/en#/N39.0) recommends to "use additional code (B95-B98), if desired, to identify infectious agent."
+
+Conversely, let's find all SNOMED CT concepts mapped to ICD-10 code `N39.0`:
+
+```{r concepts_within_n390}
+concepts_map(map_refset_id = "447562003", target_code = "N39.0") %>% 
+  select(referencedComponent.id, 
+         referencedComponent.pt.term,
+         additionalFields.mapAdvice)
+```
+We find a total of `r nrow(concepts_map(map_refset_id = "447562003", target_code = "N39.0"))` concepts potentially mappable to `N39.0 Urinary tract infection, site not specified`.
+
+**Note:** Complete mapping and semantic alignment with the incoming [ICD-11 Mortality and Morbidity Statistics](https://icd.who.int/browse11/) is planned. 
 
 
 ```{css, echo=FALSE }
