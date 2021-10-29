@@ -6,6 +6,8 @@ output:
     toc: true
     always_allow_html: yes
     df_print: tibble
+bibliography: ../inst/REFERENCES.bib
+csl: the-open-university-numeric.csl
 vignette: >
   %\VignetteIndexEntry{snomedizer: R Interface to the SNOMED CT Terminology Server REST API}
   %\VignetteEngine{knitr::rmarkdown}
@@ -13,27 +15,25 @@ vignette: >
 ---
 
 
-
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(dplyr)
-library(snomedizer)
 ```
 
 # Overview
 
 ## What is SNOMED CT?
 
-SNOMED CT is an international ontology of clinical terms. You can think of it as an encyclopedia on all things that are talked about in medicine, for instance: anatomical structures, diagnoses, medications, tests,  surgical procedures, pathogens such as SARS-CoV-2 or *Candidida auris*, or even clinical findings, such as a high temperature.
+SNOMED CT is the international standard ontology of clinical terms. It can be thought of as an encyclopedia on all things relevant to medicine, for instance: anatomical structures, diagnoses, medications, tests,  surgical procedures, pathogens such as SARS-CoV-2 or *Candidida auris*, or even clinical findings, such as a high temperature. 
 
-SNOMED CT is used mainly in the UK:
+SNOMED CT is not just a list of terms. It is an ontology made up of concepts which are fully defined in relation to each other. This allows complex inferences illustrated throughout the present vignette. You can learn more about ontologies in this [introduction workshop](https://github.com/nicolevasilevsky/CSH_IntroToOntologies/blob/master/IntroToOntologies_CSH_2018-10-28g.pdf) [@ontology101].
 
-* to record information about patient care in general practice and hospitals
-* to analyse electronic health records, in particular medical notes.
+SNOMED CT is currently used in more than 80 countries. It is present in over 70% of clinical systems commercialised in Europe and North America [@snomed2020; @snomedvalue2021], and it is mandated across the English National Health Service for:
 
-Increasingly, other countries are contributing towards and using SNOMED CT.
+* records of symptoms, diagnoses, procedures, medications, observations or allergies [@SCCI0034]
+* electronic prescribing and pathology laboratory systems [@DAPB4013; @DAPB4017].
 
-The best ways to learn more about SNOMED CT are:
+The best ways to learn about SNOMED CT are:
 
 * the [SNOMED International Browser](https://browser.ihtsdotools.org/)
 * the [SNOMED CT for Data Analysts](https://elearning.ihtsdotools.org/enrol/index.php?id=26) free online learning course
@@ -41,19 +41,21 @@ The best ways to learn more about SNOMED CT are:
 
 ## What is snomedizer?
 
-`snomedizer` is an R package to query and manipulate the SNOMED CT terminology.
+`snomedizer` is an R package to interrogate the SNOMED CT terminology based on [Snowstorm](https://github.com/IHTSDO/snowstorm/), the official SNOMED CT Terminology Server. 
 
-It allows you to perform the same operations as the [SNOMED International Browser](https://browser.ihtsdotools.org/).
+Snowstorm is the back-end terminology service for both the [SNOMED International Browser](https://browser.ihtsdotools.org/) and the SNOMED International Authoring Platform.
 
-`snomedizer` is based on [Snowstorm](https://github.com/IHTSDO/snowstorm/), the official SNOMED CT Terminology Server. Snowstorm is the back-end terminology service for both the [SNOMED International Browser](https://browser.ihtsdotools.org/) and the SNOMED International Authoring Platform.
+`snomedizer` allows you to perform the same operations as the [SNOMED International Browser](https://browser.ihtsdotools.org/) directly from your R console.
 
 # Introduction to SNOMED CT
+
+## Browsing the ontology
 
 SNOMED CT contains rich knowledge about medical concepts.
 
 Try for yourself with the quick exercise below:
 
-1. Go to the [SNOMED CT International Browser](https://browser.ihtsdotools.org/).
+1. Go to the [SNOMED CT International Browser](https://browser.ihtsdotools.org/?perspective=full) and accept licence terms.
 2. In the 'Search' tab, type in `40600002`.
 3. Click on 'Pneumococcal bronchitis' in the result list.
 4. In the right panel ('Concept Details'), click the 'Details' tab.
@@ -64,53 +66,54 @@ Try for yourself with the quick exercise below:
 
 <div class="figure"><img src="40600002_diagram.svg" style="width:100.0%" alt="Concept diagram: raw (unprocessed) electronic prescribing records"></div>
 
+<!-- <div class="bd-callout bd-callout-info"> -->
+<!-- <h4>Bonus exercise</h4> -->
+<!-- <p>Search for <code>9861002</code> and inspect the various tabs. As you can see, SNOMED CT knows that<p> -->
+<!-- <ul><li><i>Streptococcus pneumoniae</i> is the scientific name of pneumonoccus, and that</li>  -->
+<!-- <li>it is a gram-positive baterium of genus <i>Streptococcus</i>.</li></ul></p> -->
+<!-- </div> -->
+
+
+## Performing advanced queries (ECL)
+
+SNOMED CT has a query language named ['ECL' (Expression Constraint Language)](http://snomed.org/ecl). Using ECL, users can perform logical searches and learn new facts from any SNOMED CT concept using a range of operators listed in [this ECL quick reference table](https://confluence.ihtsdotools.org/display/DOCECL/Appendix+D+-+ECL+Quick+reference).
+
+For instance, once can search for all the different subtypes of pneumonia. For this, we need to query the *descendants* of concept `233604007 | Pneumonia (disorder) |`.
+
+The corresponding ECL query is `<233604007 | Pneumonia (disorder) |`, where `<` is the ECL operator selecting descendants of a concept.
+
+ 
 <div class="bd-callout bd-callout-info">
-<h4>Bonus exercise</h4>
-<p>Search for <code>9861002</code> and inspect the various tabs. As you can see, SNOMED CT knows that<p>
-<ul><li><i>Streptococcus pneumoniae</i> is the scientific name of pneumonoccus, and that</li> 
-<li>it is a gram-positive baterium of genus <i>Streptococcus</i>.</li></ul></p>
+<h4>Trying ECL in the web browser</h4>
+<ul>
+<li>Navigate to the [SNOMED International Browser](https://browser.ihtsdotools.org/?perspective=full)</li>
+<li>Accept the licence conditions</li>
+<li>Click on the 'Expression Constraint Queries' tab in the right panel</li>
+<li>Paste ECL queries from this vignette into the 'Expression...' box as shown below</li>
+<li>Press 'Execute'.</li>
+</ul>
+<br>
+<div class="figure" style="text-align:center"><img src="browser_ECL_box.png" style="width:70%" alt="SNOMED International Browser ECL interface"></div>
+</p>
 </div>
 
 
-# How to perform advanced queries (ECL)
 
-SNOMED CT has a query language named ['ECL' (Expression Constraint Language)](http://snomed.org/ecl). ECL enables users to perform logical queries and learn new facts from any SNOMED CT concept.
+# Examples
 
-ECL relies on logical operators listed in this [ECL quick reference table](https://confluence.ihtsdotools.org/display/DOCECL/Appendix+D+-+ECL+Quick+reference).
-
-You can submit ECL queries in snomedizer using the `concepts_find()` function:
+First, load and set up `snomedizer`.
 
 ```{r setup_snomedizer }
+library(dplyr)
+library(snomedizer)
+
 # Connect to the SNOMED International endpoint 
 # (see licence conditions in `vignette("snomedizer")`).
 snomedizer_options_set(
   endpoint = "https://snowstorm.ihtsdotools.org/snowstorm/snomed-ct", 
   branch = "MAIN/2021-07-31"
 )
-
-## fetch all pneumonia concepts
-pneumo_concepts <- concepts_find(ecl = "<<233604007 | Pneumonia (disorder) |")
-glimpse(pneumo_concepts)
 ```
-
-
-<div class="bd-callout bd-callout-info">
-<h4>Trying ECL in the web browser</h4>
-<p>You do not need R or snomedizer to query SNOMED CT as demonstrated in this section.</p>
-<p>You can instead use your web browser:</p>
-<ul>
-<li>Navigate to the [SNOMED International Browser](https://browser.ihtsdotools.org/)</li>
-<li>Accept the licence conditions</li>
-<li>Click on the 'Expression Constraint Queries' tab in the right panel</li>
-<li>Paste ECL queries from this vignette into the 'Expression...' box as shown below</li>
-<li>Press 'Execute'.</li>
-</ul>
-<div class="figure"><img src="browser_ECL_box.png" style="width:60%" alt="SNOMED International Browser ECL interface"></div>
-</p>
-</div>
-
-
-# Examples
 
 ## 1. Search for relevant urine specimens
 
@@ -123,7 +126,12 @@ Let's try and
 * fetch all the codes corresponding to urine specimens: they are descendants of `122575003 | Urine specimen (specimen) |`
 * while excluding the ones from urinary catheters (`122565001 | Urinary catheter specimen (specimen) |`).
 
-First, we need to query descendant concepts. This can be done using `concepts_descendants()`. But we can also use the `<<` operator (known as `descendantOrSelfOf`) using ECL. All the expressions below are equivalent.
+First, we need to query descendant concepts. There are two ways to accomplish this in `snomedizer`:
+
+* by using `concepts_descendants()`
+* by running an ECL query in the `concepts_find(ecl = "...")` function. For this, you will want to use the `<<` operator (known as `descendantOrSelfOf`) using ECL. 
+
+All the expressions below are equivalent.
 
 ```{r demo_urine_1}
 urine_specimens <- concepts_descendants(conceptIds = "122575003")
@@ -371,3 +379,4 @@ body {
 }
 ```
 
+# References

@@ -14,7 +14,7 @@ has not yet been a stable, usable release suitable for the
 public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
 <!-- badges: end -->
 
-<p class="lead">Manipulate the SNOMED CT clinical ontology using the <a href="https://github.com/IHTSDO/snowstorm">SNOMED International Terminology Server REST API</a>.</p>
+<p class="lead">Interrogate the SNOMED CT clinical ontology using the <a href="https://github.com/IHTSDO/snowstorm">SNOMED International Terminology Server REST API</a>.</p>
 
 ## Installation
 
