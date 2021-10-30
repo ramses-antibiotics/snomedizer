@@ -486,15 +486,37 @@ tokens_prescriptions %>% ungroup %>%
 
 ## Adding parents concepts
 
-```{r}
-mapped_concepts_parents <- concepts_ascendants(
-  conceptIds = unique(map_concepts_08$conceptId),
-  direct_ascendants = FALSE
-  #, include_self = TRUE
-)
- 
+```{r load_mapped_concepts_parents, eval=TRUE, include=FALSE }
+# mapped_concepts_parents <- abx_indications_mapped_concept_parents %>% 
+#   bind_rows(.id = "parent_id") %>% 
+#   # limiting to the terminology domain
+#   filter(conceptId %in% unique(snomed_concepts$conceptId)) %>% 
+#   transmute(parent_id, concept_id_complete = conceptId, pt.term)
 ```
 
+```{r eval=FALSE }
+# mapped_concepts_parents <- concepts_ancestors(
+#   conceptIds = unique(map_concepts_08$conceptId),
+#   include_self = TRUE,
+#   limit = 1000
+# ) %>% 
+#   bind_rows(.id = "parent_id") %>% 
+#   # limiting to the terminology domain
+#   filter(conceptId %in% unique(snomed_concepts$conceptId)) %>% 
+#   transmute(parent_id, concept_id_complete = conceptId, pt.term)
+```
+
+```{r}
+# truc <- map_concepts_08 %>% 
+#   transmute(prescription_id, parent_id = conceptId) %>% 
+#   left_join(mapped_concepts_parents, by = "parent_id")
+# 
+# truc %>% 
+#   group_by(pt.term) %>% 
+#   summarise(n = n_distinct(prescription_id)) %>%
+#   arrange(-n)
+  
+```
 
 
 
