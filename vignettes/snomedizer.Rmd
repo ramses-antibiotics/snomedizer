@@ -134,7 +134,8 @@ First, we need to query descendant concepts. There are two ways to accomplish th
 All the expressions below are equivalent.
 
 ```{r demo_urine_1}
-urine_specimens <- concepts_descendants(conceptIds = "122575003")
+urine_specimens <- concepts_descendants(conceptIds = "122575003", 
+                                        include_self = TRUE)
 urine_specimens <- concepts_find(ecl = "<<122575003")
 urine_specimens <- concepts_find(ecl = "<<122575003 | Urine specimen (specimen) |")
 glimpse(urine_specimens[, c("conceptId", "pt.term")])

@@ -122,116 +122,81 @@ concepts_find <- function(term = NULL,
 }
 
 
-#' Fetch ascendants of one or more concepts
+#' Fetch active ancestors/descendants of one or more concepts
 #'
-#' @description This function is a wrapper of \code{\link{api_concepts}} that
-#' fetches ascendants of one or several concept identifiers using full SNOMED CT
-#' inference. The search can be restricted to parent concepts using the
-#' \code{direct_ascendants} argument.
+#' @description Wrapper functions of \code{\link{api_concepts}} that fetch ancestors
+#' or descendants of one or several concept identifiers using full SNOMED CT
+#' inference.
+#'
+#' Note: these functions can only fetch active concepts.
 #' @param conceptIds a character vector of concept identifiers
-#' @param direct_ascendants a logical vector indicating whether to fetch
-#' direct ascendants (parents) of the \code{conceptIds} exclusively or all
-#' ascendants (including parents). The default is \code{FALSE}. If a single
-#' value is provided, it will be recycled.
-#' @param activeFilter a logical vector indicating whether to fetch active
-#' ascendant concepts exclusively. The default is \code{TRUE}. If a single
+#' @param include_self a logical vector indicating whether the \code{conceptIds}
+#' should be included in the results. The default is \code{TRUE}. If a single
 #' value is provided, it will be recycled.
 #' @param encoding HTTP charset parameter to use (default is \code{"UTF-8"})
 #' @param silent whether to hide progress bar. Default is \code{FALSE}
 #' @param ... other valid arguments to function \code{\link{api_concepts}},
 #' for instance \code{endpoint}, \code{branch} or \code{limit}.
-#'
 #' @return a named list of data frames
 #' @family wrapper
+#' @aliases concepts_ancestors concepts_descendants
 #' @export
 #' @section Disclaimer:
 #' In order to use SNOMED CT, a licence is required which depends both on the country you are
 #' based in, and the purpose of your work. See details on \link{snomedizer}.
 #' @examples
-#' # This will trigger a warning using the default limit set by snomedizer_options_get("limit")
-#' pneumonia_concepts <- concepts_ascendants(conceptIds = "233604007")
-concepts_ascendants <- function(conceptIds,
-                                direct_ascendants = FALSE,
-                                activeFilter = TRUE,
-                                encoding = "UTF-8",
-                                silent = FALSE,
-                                ...) {
-
-  stopifnot(all(direct_ascendants %in% c(TRUE, FALSE)))
-
-  .concepts_xxscendants(conceptIds = conceptIds,
-                        direction = "ascendants",
-                        direct = direct_ascendants,
-                        activeFilter = activeFilter,
-                        encoding = encoding,
-                        silent = silent,
-                        ...)
-}
-
-
-#' Fetch descendants of one or more concepts
-#'
-#' @description This function is a wrapper of \code{\link{api_concepts}} that
-#' fetches descendants of one or several concept identifiers using full SNOMED CT
-#' inference. The search can be restricted to children concepts using the
-#' \code{direct_descendants} argument.
-#' @param conceptIds a character vector of concept identifiers
-#' @param direct_descendants a logical vector indicating whether to fetch
-#' direct descendants (children) of the \code{conceptIds} exclusively or all
-#' descendants (including children). The default is \code{FALSE}. If a single
-#' value is provided, it will be recycled.
-#' @param activeFilter a logical vector indicating whether to fetch active
-#' descendant concepts exclusively. The default is \code{TRUE}. If a single
-#' value is provided, it will be recycled.
-#' @param encoding HTTP charset parameter to use (default is \code{"UTF-8"})
-#' @param silent whether to hide progress bar. Default is \code{FALSE}
-#' @param ... other valid arguments to function \code{\link{api_concepts}},
-#' for instance \code{endpoint}, \code{branch} or \code{limit}.
-#'
-#' @return a named list of data frames
-#' @family wrapper
-#' @export
-#' @section Disclaimer:
-#' In order to use SNOMED CT, a licence is required which depends both on the country you are
-#' based in, and the purpose of your work. See details on \link{snomedizer}.
-#' @examples
+#' pneumonia_ancestors <- concepts_ancestors(conceptIds = "233604007")
 #' # This will trigger a warning using the default limit set by snomedizer_options_get("limit")
 #' pneumonia_concepts <- concepts_descendants(conceptIds = "233604007")
 #' # Raising the limit
 #' pneumonia_concepts <- concepts_descendants(conceptIds = "233604007", limit = 300)
 #' head(pneumonia_concepts$`233604007`)
-concepts_descendants <- function(conceptIds,
-                                 direct_descendants = FALSE,
-                                 activeFilter = TRUE,
-                                 encoding = "UTF-8",
-                                 silent = FALSE,
-                                 ...) {
-
-  stopifnot(all(direct_descendants %in% c(TRUE, FALSE)))
+concepts_ancestors <- function(conceptIds,
+                                include_self = FALSE,
+                                encoding = "UTF-8",
+                                silent = FALSE,
+                                ...) {
 
   .concepts_xxscendants(conceptIds = conceptIds,
-                        direction = "descendants",
-                        direct = direct_descendants,
-                        activeFilter = activeFilter,
+                        direction = "ancestors",
+                        include_self = include_self,
                         encoding = encoding,
                         silent = silent,
                         ...)
 }
 
 
-#' Underlying function for concepts_ascendants and concepts_descendants
+#' @rdname concepts_ancestors
+#' @export
+concepts_descendants <- function(conceptIds,
+                                 include_self = FALSE,
+                                 encoding = "UTF-8",
+                                 silent = FALSE,
+                                 ...) {
+
+  .concepts_xxscendants(conceptIds = conceptIds,
+                        direction = "descendants",
+                        include_self = include_self,
+                        encoding = encoding,
+                        silent = silent,
+                        ...)
+}
+
+
+#' Underlying function for concepts_ancestors and concepts_descendants
 #' @noRd
 .concepts_xxscendants <- function(conceptIds,
                                   direction,
-                                  direct,
-                                  activeFilter,
+                                  include_self,
                                   encoding,
                                   silent,
                                   ...) {
 
   stopifnot(is.vector(conceptIds))
-  conceptIds <- sort(unique(conceptIds))
-  stopifnot(is.null(activeFilter) || is.logical(activeFilter))
+  stopifnot(all(!is.na(conceptIds)))
+  if(!all(include_self %in% c(TRUE, FALSE))) {
+    stop("`include_self` must be TRUE or FALSE.")
+  }
 
   if ( !silent ) {
     progress_bar <- progress::progress_bar$new(
@@ -241,32 +206,36 @@ concepts_descendants <- function(conceptIds,
     progress_bar$tick(0)
   }
 
-  if (direction == "ascendants") {
-    ecl = paste0(dplyr::if_else(direct, ">!", ">"), conceptIds)
-  } else {
-    ecl = paste0(dplyr::if_else(direct, "<!", "<"), conceptIds)
-  }
+  x <- purrr::pmap(
+    list(conceptIds,
+         include_self),
+    function(conceptId, include_self, ...) {
 
-  x <- purrr::pmap(list(ecl, activeFilter),
-                   function(ecl, activeFilter, silent, ...) {
-                     xxscendants <- api_concepts(
-                       ecl = ecl,
-                       activeFilter = activeFilter,
-                       ...)
+      if (direction == "ancestors") {
+        ecl <- paste0(dplyr::if_else(include_self, ">>", ">"), conceptId)
+      } else {
+        ecl <- paste0(dplyr::if_else(include_self, "<<", "<"), conceptId)
+      }
 
-                     if ( !silent ) {
-                       progress_bar$tick()
-                     }
+      xxscendants <- api_concepts(
+        ecl = ecl,
+        ...)
 
-                     if(httr::http_error(xxscendants)) {
-                       return(httr::content(xxscendants))
-                     } else if(length(httr::content(xxscendants)$items) == 0) {
-                       return(NULL)
-                     } else {
-                       ignore <- result_completeness(xxscendants)
-                       return(result_flatten(xxscendants, encoding = encoding))
-                     }
-                   }, silent = silent, ...)
+      if ( !silent ) {
+        progress_bar$tick()
+      }
+
+      if(httr::http_error(xxscendants)) {
+        return(httr::content(xxscendants))
+      } else if(length(httr::content(xxscendants)$items) == 0) {
+        return(NULL)
+      } else {
+        ignore <- result_completeness(xxscendants)
+        return(result_flatten(xxscendants, encoding = encoding))
+      }
+    },
+    direction = direction, silent = silent, ...
+  )
 
   names(x) <- conceptIds
 
