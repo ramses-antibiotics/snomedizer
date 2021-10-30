@@ -56,26 +56,97 @@ test_that("concepts_find (batch)", {
                sort(concepts_batch$conceptId))
 })
 
+# concepts_ascendants -----------------------------------------------------
+
+test_that("concepts_ascendants", {
+  infections <- concepts_ascendants(conceptIds = c("68566005", "233604007"),
+                                    direct_ascendants = FALSE,
+                                    activeFilter = TRUE,
+                                    silent = TRUE)
+  expect_equal(names(infections),
+               c("233604007", "68566005"))
+  infections <- concepts_ascendants(conceptIds = c("233604007", "68566005"),
+                                    direct_ascendants = FALSE,
+                                    activeFilter = TRUE,
+                                    silent = TRUE)
+  expect_equal(names(infections),
+               c("233604007", "68566005"))
+
+  expect_true(
+    "205237003" %in% #pneumonitis
+      infections[[1]]$conceptId
+  )
+  expect_false(
+    "53084003" %in% #bacterial pneumonia
+      infections[[1]]$conceptId
+  )
+  expect_false(
+    "40733004" %in% #Infectious disease
+      infections[[1]]$conceptId
+  )
+  expect_true(
+    "40733004" %in% #Infectious disease
+      infections[[2]]$conceptId
+  )
+  expect_warning(concepts_ascendants(conceptIds = c("233604007", "68566005"), limit = 2))
+  expect_is(
+    infections <- concepts_ascendants(conceptIds = c("233604007", "68566005"), limit = 300),
+    "list"
+  )
+})
+
+test_that("concepts_ascendants (direct)", {
+  infections_direct <- concepts_ascendants(conceptIds = c("233604007", "68566005"),
+                                           direct_ascendants = TRUE,
+                                           activeFilter = TRUE,
+                                           silent = TRUE)
+  expect_true(
+    "205237003" %in% #pneumonitis
+      infections_direct[[1]]$conceptId
+  )
+  expect_false(
+    "40733004" %in% #Infectious disease, which is not a direct parent
+      infections_direct[[1]]$conceptId
+  )
+  expect_false(
+    "53084003" %in% #bacterial pneumonia
+      infections_direct[[1]]$conceptId
+  )
+})
+
 # concepts_descendants ----------------------------------------------------
 
 test_that("concepts_descendants", {
 
-  infections <- concepts_descendants(conceptIds = c("233604007", "68566005"),
-                                     direct_descendants = TRUE,
+  infections <- concepts_descendants(conceptIds = c("68566005", "233604007"),
+                                     direct_descendants = FALSE,
                                      activeFilter = TRUE,
-                                     silent = TRUE)
-  infections <- concepts_descendants(conceptIds = c("233604007", "68566005"),
-                                     direct_descendants = TRUE,
-                                     activeFilter = TRUE,
-                                     silent = FALSE)
-  expect_false("882784691000119100" %in% infections$`233604007`$conceptId)
-  expect_false("1469007" %in% infections$`68566005`$conceptId)
+                                     silent = TRUE,
+                                     limit = 250)
+  expect_true("882784691000119100" %in% infections$`233604007`$conceptId)
+  expect_true("1469007" %in% infections$`68566005`$conceptId)
   expect_true("422747000" %in% infections$`68566005`$conceptId)
   expect_warning(concepts_descendants(conceptIds = c("233604007", "68566005"), limit = 2))
   infections <- concepts_descendants(conceptIds = c("233604007", "68566005"), limit = 300)
   expect_true("882784691000119100" %in% infections$`233604007`$conceptId)
 
   expect_warning(concepts_descendants(conceptIds = "blurgh"))
+})
+
+test_that("concepts_descendants (direct)", {
+
+  infections_direct <- concepts_descendants(conceptIds = c("233604007", "68566005"),
+                                            direct_descendants = TRUE,
+                                            activeFilter = TRUE,
+                                            silent = FALSE)
+  infections_direct <- concepts_descendants(conceptIds = c("233604007", "68566005"),
+                                            direct_descendants = TRUE,
+                                            activeFilter = TRUE,
+                                            silent = FALSE)
+  expect_false("882784691000119100" %in% infections_direct$`233604007`$conceptId)
+  expect_false("1469007" %in% infections_direct$`68566005`$conceptId)
+  expect_true("422747000" %in% infections_direct$`68566005`$conceptId)
+
 })
 
 # concepts_descriptions ---------------------------------------------------
