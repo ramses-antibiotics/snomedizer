@@ -30,8 +30,7 @@ on 31 January and 31 July in a format known as Release Format 2 (RF2).
 }
 \seealso{
 Other wrapper: 
-\code{\link{concepts_ascendants}()},
-\code{\link{concepts_descendants}()},
+\code{\link{concepts_ancestors}()},
 \code{\link{concepts_descriptions}()},
 \code{\link{concepts_find}()}
 }

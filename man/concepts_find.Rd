@@ -65,8 +65,7 @@ concepts_find(
 }
 \seealso{
 Other wrapper: 
-\code{\link{concepts_ascendants}()},
-\code{\link{concepts_descendants}()},
+\code{\link{concepts_ancestors}()},
 \code{\link{concepts_descriptions}()},
 \code{\link{release_version}()}
 }

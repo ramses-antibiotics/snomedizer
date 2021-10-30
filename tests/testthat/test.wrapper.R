@@ -56,22 +56,22 @@ test_that("concepts_find (batch)", {
                sort(concepts_batch$conceptId))
 })
 
-# concepts_ascendants -----------------------------------------------------
+# concepts_ancestors -----------------------------------------------------
 
-test_that("concepts_ascendants", {
-  infections <- concepts_ascendants(conceptIds = c("68566005", "233604007"),
-                                    direct_ascendants = FALSE,
-                                    activeFilter = TRUE,
+test_that("concepts_ancestors (order preserving)", {
+  infections <- concepts_ancestors(conceptIds = c("68566005", "233604007"),
+                                    silent = TRUE)
+  expect_equal(names(infections),
+               c("68566005", "233604007"))
+  infections <- concepts_ancestors(conceptIds = c("233604007", "68566005"),
                                     silent = TRUE)
   expect_equal(names(infections),
                c("233604007", "68566005"))
-  infections <- concepts_ascendants(conceptIds = c("233604007", "68566005"),
-                                    direct_ascendants = FALSE,
-                                    activeFilter = TRUE,
-                                    silent = TRUE)
-  expect_equal(names(infections),
-               c("233604007", "68566005"))
+})
 
+test_that("concepts_ancestors ", {
+  infections <- concepts_ancestors(conceptIds = c("233604007", "68566005"),
+                                    silent = FALSE)
   expect_true(
     "205237003" %in% #pneumonitis
       infections[[1]]$conceptId
@@ -88,39 +88,31 @@ test_that("concepts_ascendants", {
     "40733004" %in% #Infectious disease
       infections[[2]]$conceptId
   )
-  expect_warning(concepts_ascendants(conceptIds = c("233604007", "68566005"), limit = 2))
+  expect_warning(concepts_ancestors(conceptIds = c("233604007", "68566005"), limit = 2))
   expect_is(
-    infections <- concepts_ascendants(conceptIds = c("233604007", "68566005"), limit = 300),
+    infections <- concepts_ancestors(conceptIds = c("233604007", "68566005"), limit = 300),
     "list"
   )
+
+  expect_false("68566005" %in% infections$`68566005`$conceptId)
+  expect_false("233604007" %in% infections$`233604007`$conceptId)
 })
 
-test_that("concepts_ascendants (direct)", {
-  infections_direct <- concepts_ascendants(conceptIds = c("233604007", "68566005"),
-                                           direct_ascendants = TRUE,
-                                           activeFilter = TRUE,
-                                           silent = TRUE)
-  expect_true(
-    "205237003" %in% #pneumonitis
-      infections_direct[[1]]$conceptId
-  )
-  expect_false(
-    "40733004" %in% #Infectious disease, which is not a direct parent
-      infections_direct[[1]]$conceptId
-  )
-  expect_false(
-    "53084003" %in% #bacterial pneumonia
-      infections_direct[[1]]$conceptId
-  )
+
+test_that("concepts_ancestors (include_self)", {
+  infections <- concepts_ancestors(conceptIds = c("68566005", "233604007"),
+                                    include_self = TRUE,
+                                    silent = TRUE)
+  expect_true("68566005" %in% infections$`68566005`$conceptId)
+  expect_true("233604007" %in% infections$`233604007`$conceptId)
 })
+
 
 # concepts_descendants ----------------------------------------------------
 
 test_that("concepts_descendants", {
 
   infections <- concepts_descendants(conceptIds = c("68566005", "233604007"),
-                                     direct_descendants = FALSE,
-                                     activeFilter = TRUE,
                                      silent = TRUE,
                                      limit = 250)
   expect_true("882784691000119100" %in% infections$`233604007`$conceptId)
@@ -131,22 +123,19 @@ test_that("concepts_descendants", {
   expect_true("882784691000119100" %in% infections$`233604007`$conceptId)
 
   expect_warning(concepts_descendants(conceptIds = "blurgh"))
+
+  expect_false("68566005" %in% infections$`68566005`$conceptId)
+  expect_false("233604007" %in% infections$`233604007`$conceptId)
 })
 
-test_that("concepts_descendants (direct)", {
+test_that("concepts_descendants (include_self)", {
 
-  infections_direct <- concepts_descendants(conceptIds = c("233604007", "68566005"),
-                                            direct_descendants = TRUE,
-                                            activeFilter = TRUE,
-                                            silent = FALSE)
-  infections_direct <- concepts_descendants(conceptIds = c("233604007", "68566005"),
-                                            direct_descendants = TRUE,
-                                            activeFilter = TRUE,
-                                            silent = FALSE)
-  expect_false("882784691000119100" %in% infections_direct$`233604007`$conceptId)
-  expect_false("1469007" %in% infections_direct$`68566005`$conceptId)
-  expect_true("422747000" %in% infections_direct$`68566005`$conceptId)
-
+  infections <- concepts_descendants(conceptIds = c("68566005", "233604007"),
+                                     include_self = TRUE,
+                                     silent = TRUE,
+                                     limit = 250)
+  expect_true("68566005" %in% infections$`68566005`$conceptId)
+  expect_true("233604007" %in% infections$`233604007`$conceptId)
 })
 
 # concepts_descriptions ---------------------------------------------------
