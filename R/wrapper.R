@@ -122,6 +122,65 @@ concepts_find <- function(term = NULL,
 }
 
 
+#' Determine where a concept of interest belongs to a target set of concepts
+#'
+#' @description This function examines a vector of \code{concept_ids} identifiers
+#' against a target set defined by an ECL expression
+#'
+#' @param concept_ids character vector of identifiers of domain concepts to be analysed
+#' @param target_ecl character ECL expression defining the target set of concepts
+#' @param silent whether to hide progress bar. Default is \code{FALSE}
+#' @param endpoint URL of a SNOMED CT Terminology Server REST API endpoint.
+#'  See \code{\link{snomedizer_options}}.
+#' @param branch a string for the name of the API endpoint branch to use (most
+#' commonly \code{"MAIN"}). See \code{\link{snomedizer_options}}.
+#' @return a logical vector with the same order as \code{concept_ids} indicating
+#' whether each concept is included in the target set or not. \code{NA} denotes
+#' a REST error.
+#' @export
+#' @seealso \href{https://confluence.ihtsdotools.org/display/DOCECL/Appendix+D+-+ECL+Quick+reference}{ECL quick reference table by SNOMED International}
+#' @examples
+#' concepts_included_in(
+#'   concept_ids = "16227691000119107 | Post-surgical excision site",
+#'   target_ecl = "123037004 | Body structure"
+#' )
+#' concepts_included_in(
+#'   concept_ids = "48800003 | Ear lobule structure (body structure) |",
+#'   target_ecl = "233604007 | Pneumonia (disorder) |"
+#' )
+concepts_included_in <- function(
+  concept_ids,
+  target_ecl,
+  silent = FALSE,
+  endpoint = snomedizer_options_get("endpoint"),
+  branch = snomedizer_options_get("branch")
+) {
+
+  stopifnot(length(target_ecl) == 1)
+
+  purrr::pmap_lgl(
+    list(concept_ids, target_ecl),
+    function(concept_id, target_ecl) {
+      x <- api_concepts(
+        ecl = paste0(concept_id,
+                     " AND <<(",
+                     target_ecl, ")"),
+        limit = 1
+      )
+      if(httr::http_error(x)) {
+        warning(paste0(
+          "Status ", x$status_code, " ", httr::content(x, encoding = "UTF-8")$error,
+          "\n", httr::content(x, encoding = "UTF-8")$message
+        ), call. = FALSE)
+        return(NA_complex_)
+      } else {
+        return(
+          as.logical(httr::content(x)$total)
+        )
+    }
+  })
+}
+
 #' Fetch active ancestors/descendants of one or more concepts
 #'
 #' @description Wrapper functions of \code{\link{api_concepts}} that fetch ancestors
