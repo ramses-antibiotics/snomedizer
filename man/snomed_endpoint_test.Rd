@@ -23,3 +23,4 @@ snomed_endpoint_test(
   branch = "MAIN"
 )
 }
+\concept{utilities#'}

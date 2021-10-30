@@ -4,12 +4,14 @@
 \alias{concepts_descriptions}
 \title{Fetch descriptions of one or more concepts}
 \usage{
-concepts_descriptions(conceptIds, encoding = "UTF-8", ...)
+concepts_descriptions(conceptIds, encoding = "UTF-8", silent = FALSE, ...)
 }
 \arguments{
 \item{conceptIds}{a character vector of concept identifiers}
 
-\item{encoding}{HTTP charset parameter to use (default is \code{"UTF-8"})}
+\item{encoding}{HTTP charset parameter to use. Default is \code{"UTF-8"}.}
+
+\item{silent}{whether to hide progress bar. Default is \code{FALSE}.}
 
 \item{...}{other optional arguments listed in \code{\link{api_operations}}, such as
 \code{endpoint}, \code{branch} or \code{limit}}
@@ -36,3 +38,10 @@ based in, and the purpose of your work. See details on \link{snomedizer}.
 pneumonia_descriptions <- concepts_descriptions(conceptIds = "233604007")
 str(pneumonia_descriptions)
 }
+\seealso{
+Other wrapper: 
+\code{\link{concepts_descendants}()},
+\code{\link{concepts_find}()},
+\code{\link{release_version}()}
+}
+\concept{wrapper}

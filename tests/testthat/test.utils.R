@@ -10,6 +10,7 @@ test_that("default options load", {
   onLoadendpoint <- snomedizer_options_get("endpoint")
   expect_true(onLoadendpoint == "https://snowstorm.ihtsdotools.org/snowstorm/snomed-ct" |
                 onLoadendpoint == "https://browser.ihtsdotools.org/snowstorm/snomed-ct")
+  expect_error(snomedizer_options_get("Kaiserschmarren"))
 })
 
 # snomedizer_default_options ----------------------------------------------

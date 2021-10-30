@@ -28,7 +28,9 @@ result_completeness(api_concepts(term = "pneumonia", limit = 10))
 \seealso{
 Other utilities: 
 \code{\link{result_flatten}()},
+\code{\link{snomed_public_endpoint_list}()},
 \code{\link{snomed_public_endpoint_suggest}()},
-\code{\link{snomedizer_options}}
+\code{\link{snomedizer_options}},
+\code{\link{snomedizer_version_compatibility}()}
 }
 \concept{utilities}

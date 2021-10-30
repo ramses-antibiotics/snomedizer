@@ -16,6 +16,8 @@ Find a public SNOMED CT endpoint
 Other utilities: 
 \code{\link{result_completeness}()},
 \code{\link{result_flatten}()},
-\code{\link{snomedizer_options}}
+\code{\link{snomed_public_endpoint_list}()},
+\code{\link{snomedizer_options}},
+\code{\link{snomedizer_version_compatibility}()}
 }
 \concept{utilities}

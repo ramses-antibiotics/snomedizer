@@ -28,3 +28,10 @@ on 31 January and 31 July in a format known as Release Format 2 (RF2).
 \references{
 \href{SNOMED CT Release File Specifications}{http://snomed.org/rfs}
 }
+\seealso{
+Other wrapper: 
+\code{\link{concepts_descendants}()},
+\code{\link{concepts_descriptions}()},
+\code{\link{concepts_find}()}
+}
+\concept{wrapper}

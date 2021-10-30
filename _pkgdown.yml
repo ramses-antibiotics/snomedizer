@@ -2,6 +2,13 @@ destination: docs
 template:
   params:
     bootswatch: flatly
+  opengraph:
+    image:
+      src: man/figures/logo.png
+      alt: "snomedizer: R Interface to the SNOMED CT Terminology Server REST API"
+    twitter:
+      creator: "@peterdutey"
+      card: summary
 
 url: https://snomedizer.web.app
 
@@ -21,6 +28,10 @@ navbar:
 
 
 reference:
+
+- title: SNOMED CT licence information
+  contents:
+  - snomedizer
 - title: Main functions
   desc:  User-friendly functions provided for every day tasks
   contents:

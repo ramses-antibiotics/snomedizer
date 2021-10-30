@@ -300,3 +300,68 @@ test_that("api_code_system_all_versions", {
     "SNOMEDCT" %in% result_flatten(api_code_system_all_versions(shortName = "SNOMEDCT"))$shortName
   )
 })
+
+
+# api_browser_refset_members ---------------------------------------------
+
+test_that("api_browser_refset_members includes ICD10 map", {
+  refsets <- httr::content(api_browser_refset_members())
+  refsets <- dplyr::bind_rows(lapply(refsets$referenceSets, as.data.frame))
+  expect_true("447562003" %in% refsets$id)
+})
+
+test_that("api_browser_refset_members filtering by RefSet member", {
+  refsets <- httr::content(api_browser_refset_members(referencedComponentId = "49436004"))
+  refsets <- dplyr::bind_rows(lapply(refsets$referenceSets, as.data.frame))
+  expect_true("447562003" %in% refsets$id)
+})
+
+test_that("api_browser_refset_members filtering by RefSet member and module", {
+  refsets <- httr::content(api_browser_refset_members(
+    referencedComponentId = "49436004",
+    referenceSetModule = "<900000000000445007"
+    ))
+  refsets <- dplyr::bind_rows(lapply(refsets$referenceSets, as.data.frame))
+  expect_true("447562003" %in% refsets$id)
+
+  refsets <- httr::content(api_browser_refset_members(
+    referencedComponentId = "49436004",
+    referenceSetModule = "900000000000445007"
+  ))
+  expect_length(refsets$referenceSets, 0)
+})
+
+test_that("api_browser_refset_members filtering by RefSet member and RefSet", {
+  refsets <- httr::content(api_browser_refset_members(
+    referencedComponentId = "49436004",
+    referenceSet = "447562003"
+  ))
+  refsets <- dplyr::bind_rows(lapply(refsets$referenceSets, as.data.frame))
+  expect_equal(refsets$id, "447562003")
+})
+
+# api_refset_members -----------------------------------------------------
+
+test_that("api_refset_members find all concepts within ICD N39.0 urinary tract inf", {
+  uti_concepts <- httr::content(api_refset_members(
+    mapTarget = "N39.0",
+    referenceSet = "447562003"
+  ))
+  uti_concepts <- dplyr::bind_rows(lapply(uti_concepts$items, as.data.frame))
+  expect_true(all(
+    c("61373006", "4800001") %in% uti_concepts$referencedComponent.conceptId
+  ))
+})
+
+test_that("api_members find ICD code(s) corresponding to bacteriuria", {
+  bacteriuria <- httr::content(api_refset_members(
+    referenceSet = "447562003",
+    referencedComponentId = "61373006"
+  ))
+  bacteriuria <- dplyr::bind_rows(lapply(bacteriuria$items, as.data.frame))
+  expect_equal(
+    bacteriuria$additionalFields.mapTarget,
+    "N39.0"
+  )
+})
+

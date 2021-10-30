@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# <img src="man/figures/logo.png" align="right" width="150px"/><code>snomedizer</code>: R Interface to the SNOMED CT Terminology Server REST API
+# <img src="man/figures/logo.png" align="right" width="170px"/>snomedizer: R Interface to the SNOMED CT Terminology Server REST API
 
 <!-- badges: start -->
 
@@ -14,11 +14,7 @@ has not yet been a stable, usable release suitable for the
 public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
 <!-- badges: end -->
 
-<p class="lead">
-<code>snomedizer</code> is an R package to manipulate the SNOMED
-clinical ontology using the [SNOMED CT Terminology Server REST
-API](https://github.com/IHTSDO/snowstorm).
-</p>
+<p class="lead">Interrogate the SNOMED CT clinical ontology using the <a href="https://github.com/IHTSDO/snowstorm">SNOMED International Terminology Server REST API</a>.</p>
 
 ## Installation
 
@@ -62,7 +58,7 @@ library(snomedizer)
 
 api_concepts(term = "pneumonia", activeFilter = TRUE)
 #> Response [https://snowstorm.ihtsdotools.org/snowstorm/snomed-ct/MAIN/concepts?term=pneumonia&limit=50&offset=0&activeFilter=TRUE]
-#>   Date: 2021-08-16 09:51
+#>   Date: 2021-09-07 17:25
 #>   Status: 200
 #>   Content-Type: application/json
 #>   Size: 22 kB
@@ -86,7 +82,7 @@ provide results as data frames:
 concepts_find(term = "pneumonia", limit = 5) %>% 
   dplyr::select(conceptId, fsn.term, pt.term) 
 #> Warning: 
-#> This server request returned just 5 of a total 606 results.
+#> This server request returned just 5 of a total 589 results.
 #> Please increase the server `limit` to fetch all results.
 #>   conceptId                         fsn.term            pt.term
 #> 1 233604007             Pneumonia (disorder)          Pneumonia
@@ -139,6 +135,20 @@ licences:
 -   residents of other Member Countries and low-income countries are
     also eligible. More information can be found on the [SNOMED
     International website](https://www.snomed.org/snomed-ct/get-snomed).
+
+### Licence
+
+Copyright © 2020 University College London
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the
+Free Software Foundation; either version 3 of the License, or (at your
+option) any later version.
+
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
+Public License for more details.
 
 ## Funders
 

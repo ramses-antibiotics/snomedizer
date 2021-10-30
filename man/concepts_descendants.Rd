@@ -9,6 +9,7 @@ concepts_descendants(
   direct_descendants = FALSE,
   activeFilter = TRUE,
   encoding = "UTF-8",
+  silent = FALSE,
   ...
 )
 }
@@ -25,6 +26,8 @@ descendant concepts exclusively. The default is \code{TRUE}. If a single
 value is provided, it will be recycled.}
 
 \item{encoding}{HTTP charset parameter to use (default is \code{"UTF-8"})}
+
+\item{silent}{whether to hide progress bar. Default is \code{FALSE}}
 
 \item{...}{other valid arguments to function \code{\link{api_concepts}},
 for instance \code{endpoint}, \code{branch} or \code{limit}.}
@@ -51,3 +54,10 @@ pneumonia_concepts <- concepts_descendants(conceptIds = "233604007")
 pneumonia_concepts <- concepts_descendants(conceptIds = "233604007", limit = 300)
 head(pneumonia_concepts$`233604007`)
 }
+\seealso{
+Other wrapper: 
+\code{\link{concepts_descriptions}()},
+\code{\link{concepts_find}()},
+\code{\link{release_version}()}
+}
+\concept{wrapper}

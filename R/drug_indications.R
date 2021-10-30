@@ -3,7 +3,7 @@
 #' Sample of antibiotic prescription records
 #'
 #' @docType data
-#' @description Dataset containing 403 records of free-text therapy indications
+#' @description Dataset containing records of free-text therapy indications
 #' filled in by doctors when prescription antibiotics
 #' @details A data frame with one row per therapy indication:
 #' \describe{

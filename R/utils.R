@@ -2,30 +2,31 @@
 #' Set SNOMED CT endpoint and other \code{snomedizer} options
 #'
 #' @description Functions to get and set \code{snomedizer} default endpoint and other options
-#' @param option.name the name of an option to return. If NULL (the default),
+#' @param option.name name of a single option to return: \code{"endpoint"},
+#' \code{"branch"}, or \code{"limit"}. If \code{NULL} (the default),
 #' \code{snomedizer_options_get()} returns a list of all options.
-#' @param endpoint URL of a SNOMED CT Terminology Server REST API endpoint.
-#' When the package is loaded, this option is set to the current environment variable
-#' \code{SNOMEDIZER_ENDPOINT} if it exists, or to
-#' \code{\link{snomed_public_endpoint_suggest}()} otherwise.
-#' @param branch string for the branch to use on the SNOMED CT Terminology Server REST API
-#' endpoint. Set to `"MAIN"` by default when the package is loaded.
-#' @param limit integer for the maximum number of results to return. Set to 50 by default
-#' when the package is loaded.
-#' @details  The SNOMED REST API requires several parameters which are
-#' set to default values when this package is launched:
-#' \itemize{
-#'    \item{endpoint} this is the address of the SNOWSTORM terminology server
-#'    to be used. When \code{snomedizer} is loaded, it is set to the current
-#'    environment variable \code{SNOMEDIZER_ENDPOINT}. If no such
-#'     the SNOMED CT version maintained by the official
-#'         SNOWSTORM server.
-#'    \item{branch} a branch name. If no branch name is provided and that none
-#'    has previously been set, a default "MAIN" will be used, pointing to the most
-#'         up-to-date edition of SNOMED CT International Edition.
-#'    \item{limit} an integer stating the the maximum number of results fetched.
-#'    This is set to 50 by default.
+#' @param endpoint address of a SNOMED CT Terminology Server REST API endpoint
+#' @param branch string for the branch name to use on endpoint, for instance
+#' \code{"MAIN"} for the root branch (usually the latest release of
+#' SNOMED CT's International Edition), or \code{"MAIN/2017-07-31"} for a past release.
+#' To obtain a list of all branches available on the current endpoint,
+#' see \code{\link{api_branch}()}
+#' @param limit integer for the maximum number of results to return.
+#' @section Default settings and environment variables:
+#'
+#' When loaded, the snomedizer package will look up for settings provided
+#' to the following environment variables:
+#' \describe{
+#'    \item{\code{SNOMEDIZER_ENDPOINT}}{for the \code{endpoint}. If this variable
+#'    is not specified, snomedizer uses
+#'    \code{\link{snomed_public_endpoint_suggest}()} to pick a public endpoint.}
+#'    \item{\code{SNOMEDIZER_BRANCH}}{for the \code{branch}. If this variable is
+#'    not specified, snomedizer chooses branch \code{"MAIN"} by default.}
+#'    \item{\code{SNOMEDIZER_LIMIT}}{for the \code{limit}. If this variable is
+#'    not specified, snomedizer sets the limit to 50 by default.
+#'    The maximum is 10,000.}
 #' }
+#'
 #' @family utilities
 #' @return The factory setting of the target API parameter.
 #' @seealso To learn how to set environment variables in `.Rprofile` or `.Renviron`, see
@@ -38,17 +39,26 @@ NULL
 #' @rdname snomedizer_options
 #' @export
 snomedizer_options_get <- function(option.name = NULL){
+
+  if ( !is.null(option.name) &&
+       option.name != "endpoint" &&
+       option.name != "branch" &&
+       option.name != "limit" ) {
+    stop("`option.name` must be of length 1 and equal to \"endpoint\", \"branch\" or \"limit\"")
+  }
+
   default_options <- list(
     endpoint = getOption("snomedizer.endpoint"),
     branch = getOption("snomedizer.branch"),
     limit = getOption("snomedizer.limit")
   )
+
   if ( any(is.null(default_options)) ) {
     print(default_options)
-    warning("Invalid snomedizer default options. See `snomedizer_options_set()`")
+    warning("Invalid snomedizer default options. See `?snomedizer_options_set`")
   }
 
-  if (length(option.name) == 1) {
+  if ( !is.null(option.name) ) {
     return(
       default_options[[
         grep(option.name, names(default_options))
@@ -124,12 +134,11 @@ snomedizer_options_set <- function(endpoint = NULL,
 #' @family utilities
 #' @export
 snomed_public_endpoint_suggest <- function() {
-  snomed_public_endpoints <- gsub("/*$", "", list(
-    "https://snowstorm.ihtsdotools.org/snowstorm/snomed-ct/",
-    "https://browser.ihtsdotools.org/snowstorm/snomed-ct/",
-    "https://snowstorm.test-nictiz.nl/",
-    "https://snowstorm.msal.gov.ar/"
-  ))
+
+  snomed_public_endpoints <- gsub(
+    "/*$", "",
+    snomed_public_endpoint_list()
+  )
 
   for(i in seq_along(snomed_public_endpoints)) {
     endpoint_answers <- try(httr::http_error(snomed_public_endpoints[[i]]))
@@ -149,6 +158,27 @@ snomed_public_endpoint_suggest <- function() {
 }
 
 
+#' List of public SNOMED CT endpoints
+#'
+#' @description List a range of know public SNOMED CT Terminology Server
+#' REST API endpoint. To select a currently active endpoint, see
+#' \code{\link{snomed_public_endpoint_suggest}()}
+#' @return a vector of URLs
+#' @family utilities
+#' @export
+snomed_public_endpoint_list <- function() {
+
+  as.list(
+    readLines(
+      system.file(
+        package = "snomedizer",
+        "public_snomed_endpoints"
+      )
+    )
+  )
+
+}
+
 #' Test a SNOMED CT endpoint
 #'
 #' @param endpoint URL of a SNOMED CT Terminology Server REST API endpoint
@@ -156,7 +186,7 @@ snomed_public_endpoint_suggest <- function() {
 #'
 #' @return a boolean indicating whether the endpoint passed the test
 #' @export
-#'
+#' @family utilities#'
 #' @examples
 #' snomed_endpoint_test(
 #'   endpoint = "https://snowstorm.ihtsdotools.org/snowstorm/snomed-ct",
@@ -185,6 +215,7 @@ snomed_endpoint_test <- function(endpoint, branch) {
 #' @param silent whether to hide warnings. Default is `FALSE`
 #' @return a logical value indicating whether the endpoint version is supported
 #' @export
+#' @family utilities
 snomedizer_version_compatibility <- function(
   endpoint = snomedizer_options_get("endpoint"),
   silent = FALSE
@@ -197,13 +228,13 @@ snomedizer_version_compatibility <- function(
   version_minor <- (endpoint_version_num[2] + endpoint_version_num[3] * 0.001)
 
   if (
-    (version_main < 6) |
-    (version_main == 6 & version_minor < 2)
+    (version_main < 7) |
+    (version_main == 7 & version_minor < 3)
   ) {
     warning(
       paste(
         paste0("The selected endpoint version is ", endpoint_version, "."),
-        "This version of snomedizer is designed for endpoint versions 6.2.0 or greater.",
+        "This version of snomedizer is designed for endpoint versions 7.3.0 or greater.",
         "Some function may not work as intended.",
         sep = "\n"
       )
@@ -282,6 +313,7 @@ result_completeness <- function(x, silent = FALSE) {
 #'
 #' @param x a \code{\link{httr}{response}} object from a server request
 #' @keywords internal
+#' @noRd
 .catch_http_error <- function(x) {
   if(httr::http_error(x)) {
     warning(paste0(
@@ -297,6 +329,7 @@ result_completeness <- function(x, silent = FALSE) {
 #' @param rest_url a list of class \code{url} generated by \code{\link[httr]{parse_url}()}
 #' and containing a \code{query} list
 #' @keywords internal
+#' @noRd
 .check_rest_query_length1 <- function(rest_url) {
   if(any(sapply(rest_url$query, length) > 1)){
     stop(paste0("The following arguments must have length <= 1: `",
@@ -310,6 +343,7 @@ result_completeness <- function(x, silent = FALSE) {
 #' @param param a character vector of values to concatenate
 #' @return a character string
 #' @keywords internal
+#' @noRd
 .concatenate_array_parameter <- function(param) {
   if(length(param>1)){
     # `AsIs` used to prevent URL encoding of the ampersand
@@ -325,14 +359,11 @@ result_completeness <- function(x, silent = FALSE) {
 
 
 .validate_limit <- function(limit) {
-  if(is.null(limit)) {
-    stop("`limit` must not be NULL")
+  if(is.null(limit) || is.na(limit)) {
+    stop("`limit` must not be NULL or missing")
   }
   if(length(limit) != 1) {
     stop("`limit` must have length == 1")
-  }
-  if(is.na(limit)) {
-    stop("`limit` must not be missing")
   }
   if(!is.numeric(limit) || limit < 0 ||
      # check is whole number
@@ -340,16 +371,34 @@ result_completeness <- function(x, silent = FALSE) {
     stop("`limit` must be a strictly positive integer")
   }
   if(limit > 10000){
-    warning("Please not the maximum limit on public endpoints is 10,000.")
+    # This is controlled by Java class
+    # org.snomed.snowstorm.rest.ControllerHelper
+    # https://github.com/IHTSDO/snowstorm/blob/master/src/main/java/org/snomed/snowstorm/rest/ControllerHelper.java#L183
+    warning("Please note the maximum limit on public endpoints is 10,000.")
   }
 
   as.integer(limit)
 }
 
 .validate_branch <- function(branch) {
+
+  # See snowstorm documentation
+  # https://github.com/IHTSDO/snowstorm/blob/master/docs/branching-and-merging.md
+
+  # Branch names are controlled by Java class
+  # io.kaicode.elasticvc.api.BranchService
+  # https://github.com/kaicode/elasticvc/blob/master/src/main/java/io/kaicode/elasticvc/api/BranchService.java#L75
+  # They are hierarchical.
+  # The root branch is "MAIN"
+  # Derived SNOMED CT Editions branch off, eg "MAIN/SNOMEDCT-UK"
+  # Past releases branch off too, eg "MAIN/2017-07-31" and "MAIN/SNOMEDCT-UK/2017-07-31"
+
   stopifnot(length(branch) == 1)
   stopifnot(!is.na(branch))
   stopifnot(is.character(branch))
   stopifnot(branch != "")
+  if ( !grepl("^MAIN", branch) ) {
+    stop("snowstorm branches must begin with `MAIN`")
+  }
   utils::URLencode(URL = branch, reserved = TRUE)
 }
