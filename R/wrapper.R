@@ -153,33 +153,72 @@ concepts_included_in <- function(
   target_ecl,
   silent = FALSE,
   endpoint = snomedizer_options_get("endpoint"),
-  branch = snomedizer_options_get("branch")
+  branch = snomedizer_options_get("branch"),
+  encoding = "UTF-8"
 ) {
 
   stopifnot(length(target_ecl) == 1)
 
-  purrr::pmap_lgl(
-    list(concept_ids, target_ecl),
-    function(concept_id, target_ecl) {
-      x <- api_concepts(
-        ecl = paste0(concept_id,
-                     " AND <<(",
-                     target_ecl, ")"),
-        limit = 1
+  unique_concept_ids <- as.character(na.omit(concept_ids))
+  # remove empty strings
+  unique_concept_ids <- grep(pattern = "^$",
+                             x = unique_concept_ids,
+                             value = TRUE, invert = TRUE)
+
+  # split into batches of 200 concepts
+  if( length(unique_concept_ids) > 200 ) {
+
+    if( !silent ) {
+      progress_bar <- progress::progress_bar$new(
+        format = "  [:bar] :percent :eta",
+        total = (trunc(length(unique_concept_ids)/200) + 1)
       )
-      if(httr::http_error(x)) {
-        warning(paste0(
-          "Status ", x$status_code, " ", httr::content(x, encoding = "UTF-8")$error,
-          "\n", httr::content(x, encoding = "UTF-8")$message
-        ), call. = FALSE)
-        return(NA_complex_)
-      } else {
-        return(
-          as.logical(httr::content(x)$total)
-        )
+      progress_bar$tick(0)
     }
-  })
+
+    unique_concept_ids <- split(
+      unique_concept_ids,
+      sort(trunc(seq_len(length(unique_concept_ids))/200))
+    )
+  }
+
+  x <- purrr::map(
+    .x = unique_concept_ids,
+    .f = function(chunk, ecl, endpoint,
+                  branch ,encoding, silent) {
+      output <- api_concepts(
+        conceptIds = chunk,
+        ecl = ecl,
+        endpoint = endpoint,
+        branch = branch,
+        limit = 250)
+      if ( !silent ) {
+        progress_bar$tick()
+      }
+
+      if(httr::http_error(output)) {
+        return(httr::content(output))
+      } else if(length(httr::content(output)$items) == 0) {
+        return(NULL)
+      } else {
+        ignore <- result_completeness(output)
+        output <- result_flatten(output, encoding = encoding)
+        return(output)
+      }},
+    endpoint = endpoint,
+    branch = branch,
+    encoding = encoding,
+    silent = silent,
+    ecl = paste0("<<(", target_ecl, ")")
+  )
+
+  x <- dplyr::bind_rows(x)
+
+  ## Danger. Concepts unknown to SNOMED should probably be marked as NA.
+  concept_ids %in% x$conceptId
 }
+
+
 
 #' Fetch active ancestors/descendants of one or more concepts
 #'
