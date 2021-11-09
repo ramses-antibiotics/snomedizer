@@ -141,12 +141,12 @@ concepts_find <- function(term = NULL,
 #' @seealso \href{https://confluence.ihtsdotools.org/display/DOCECL/Appendix+D+-+ECL+Quick+reference}{ECL quick reference table by SNOMED International}
 #' @examples
 #' concepts_included_in(
-#'   concept_ids = "16227691000119107 | Post-surgical excision site",
-#'   target_ecl = "123037004 | Body structure"
+#'   concept_ids = "16227691000119107",  # Post-surgical excision site
+#'   target_ecl = "123037004"            # Body structure
 #' )
 #' concepts_included_in(
-#'   concept_ids = "48800003 | Ear lobule structure (body structure) |",
-#'   target_ecl = "233604007 | Pneumonia (disorder) |"
+#'   concept_ids = "48800003",           # Ear lobule structure
+#'   target_ecl = "233604007"            # Pneumonia
 #' )
 concepts_included_in <- function(
   concept_ids,
@@ -165,27 +165,31 @@ concepts_included_in <- function(
                              x = unique_concept_ids,
                              value = TRUE, invert = TRUE)
 
-  # split into batches of 200 concepts
-  if( length(unique_concept_ids) > 200 ) {
-
-    if( !silent ) {
-      progress_bar <- progress::progress_bar$new(
-        format = "  [:bar] :percent :eta",
-        total = (trunc(length(unique_concept_ids)/200) + 1)
-      )
-      progress_bar$tick(0)
-    }
-
-    unique_concept_ids <- split(
-      unique_concept_ids,
-      sort(trunc(seq_len(length(unique_concept_ids))/200))
+  if( !silent ) {
+    progress_bar <- progress::progress_bar$new(
+      format = "  [:bar] :percent :eta",
+      total = (trunc(length(unique_concept_ids)/200) + 1)
     )
+    progress_bar$tick(0)
+  } else {
+    progress_bar <- NULL
   }
+
+  # split into batches of 200 concepts
+  unique_concept_ids <- split(
+    unique_concept_ids,
+    sort(trunc(seq_len(length(unique_concept_ids))/200))
+  )
 
   x <- purrr::map(
     .x = unique_concept_ids,
-    .f = function(chunk, ecl, endpoint,
-                  branch ,encoding, silent) {
+    .f = function(chunk,
+                  ecl,
+                  endpoint,
+                  branch,
+                  encoding,
+                  silent,
+                  progress_bar) {
       output <- api_concepts(
         conceptIds = chunk,
         ecl = ecl,
@@ -197,25 +201,31 @@ concepts_included_in <- function(
       }
 
       if(httr::http_error(output)) {
-        return(httr::content(output))
-      } else if(length(httr::content(output)$items) == 0) {
+        return(httr::content(output, encoding = encoding))
+      } else if(length(httr::content(output, encoding = encoding)$items) == 0) {
         return(NULL)
       } else {
         ignore <- result_completeness(output)
         output <- result_flatten(output, encoding = encoding)
         return(output)
       }},
+    ecl = paste0("<<(", target_ecl, ")"),
     endpoint = endpoint,
     branch = branch,
     encoding = encoding,
     silent = silent,
-    ecl = paste0("<<(", target_ecl, ")")
+    progress_bar = progress_bar
   )
 
   x <- dplyr::bind_rows(x)
 
   ## Danger. Concepts unknown to SNOMED should probably be marked as NA.
-  concept_ids %in% x$conceptId
+
+  if( nrow(x) == 0 ) {
+    rep(FALSE, length(concept_ids))
+  } else {
+    concept_ids %in% x$conceptId
+  }
 }
 
 
