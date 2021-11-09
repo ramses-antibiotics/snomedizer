@@ -24,7 +24,7 @@ library(dplyr)
 
 ## What is SNOMED CT?
 
-SNOMED CT is the international standard ontology of clinical terms. It can be thought of as an encyclopedia on all things relevant to medicine, for instance: anatomical structures, diagnoses, medications, tests,  surgical procedures, pathogens such as SARS-CoV-2 or *Candidida auris*, or even clinical findings, such as a high temperature. 
+SNOMED CT is the international standard ontology of clinical terms. It can be thought of as an encyclopedia on all things relevant to medicine, for instance: anatomical structures, diagnoses, medications, tests,  surgical procedures, pathogens such as SARS-CoV-2 or *Candida auris*, or even clinical findings, such as a high temperature. 
 
 SNOMED CT is not just a list of terms. It is an ontology made up of concepts which are fully defined in relation to each other. This allows complex inferences illustrated throughout the present vignette. You can learn more about ontologies in this [introduction workshop](https://github.com/nicolevasilevsky/CSH_IntroToOntologies/blob/master/IntroToOntologies_CSH_2018-10-28g.pdf) [@ontology101].
 
