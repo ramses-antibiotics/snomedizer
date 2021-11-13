@@ -134,6 +134,7 @@ concepts_find <- function(term = NULL,
 #'  See \code{\link{snomedizer_options}}.
 #' @param branch a string for the name of the API endpoint branch to use (most
 #' commonly \code{"MAIN"}). See \code{\link{snomedizer_options}}.
+#' @param encoding HTTP charset parameter to use (default is \code{"UTF-8"})
 #' @return a logical vector with the same order as \code{concept_ids} indicating
 #' whether each concept is included in the target set or not. \code{NA} denotes
 #' a REST error.
@@ -148,6 +149,10 @@ concepts_find <- function(term = NULL,
 #'   concept_ids = "48800003",           # Ear lobule structure
 #'   target_ecl = "233604007"            # Pneumonia
 #' )
+#' concepts_included_in(
+#'   concept_ids = "39732311000001104",  # Medical product only found UK Edition
+#'   target_ecl = "27658006"             # Product containing amoxicillin
+#' )
 concepts_included_in <- function(
   concept_ids,
   target_ecl,
@@ -159,11 +164,28 @@ concepts_included_in <- function(
 
   stopifnot(length(target_ecl) == 1)
 
-  unique_concept_ids <- as.character(na.omit(concept_ids))
+  unique_concept_ids <- as.character(stats::na.omit(concept_ids))
   # remove empty strings
   unique_concept_ids <- grep(pattern = "^$",
                              x = unique_concept_ids,
                              value = TRUE, invert = TRUE)
+
+  if( length(unique_concept_ids) == 0 ) {
+    return(rep(as.logical(NA), length(concept_ids)))
+  }
+
+  # First determine whether the input concepts are known
+  valid_concepts <- concepts_find(
+    conceptIds = unique_concept_ids,
+    silent = silent,
+    endpoint = endpoint,
+    branch = branch,
+    encoding = encoding
+  )
+
+  if( is.null(valid_concepts) ) {
+    return(rep(as.logical(NA), length(concept_ids)))
+  }
 
   if( !silent ) {
     progress_bar <- progress::progress_bar$new(
@@ -219,12 +241,19 @@ concepts_included_in <- function(
 
   x <- dplyr::bind_rows(x)
 
-  ## Danger. Concepts unknown to SNOMED should probably be marked as NA.
-
   if( nrow(x) == 0 ) {
-    rep(FALSE, length(concept_ids))
+    dplyr::case_when(
+      concept_ids %in% valid_concepts$conceptId ~ FALSE,
+      TRUE ~ as.logical(NA)
+    )
   } else {
-    concept_ids %in% x$conceptId
+    dplyr::case_when(
+      concept_ids %in% x$conceptId &
+        concept_ids %in% valid_concepts$conceptId ~ TRUE,
+      !(concept_ids %in% x$conceptId) &
+        concept_ids %in% valid_concepts$conceptId ~ FALSE,
+      TRUE ~ as.logical(NA)
+    )
   }
 }
 

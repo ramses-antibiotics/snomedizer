@@ -9,7 +9,8 @@ concepts_included_in(
   target_ecl,
   silent = FALSE,
   endpoint = snomedizer_options_get("endpoint"),
-  branch = snomedizer_options_get("branch")
+  branch = snomedizer_options_get("branch"),
+  encoding = "UTF-8"
 )
 }
 \arguments{
@@ -24,6 +25,8 @@ See \code{\link{snomedizer_options}}.}
 
 \item{branch}{a string for the name of the API endpoint branch to use (most
 commonly \code{"MAIN"}). See \code{\link{snomedizer_options}}.}
+
+\item{encoding}{HTTP charset parameter to use (default is \code{"UTF-8"})}
 }
 \value{
 a logical vector with the same order as \code{concept_ids} indicating
@@ -36,12 +39,16 @@ against a target set defined by an ECL expression
 }
 \examples{
 concepts_included_in(
-  concept_ids = "16227691000119107 | Post-surgical excision site",
-  target_ecl = "123037004 | Body structure"
+  concept_ids = "16227691000119107",  # Post-surgical excision site
+  target_ecl = "123037004"            # Body structure
 )
 concepts_included_in(
-  concept_ids = "48800003 | Ear lobule structure (body structure) |",
-  target_ecl = "233604007 | Pneumonia (disorder) |"
+  concept_ids = "48800003",           # Ear lobule structure
+  target_ecl = "233604007"            # Pneumonia
+)
+concepts_included_in(
+  concept_ids = "39732311000001104",  # Medical product only found UK Edition
+  target_ecl = "27658006"             # Product containing amoxicillin
 )
 }
 \seealso{
