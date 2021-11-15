@@ -91,7 +91,7 @@ jobs:
 
       - name: Code coverage
         if: github.ref == 'refs/heads/master' && github.event_name == 'push' && matrix.config.os == 'ubuntu-20.04' &&  matrix.config.r == 'release'
-        run: covr::package_coverage(type = "vignettes", quiet = FALSE)
+        run: covr::package_coverage(type = "all", quiet = FALSE)
         #covr::codecov(type = "all", quiet = FALSE, token = Sys.getenv("CODECOVTOKEN"))
         shell: Rscript {0}
 
