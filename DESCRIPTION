@@ -8,6 +8,11 @@ Authors@R: c(
            role = c("aut", "cre", "res"),
            email = "p.dutey-magni@ucl.ac.uk",
            comment = c(ORCID = "0000-0002-8942-9836")),
+    person(given = "Anika",
+           family = "Cawthorn",
+           role = c("rev", "res"),
+           email = "a.cawthorn@ucl.ac.uk",  
+           comment = c(ORCID = "0000-0002-2438-7495")),
     person("University College London", role = c("cph")))
 Description: Interrogate the SNOMED CT clinical ontology using the 
    SNOMED International Terminology Server REST API <https://github.com/IHTSDO/snowstorm>.
