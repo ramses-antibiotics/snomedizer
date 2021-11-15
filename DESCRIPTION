@@ -1,6 +1,6 @@
 Package: snomedizer
 Type: Package
-Title: R Interface to the SNOMED-CT Terminology Server REST API
+Title: R Interface to the SNOMED CT Terminology Server REST API
 Version: 0.1.0
 Authors@R: c(
     person(given = "Peter",
@@ -8,8 +8,13 @@ Authors@R: c(
            role = c("aut", "cre", "res"),
            email = "p.dutey-magni@ucl.ac.uk",
            comment = c(ORCID = "0000-0002-8942-9836")),
+    person(given = "Anika",
+           family = "Cawthorn",
+           role = c("rev", "res"),
+           email = "a.cawthorn@ucl.ac.uk",  
+           comment = c(ORCID = "0000-0002-2438-7495")),
     person("University College London", role = c("cph")))
-Description: Manipulate the SNOMED CT clinical ontology using the 
+Description: Interrogate the SNOMED CT clinical ontology using the 
    SNOMED International Terminology Server REST API <https://github.com/IHTSDO/snowstorm>.
 URL: https://github.com/ramses-antibiotics/snomedizer
 BugReports: https://github.com/ramses-antibiotics/snomedizer/issues
@@ -26,7 +31,8 @@ Imports:
     stringr,
     httr,
     methods,
-    progress
+    progress,
+    Rdpack (>= 0.7),
 Suggests: 
     testthat,
     tidyr,
@@ -38,6 +44,8 @@ Suggests:
     stopwords,
     pkgdown,
     R.utils,
-    text2vec
+    text2vec,
+    oysteR
 RoxygenNote: 7.1.1
 VignetteBuilder: knitr
+RdMacros: Rdpack

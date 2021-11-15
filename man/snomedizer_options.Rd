@@ -11,19 +11,19 @@ snomedizer_options_get(option.name = NULL)
 snomedizer_options_set(endpoint = NULL, branch = NULL, limit = NULL)
 }
 \arguments{
-\item{option.name}{the name of an option to return. If NULL (the default),
+\item{option.name}{name of a single option to return: \code{"endpoint"},
+\code{"branch"}, or \code{"limit"}. If \code{NULL} (the default),
 \code{snomedizer_options_get()} returns a list of all options.}
 
-\item{endpoint}{URL of a SNOMED CT Terminology Server REST API endpoint.
-When the package is loaded, this option is set to the current environment variable
-\code{SNOMEDIZER_ENDPOINT} if it exists, or to
-\code{\link{snomed_public_endpoint_suggest}()} otherwise.}
+\item{endpoint}{address of a SNOMED CT Terminology Server REST API endpoint}
 
-\item{branch}{string for the branch to use on the SNOMED CT Terminology Server REST API
-endpoint. Set to `"MAIN"` by default when the package is loaded.}
+\item{branch}{string for the branch name to use on endpoint, for instance
+\code{"MAIN"} for the root branch (usually the latest release of
+SNOMED CT's International Edition), or \code{"MAIN/2017-07-31"} for a past release.
+To obtain a list of all branches available on the current endpoint,
+see \code{\link{api_branch}()}}
 
-\item{limit}{integer for the maximum number of results to return. Set to 50 by default
-when the package is loaded.}
+\item{limit}{integer for the maximum number of results to return.}
 }
 \value{
 The factory setting of the target API parameter.
@@ -31,22 +31,23 @@ The factory setting of the target API parameter.
 \description{
 Functions to get and set \code{snomedizer} default endpoint and other options
 }
-\details{
-The SNOMED REST API requires several parameters which are
-set to default values when this package is launched:
-\itemize{
-   \item{endpoint} this is the address of the SNOWSTORM terminology server
-   to be used. When \code{snomedizer} is loaded, it is set to the current
-   environment variable \code{SNOMEDIZER_ENDPOINT}. If no such
-    the SNOMED CT version maintained by the official
-        SNOWSTORM server.
-   \item{branch} a branch name. If no branch name is provided and that none
-   has previously been set, a default "MAIN" will be used, pointing to the most
-        up-to-date edition of SNOMED CT International Edition.
-   \item{limit} an integer stating the the maximum number of results fetched.
-   This is set to 50 by default.
+\section{Default settings and environment variables}{
+
+
+When loaded, the snomedizer package will look up for settings provided
+to the following environment variables:
+\describe{
+   \item{\code{SNOMEDIZER_ENDPOINT}}{for the \code{endpoint}. If this variable
+   is not specified, snomedizer uses
+   \code{\link{snomed_public_endpoint_suggest}()} to pick a public endpoint.}
+   \item{\code{SNOMEDIZER_BRANCH}}{for the \code{branch}. If this variable is
+   not specified, snomedizer chooses branch \code{"MAIN"} by default.}
+   \item{\code{SNOMEDIZER_LIMIT}}{for the \code{limit}. If this variable is
+   not specified, snomedizer sets the limit to 50 by default.
+   The maximum is 10,000.}
 }
 }
+
 \examples{
 snomedizer_options_get()
 }
@@ -57,6 +58,7 @@ To learn how to set environment variables in `.Rprofile` or `.Renviron`, see
 Other utilities: 
 \code{\link{result_completeness}()},
 \code{\link{result_flatten}()},
+\code{\link{snomed_public_endpoint_list}()},
 \code{\link{snomed_public_endpoint_suggest}()},
 \code{\link{snomedizer_version_compatibility}()}
 }

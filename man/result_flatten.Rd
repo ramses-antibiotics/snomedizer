@@ -29,6 +29,7 @@ str(flattened_results)
 \seealso{
 Other utilities: 
 \code{\link{result_completeness}()},
+\code{\link{snomed_public_endpoint_list}()},
 \code{\link{snomed_public_endpoint_suggest}()},
 \code{\link{snomedizer_options}},
 \code{\link{snomedizer_version_compatibility}()}

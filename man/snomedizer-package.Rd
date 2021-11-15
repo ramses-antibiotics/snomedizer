@@ -4,11 +4,11 @@
 \name{snomedizer-package}
 \alias{snomedizer}
 \alias{snomedizer-package}
-\title{snomedizer: R Interface to the SNOMED-CT Terminology Server REST API}
+\title{snomedizer: R Interface to the SNOMED CT Terminology Server REST API}
 \description{
 \if{html}{\figure{logo.png}{options: align='right' alt='logo' width='120'}}
 
-Manipulate the SNOMED CT clinical ontology using the 
+Interrogate the SNOMED CT clinical ontology using the 
    SNOMED International Terminology Server REST API <https://github.com/IHTSDO/snowstorm>.
 }
 \section{SNOMED CT licensing}{
@@ -19,7 +19,7 @@ based in, and the purpose of your work. Although SNOMED International allows acc
 SNOMED CT terminology server hosted by IHSTO to anyone for reference purpose, uses for data
 analysis or health care production systems is subject to other licences.
 
-SNOMED International allows access to public SNOMED-CT terminology servers to anyone
+SNOMED International allows access to public SNOMED CT terminology servers to anyone
 for strict 'reference purposes' under the \href{https://browser.ihtsdotools.org/}{SNOMED
 International SNOMED CT Browser License Agreement} (see section below).
 
@@ -44,9 +44,9 @@ It is subject to the
 reproduced below:
 
 \enumerate{
-\item The meaning of the terms “Affiliate”, or “Data Analysis System”, “Data Creation System”,
-“Derivative”, “End User”, “Extension”, “Member”, “Non-Member Territory”, “SNOMED CT”
-and “SNOMED CT Content” are as defined in the SNOMED International Affiliate License Agreement
+\item The meaning of the terms "Affiliate", or "Data Analysis System", "Data Creation System",
+"Derivative", "End User", "Extension", "Member", "Non-Member Territory", "SNOMED CT"
+and "SNOMED CT Content" are as defined in the SNOMED International Affiliate License Agreement
 (see \url{http://snomed.org/license-affiliate}).
 
 \item Information about Affiliate Licensing is available at \url{https://www.snomed.org/snomed-ct/get-snomed}.
@@ -73,6 +73,20 @@ following sub-license limitations: \itemize{
   \item c) In the event of termination of the Affiliate License Agreement, the use of SNOMED International SNOMED CT Browser will be subject to the End User limitations noted in 4.
   }
 }
+}
+
+\section{snomedizer licence}{
+
+Copyright © 2020 University College London
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the Free
+Software Foundation; either version 3 of the License, or (at your option)
+any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 }
 
 \seealso{

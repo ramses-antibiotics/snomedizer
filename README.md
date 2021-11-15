@@ -9,12 +9,10 @@
 status](https://github.com/ramses-antibiotics/snomedizer/workflows/R-CMD-check/badge.svg?branch=master)](https://github.com/ramses-antibiotics/snomedizer/actions)
 [![Codecov test
 coverage](https://codecov.io/gh/ramses-antibiotics/snomedizer/branch/master/graph/badge.svg)](https://codecov.io/gh/ramses-antibiotics/snomedizer?branch=master)
-[![Project Status: WIP – Initial development is in progress, but there
-has not yet been a stable, usable release suitable for the
-public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
+[![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 <!-- badges: end -->
 
-<p class="lead">Manipulate the SNOMED CT clinical ontology using the <a href="https://github.com/IHTSDO/snowstorm">SNOMED International Terminology Server REST API</a>.</p>
+<p class="lead">Interrogate the SNOMED CT clinical ontology using the <a href="https://github.com/IHTSDO/snowstorm">SNOMED International Terminology Server REST API</a>.</p>
 
 ## Installation
 
@@ -44,8 +42,8 @@ server](https://browser.ihtsdotools.org/snowstorm/snomed-ct/) available
 for reference purposes **only** (see [terms &
 conditions](#terms--conditions)).
 
-For example, [`GET
-/branch/concepts`](https://snowstorm.ihtsdotools.org/snowstorm/snomed-ct/swagger-ui.html#!/Concepts/findConceptsUsingGET)
+For example,
+[`GET /branch/concepts`](https://snowstorm.ihtsdotools.org/snowstorm/snomed-ct/swagger-ui.html#!/Concepts/findConceptsUsingGET)
 is implemented in `api_concepts()`:
 
 ``` r
@@ -58,7 +56,7 @@ library(snomedizer)
 
 api_concepts(term = "pneumonia", activeFilter = TRUE)
 #> Response [https://snowstorm.ihtsdotools.org/snowstorm/snomed-ct/MAIN/concepts?term=pneumonia&limit=50&offset=0&activeFilter=TRUE]
-#>   Date: 2021-08-16 16:36
+#>   Date: 2021-09-07 17:25
 #>   Status: 200
 #>   Content-Type: application/json
 #>   Size: 22 kB
@@ -82,7 +80,7 @@ provide results as data frames:
 concepts_find(term = "pneumonia", limit = 5) %>% 
   dplyr::select(conceptId, fsn.term, pt.term) 
 #> Warning: 
-#> This server request returned just 5 of a total 606 results.
+#> This server request returned just 5 of a total 589 results.
 #> Please increase the server `limit` to fetch all results.
 #>   conceptId                         fsn.term            pt.term
 #> 1 233604007             Pneumonia (disorder)          Pneumonia
@@ -94,7 +92,7 @@ concepts_find(term = "pneumonia", limit = 5) %>%
 
 ## Development and new features
 
-Please share your experience as a user\!
+Please share your experience as a user!
 
 Do not hesitate to [get in touch on
 GitHub](https://github.com/ramses-antibiotics/snomedizer/issues) to
@@ -130,11 +128,25 @@ Use of SNOMED CT terminology for data analysis or health care production
 systems is subject to other licences. Some users are eligible for free
 licences:
 
-  - UK-based users can obtain a licence free of charge on the [NHS TRUD
+-   UK-based users can obtain a licence free of charge on the [NHS TRUD
     website](https://isd.digital.nhs.uk/trud3).
-  - residents of other Member Countries and low-income countries are
+-   residents of other Member Countries and low-income countries are
     also eligible. More information can be found on the [SNOMED
     International website](https://www.snomed.org/snomed-ct/get-snomed).
+
+### Licence
+
+Copyright © 2020 University College London
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the
+Free Software Foundation; either version 3 of the License, or (at your
+option) any later version.
+
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
+Public License for more details.
 
 ## Funders
 
