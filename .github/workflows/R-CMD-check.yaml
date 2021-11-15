@@ -20,10 +20,10 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - {os: windows-latest, r: 'release'}
-          - {os: macOS-latest, r: 'release'}
+          #- {os: windows-latest, r: 'release'}
+          #- {os: macOS-latest, r: 'release'}
           - {os: ubuntu-20.04, r: 'release', rspm: "https://packagemanager.rstudio.com/cran/__linux__/focal/latest"}
-          - {os: ubuntu-20.04, r: 'devel', rspm: "https://packagemanager.rstudio.com/cran/__linux__/focal/latest"}
+          #- {os: ubuntu-20.04, r: 'devel', rspm: "https://packagemanager.rstudio.com/cran/__linux__/focal/latest"}
 
     env:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
@@ -91,7 +91,8 @@ jobs:
 
       - name: Code coverage
         if: github.ref == 'refs/heads/master' && github.event_name == 'push' && matrix.config.os == 'ubuntu-20.04' &&  matrix.config.r == 'release'
-        run: covr::codecov(type = "all", quiet = FALSE, token = Sys.getenv("CODECOVTOKEN"))
+        run: covr::package_coverage(type = "all", quiet = FALSE)
+        #covr::codecov(type = "all", quiet = FALSE, token = Sys.getenv("CODECOVTOKEN"))
         shell: Rscript {0}
 
       - name: Build pkgdown
