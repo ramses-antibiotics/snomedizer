@@ -10,6 +10,7 @@ status](https://github.com/ramses-antibiotics/snomedizer/workflows/R-CMD-check/b
 [![Codecov test
 coverage](https://codecov.io/gh/ramses-antibiotics/snomedizer/branch/master/graph/badge.svg)](https://codecov.io/gh/ramses-antibiotics/snomedizer?branch=master)
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
+[![DOI](https://zenodo.org/badge/255863979.svg)](https://zenodo.org/badge/latestdoi/255863979)
 <!-- badges: end -->
 
 <p class="lead">Interrogate the SNOMED CT clinical ontology using the <a href="https://github.com/IHTSDO/snowstorm">SNOMED International Terminology Server REST API</a>.</p>
