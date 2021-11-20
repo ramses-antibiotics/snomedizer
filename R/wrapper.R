@@ -153,6 +153,11 @@ concepts_find <- function(term = NULL,
 #'   concept_ids = "39732311000001104",  # Medical product only found UK Edition
 #'   target_ecl = "27658006"             # Product containing amoxicillin
 #' )
+#' concepts_included_in(
+#'   concept_ids = "233604007",          # Pneumonia
+#'   target_ecl = "<<64572001 :
+#'          116676008 = <<409774005"     # Disorder with inflammation as associated morphology
+#' )
 concepts_included_in <- function(
   concept_ids,
   target_ecl,
