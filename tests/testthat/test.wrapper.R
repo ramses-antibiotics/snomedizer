@@ -283,6 +283,21 @@ test_that("concepts_included_in", {
     ),
     FALSE
   )
+
+  # Trigger REST 400 BAD_REQUEST
+  expect_warning(
+    expect_equal(
+      concepts_included_in(
+        concept_ids = c(
+          "407671000",
+          "xxab" # (SNOMED codes should not have letters)
+        ),
+        target_ecl = "763158003"
+      ),
+      c(FALSE, NA)
+    )
+  )
+
 })
 
 
