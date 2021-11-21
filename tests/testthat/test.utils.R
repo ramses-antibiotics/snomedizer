@@ -120,15 +120,28 @@ test_that("snomedizer_version_compatibility", {
 
 
 
-# .snomed_indentifiers_deduplicate ----------------------------------------
+# .snomed_identifiers_deduplicate ----------------------------------------
 
-test_that(".snomed_indentifiers_deduplicate", {
+test_that(".snomed_identifiers_deduplicate", {
   expect_equal(
-    .snomed_indentifiers_deduplicate(c("001", " 001", NA, "")),
+    .snomed_identifiers_deduplicate(c("001", " 001", NA, "")),
     "001"
   )
   expect_equal(
-    .snomed_indentifiers_deduplicate(1:3),
+    .snomed_identifiers_deduplicate(1:3),
     c("1", "2", "3")
+  )
+})
+
+# .split_into_chunks ------------------------------------------------------
+
+test_that(".split_into_chunks", {
+  expect_equal(
+    .split_into_chunks(x = c(1, 2, 2, 3, 3), max_length = 2),
+    list(
+      "0" = c(1),
+      "1" = c(2,2),
+      "2" = c(3,3)
+    )
   )
 })

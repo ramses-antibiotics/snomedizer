@@ -411,7 +411,7 @@ result_completeness <- function(x, silent = FALSE) {
 #'
 #' @return a character vector of unique identifiers, without NA or empty strings.
 #' @noRd
-.snomed_indentifiers_deduplicate <- function(x) {
+.snomed_identifiers_deduplicate <- function(x) {
 
   # remove NA and turn to character
   x <- trimws(as.character(stats::na.omit(x)))
@@ -423,3 +423,43 @@ result_completeness <- function(x, silent = FALSE) {
 
   x
 }
+
+
+#' Initiate progress bar
+#'
+#' @param x vector to determine the length of the progress bar
+#' @param chunk_size integer interval size to determine the
+#' length of the progress bar (for example, 10 will mean the progress
+#' bar unit corresponds to chunks of 10 observations in vector \code{x})
+#' @param silent if TRUE, returns a progress bar object, otherwise return
+#' \code{NULL}
+#'
+#' @return an R6 object of class \code{progress_bar} if
+#' \code{silent} is \code{TRUE}, \code{NULL} otherwise
+#' @noRd
+.progress_bar_initiate <- function(x, chunk_size, silent) {
+  if (silent) {
+    NULL
+  } else {
+    progress_bar <- progress::progress_bar$new(
+      format = "  [:bar] :percent :eta",
+      total = trunc(length(x)/chunk_size) + as.integer(length(x) %% chunk_size > 0)
+    )
+    progress_bar$tick(0)
+
+    progress_bar
+  }
+}
+
+
+#' Split a vector into a list of smaller vectors
+#'
+#' @param x a vector to split
+#' @param max_length the maximum length of vectors to return
+#'
+#' @return a list of vector of length between 1 and \code{max_length}
+#' @noRd
+.split_into_chunks <- function(x, max_length){
+  split(x, sort(trunc(seq_len(length(x))/max_length)))
+}
+

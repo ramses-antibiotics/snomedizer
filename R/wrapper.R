@@ -45,26 +45,24 @@ concepts_find <- function(term = NULL,
                           silent = FALSE,
                           ...) {
 
+  CHUNK_SIZE = 100
 
   if(is.null(term) & is.null(conceptIds) & is.null(ecl)) {
     stop("At least `term` or `conceptIds` or `ecl` must be provided.")
   }
 
   if( !is.null(conceptIds) ) {
-    conceptIds <- .snomed_indentifiers_deduplicate(conceptIds)
+    conceptIds <- .snomed_identifiers_deduplicate(conceptIds)
   }
 
-  if( !is.null(conceptIds) && length(conceptIds) > 100 ) {
+  if( !is.null(conceptIds) && length(conceptIds) > CHUNK_SIZE ) {
 
-    if( !silent ) {
-      progress_bar <- progress::progress_bar$new(
-        format = "  [:bar] :percent :eta",
-        total = (trunc(length(conceptIds)/100) + 1)
-      )
-      progress_bar$tick(0)
-    }
+    progress_bar <- .progress_bar_initiate(x = conceptIds,
+                                           chunk_size = CHUNK_SIZE,
+                                           silent = silent)
 
-    conceptIds <-  split(conceptIds, sort(trunc(seq_len(length(conceptIds))/100)))
+    conceptIds <- .split_into_chunks(x = conceptIds,
+                                     max_length = CHUNK_SIZE)
 
     x <- purrr::map(
       .x = conceptIds,
@@ -73,6 +71,7 @@ concepts_find <- function(term = NULL,
                     ecl,
                     activeFilter,
                     encoding,
+                    progress_bar,
                     silent,
                     ...) {
         conc <- api_concepts(conceptIds = chunk, ...)
@@ -91,6 +90,7 @@ concepts_find <- function(term = NULL,
       ecl = ecl,
       activeFilter = activeFilter,
       encoding = encoding,
+      progress_bar = progress_bar,
       silent = silent,
       ...
     )
@@ -168,9 +168,11 @@ concepts_included_in <- function(
   encoding = "UTF-8"
 ) {
 
+  CHUNK_SIZE = 200
+
   stopifnot(length(target_ecl) == 1)
 
-  unique_concept_ids <- .snomed_indentifiers_deduplicate(concept_ids)
+  unique_concept_ids <- .snomed_identifiers_deduplicate(concept_ids)
 
   if( length(unique_concept_ids) == 0 ) {
     return(rep(as.logical(NA), length(concept_ids)))
@@ -189,21 +191,12 @@ concepts_included_in <- function(
     return(rep(as.logical(NA), length(concept_ids)))
   }
 
-  if( !silent ) {
-    progress_bar <- progress::progress_bar$new(
-      format = "  [:bar] :percent :eta",
-      total = (trunc(length(unique_concept_ids)/200) + 1)
-    )
-    progress_bar$tick(0)
-  } else {
-    progress_bar <- NULL
-  }
+  progress_bar <- .progress_bar_initiate(x = unique_concept_ids,
+                                         chunk_size = CHUNK_SIZE,
+                                         silent = silent)
 
-  # split into batches of 200 concepts
-  unique_concept_ids <- split(
-    unique_concept_ids,
-    sort(trunc(seq_len(length(unique_concept_ids))/200))
-  )
+  unique_concept_ids <- .split_into_chunks(x = unique_concept_ids,
+                                           max_length = CHUNK_SIZE)
 
   x <- purrr::map(
     .x = unique_concept_ids,
@@ -212,8 +205,8 @@ concepts_included_in <- function(
                   endpoint,
                   branch,
                   encoding,
-                  silent,
-                  progress_bar) {
+                  progress_bar,
+                  silent) {
       output <- api_concepts(
         conceptIds = chunk,
         ecl = ecl,
@@ -237,8 +230,8 @@ concepts_included_in <- function(
     endpoint = endpoint,
     branch = branch,
     encoding = encoding,
-    silent = silent,
-    progress_bar = progress_bar
+    progress_bar = progress_bar,
+    silent = silent
   )
 
   x <- dplyr::bind_rows(x)
@@ -337,18 +330,18 @@ concepts_descendants <- function(conceptIds,
     stop("`include_self` must be TRUE or FALSE.")
   }
 
-  if ( !silent ) {
-    progress_bar <- progress::progress_bar$new(
-      format = "  [:bar] :percent :eta",
-      total = length(conceptIds)
-    )
-    progress_bar$tick(0)
-  }
+  progress_bar <- .progress_bar_initiate(x = conceptIds,
+                                         chunk_size = 1,
+                                         silent = silent)
 
   x <- purrr::pmap(
     list(conceptIds,
          include_self),
-    function(conceptId, include_self, ...) {
+    function(conceptId,
+             include_self,
+             direction,
+             progress_bar,
+             silent,...) {
 
       if (direction == "ancestors") {
         ecl <- paste0(dplyr::if_else(include_self, ">>", ">"), conceptId)
@@ -373,7 +366,10 @@ concepts_descendants <- function(conceptIds,
         return(result_flatten(xxscendants, encoding = encoding))
       }
     },
-    direction = direction, silent = silent, ...
+    direction = direction,
+    progress_bar = progress_bar,
+    silent = silent,
+    ...
   )
 
   names(x) <- conceptIds
@@ -406,24 +402,21 @@ concepts_descriptions <- function(conceptIds,
                                   encoding = "UTF-8",
                                   silent = FALSE,
                                   ...) {
+  CHUNK_SIZE = 100
 
   stopifnot(is.vector(conceptIds))
-  conceptIds <- .snomed_indentifiers_deduplicate(conceptIds)
+  conceptIds <- .snomed_identifiers_deduplicate(conceptIds)
   stopifnot(length(conceptIds) > 0)
 
-  if( !silent ) {
-    progress_bar <- progress::progress_bar$new(
-      format = "  [:bar] :percent :eta",
-      total = (trunc(length(conceptIds)/100) + 1)
-    )
-    progress_bar$tick(0)
-  }
+  progress_bar <- .progress_bar_initiate(x = conceptIds,
+                                         chunk_size = CHUNK_SIZE,
+                                         silent = silent)
 
-  x <-  split(conceptIds, sort(trunc(seq_len(length(conceptIds))/100)))
+  x <- .split_into_chunks(x = conceptIds, max_length = CHUNK_SIZE)
 
   x <- purrr::map(
     .x = x,
-    .f = function(chunk, encoding, silent, ...) {
+    .f = function(chunk, encoding, progress_bar, silent, ...) {
       desc <- api_descriptions(conceptIds = chunk, ...)
       if ( !silent ) {
         progress_bar$tick()
@@ -438,6 +431,7 @@ concepts_descriptions <- function(conceptIds,
         return(result_flatten(desc, encoding = encoding))
       }},
     encoding = encoding,
+    progress_bar = progress_bar,
     silent = silent,
     ...
   )
@@ -496,21 +490,20 @@ concepts_map <- function(concept_ids = NULL,
                          silent = FALSE,
                          ...) {
 
+  CHUNK_SIZE = 100
+
   if( !is.null(concept_ids) ) {
-    concept_ids <- .snomed_indentifiers_deduplicate(concept_ids)
+    concept_ids <- .snomed_identifiers_deduplicate(concept_ids)
   }
 
-  if( !is.null(concept_ids) && length(unique(concept_ids)) > 100 ) {
+  if( !is.null(concept_ids) && length(unique(concept_ids)) > CHUNK_SIZE ) {
 
-    if( !silent ) {
-      progress_bar <- progress::progress_bar$new(
-        format = "  [:bar] :percent :eta",
-        total = (trunc(length(concept_ids)/100) + 1)
-      )
-      progress_bar$tick(0)
-    }
+    progress_bar <- .progress_bar_initiate(x = concept_ids,
+                                           chunk_size = CHUNK_SIZE,
+                                           silent = silent)
 
-    concept_ids <- split(concept_ids, sort(trunc(seq_len(length(concept_ids))/100)))
+    concept_ids <- .split_into_chunks(x = concept_ids,
+                                      max_length = CHUNK_SIZE)
 
     x <- purrr::map(
       .x = concept_ids,
@@ -519,6 +512,7 @@ concepts_map <- function(concept_ids = NULL,
                     active,
                     mapTarget,
                     encoding,
+                    progress_bar,
                     silent,
                     ...) {
         conc <- api_refset_members(
@@ -546,13 +540,12 @@ concepts_map <- function(concept_ids = NULL,
       active = active,
       mapTarget = target_code,
       encoding = encoding,
+      progress_bar = progress_bar,
       silent = silent,
       ...
     )
 
     x <- dplyr::bind_rows(x)
-
-    return(x)
 
   } else {
     x <- api_refset_members(
@@ -575,6 +568,8 @@ concepts_map <- function(concept_ids = NULL,
       return(concepts)
     }
   }
+
+  x
 }
 
 
