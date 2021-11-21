@@ -122,7 +122,7 @@ concepts_find <- function(term = NULL,
 }
 
 
-#' Determine where a concept of interest belongs to a target set of concepts
+#' Determine whether concept of interest belongs to a target set of concepts
 #'
 #' @description This function examines a vector of \code{concept_ids} identifiers
 #' against a target set defined by an ECL expression
@@ -136,8 +136,9 @@ concepts_find <- function(term = NULL,
 #' commonly \code{"MAIN"}). See \code{\link{snomedizer_options}}.
 #' @param encoding HTTP charset parameter to use (default is \code{"UTF-8"})
 #' @return a logical vector with the same order as \code{concept_ids} indicating
-#' whether each concept is included in the target set or not. \code{NA} denotes
-#' a REST error.
+#' whether each concept is included in the target set or not. \code{NA} is returned
+#' when \code{concept_ids} are not present on the target \code{branch}, or in case
+#' of a REST error caused by invalid \code{concept_ids} or \code{target_ecl}.
 #' @export
 #' @seealso \href{https://confluence.ihtsdotools.org/display/DOCECL/Appendix+D+-+ECL+Quick+reference}{ECL quick reference table by SNOMED International}
 #' @examples

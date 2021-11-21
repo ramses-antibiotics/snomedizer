@@ -2,7 +2,7 @@
 % Please edit documentation in R/wrapper.R
 \name{concepts_included_in}
 \alias{concepts_included_in}
-\title{Determine where a concept of interest belongs to a target set of concepts}
+\title{Determine whether concept of interest belongs to a target set of concepts}
 \usage{
 concepts_included_in(
   concept_ids,
@@ -30,8 +30,9 @@ commonly \code{"MAIN"}). See \code{\link{snomedizer_options}}.}
 }
 \value{
 a logical vector with the same order as \code{concept_ids} indicating
-whether each concept is included in the target set or not. \code{NA} denotes
-a REST error.
+whether each concept is included in the target set or not. \code{NA} is returned
+when \code{concept_ids} are not present on the target \code{branch}, or in case
+of a REST error caused by invalid \code{concept_ids} or \code{target_ecl}.
 }
 \description{
 This function examines a vector of \code{concept_ids} identifiers
@@ -49,6 +50,11 @@ concepts_included_in(
 concepts_included_in(
   concept_ids = "39732311000001104",  # Medical product only found UK Edition
   target_ecl = "27658006"             # Product containing amoxicillin
+)
+concepts_included_in(
+  concept_ids = "233604007",          # Pneumonia
+  target_ecl = "<<64572001 :
+         116676008 = <<409774005"     # Disorder with inflammation as associated morphology
 )
 }
 \seealso{
