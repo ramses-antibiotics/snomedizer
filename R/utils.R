@@ -402,3 +402,24 @@ result_completeness <- function(x, silent = FALSE) {
   }
   utils::URLencode(URL = branch, reserved = TRUE)
 }
+
+
+
+#' Deduplicate, clean and sort SNOMED CT identifiers
+#'
+#' @param x a vector of identifiers, such as SNOMED CT concept IDs
+#'
+#' @return a character vector of unique identifiers, without NA or empty strings.
+#' @noRd
+.snomed_indentifiers_deduplicate <- function(x) {
+
+  # remove NA and turn to character
+  x <- trimws(as.character(stats::na.omit(x)))
+  # remove empty strings
+  x <- grep(pattern = "^$",
+            x = x,
+            value = TRUE, invert = TRUE)
+  x <- sort(unique(x))
+
+  x
+}

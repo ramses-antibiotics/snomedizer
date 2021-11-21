@@ -51,10 +51,10 @@ concepts_find <- function(term = NULL,
   }
 
   if( !is.null(conceptIds) ) {
-    conceptIds <- sort(unique(conceptIds))
+    conceptIds <- .snomed_indentifiers_deduplicate(conceptIds)
   }
 
-  if( !is.null(conceptIds) && length(unique(conceptIds)) > 100 ) {
+  if( !is.null(conceptIds) && length(conceptIds) > 100 ) {
 
     if( !silent ) {
       progress_bar <- progress::progress_bar$new(
@@ -170,11 +170,7 @@ concepts_included_in <- function(
 
   stopifnot(length(target_ecl) == 1)
 
-  unique_concept_ids <- as.character(stats::na.omit(concept_ids))
-  # remove empty strings
-  unique_concept_ids <- grep(pattern = "^$",
-                             x = unique_concept_ids,
-                             value = TRUE, invert = TRUE)
+  unique_concept_ids <- .snomed_indentifiers_deduplicate(concept_ids)
 
   if( length(unique_concept_ids) == 0 ) {
     return(rep(as.logical(NA), length(concept_ids)))
@@ -412,7 +408,8 @@ concepts_descriptions <- function(conceptIds,
                                   ...) {
 
   stopifnot(is.vector(conceptIds))
-  stopifnot(all(conceptIds != ""))
+  conceptIds <- .snomed_indentifiers_deduplicate(conceptIds)
+  stopifnot(length(conceptIds) > 0)
 
   if( !silent ) {
     progress_bar <- progress::progress_bar$new(
@@ -421,9 +418,6 @@ concepts_descriptions <- function(conceptIds,
     )
     progress_bar$tick(0)
   }
-
-  stopifnot(all(conceptIds != ""))
-  conceptIds <- sort(unique(conceptIds))
 
   x <-  split(conceptIds, sort(trunc(seq_len(length(conceptIds))/100)))
 
@@ -503,7 +497,7 @@ concepts_map <- function(concept_ids = NULL,
                          ...) {
 
   if( !is.null(concept_ids) ) {
-    concept_ids <- sort(unique(concept_ids))
+    concept_ids <- .snomed_indentifiers_deduplicate(concept_ids)
   }
 
   if( !is.null(concept_ids) && length(unique(concept_ids)) > 100 ) {

@@ -118,3 +118,17 @@ test_that("snomedizer_version_compatibility", {
   expect_true(snomedizer_version_compatibility(), "logical")
 })
 
+
+
+# .snomed_indentifiers_deduplicate ----------------------------------------
+
+test_that(".snomed_indentifiers_deduplicate", {
+  expect_equal(
+    .snomed_indentifiers_deduplicate(c("001", " 001", NA, "")),
+    "001"
+  )
+  expect_equal(
+    .snomed_indentifiers_deduplicate(1:3),
+    c("1", "2", "3")
+  )
+})
