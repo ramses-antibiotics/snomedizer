@@ -27,6 +27,16 @@ test_that("snomedizer_default_options", {
   expect_invisible(snomedizer_options_set(limit = 50))
 })
 
+
+# release_version ---------------------------------------------------------
+
+test_that("release_version", {
+  ct_version <- release_version(branch = "MAIN/2021-07-31")
+  expect_equal(ct_version$rf2_date, "20210731")
+  expect_equal(ct_version$rf2_month_year, "July 2021")
+})
+
+
 # result_flatten ----------------------------------------------------------
 
 test_that("result_flatten", {
