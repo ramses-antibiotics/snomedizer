@@ -373,7 +373,7 @@ result_completeness <- function(x, silent = FALSE) {
   if(limit > 10000){
     # This is controlled by Java class
     # org.snomed.snowstorm.rest.ControllerHelper
-    # https://github.com/IHTSDO/snowstorm/blob/master/src/main/java/org/snomed/snowstorm/rest/ControllerHelper.java#L183
+    # https://github.com/IHTSDO/snowstorm/blob/master/src/main/java/org/snomed/snowstorm/rest/ControllerHelper.java#L212
     warning("Please note the maximum limit on public endpoints is 10,000.")
   }
 

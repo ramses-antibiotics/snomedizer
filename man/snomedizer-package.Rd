@@ -102,6 +102,7 @@ Useful links:
 
 Other contributors:
 \itemize{
+  \item Anika Cawthorn \email{a.cawthorn@ucl.ac.uk} (\href{https://orcid.org/0000-0002-2438-7495}{ORCID}) [reviewer, researcher]
   \item University College London [copyright holder]
 }
 
