@@ -9,7 +9,9 @@
 status](https://github.com/ramses-antibiotics/snomedizer/workflows/R-CMD-check/badge.svg?branch=master)](https://github.com/ramses-antibiotics/snomedizer/actions)
 [![Codecov test
 coverage](https://codecov.io/gh/ramses-antibiotics/snomedizer/branch/master/graph/badge.svg)](https://codecov.io/gh/ramses-antibiotics/snomedizer?branch=master)
-[![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
+[![Project Status: Active – The project has reached a stable, usable
+state and is being actively
+developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5705568.svg)](https://doi.org/10.5281/zenodo.5705568)
 <!-- badges: end -->
 
@@ -43,8 +45,8 @@ server](https://browser.ihtsdotools.org/snowstorm/snomed-ct/) available
 for reference purposes **only** (see [terms &
 conditions](#terms--conditions)).
 
-For example,
-[`GET /branch/concepts`](https://snowstorm.ihtsdotools.org/snowstorm/snomed-ct/swagger-ui.html#!/Concepts/findConceptsUsingGET)
+For example, [`GET
+/branch/concepts`](https://snowstorm.ihtsdotools.org/snowstorm/snomed-ct/swagger-ui.html#!/Concepts/findConceptsUsingGET)
 is implemented in `api_concepts()`:
 
 ``` r
@@ -57,7 +59,7 @@ library(snomedizer)
 
 api_concepts(term = "pneumonia", activeFilter = TRUE)
 #> Response [https://snowstorm.ihtsdotools.org/snowstorm/snomed-ct/MAIN/concepts?term=pneumonia&limit=50&offset=0&activeFilter=TRUE]
-#>   Date: 2021-09-07 17:25
+#>   Date: 2021-12-30 18:07
 #>   Status: 200
 #>   Content-Type: application/json
 #>   Size: 22 kB
@@ -81,7 +83,7 @@ provide results as data frames:
 concepts_find(term = "pneumonia", limit = 5) %>% 
   dplyr::select(conceptId, fsn.term, pt.term) 
 #> Warning: 
-#> This server request returned just 5 of a total 589 results.
+#> This server request returned just 5 of a total 608 results.
 #> Please increase the server `limit` to fetch all results.
 #>   conceptId                         fsn.term            pt.term
 #> 1 233604007             Pneumonia (disorder)          Pneumonia
@@ -93,7 +95,7 @@ concepts_find(term = "pneumonia", limit = 5) %>%
 
 ## Development and new features
 
-Please share your experience as a user!
+Please share your experience as a user\!
 
 Do not hesitate to [get in touch on
 GitHub](https://github.com/ramses-antibiotics/snomedizer/issues) to
@@ -129,15 +131,15 @@ Use of SNOMED CT terminology for data analysis or health care production
 systems is subject to other licences. Some users are eligible for free
 licences:
 
--   UK-based users can obtain a licence free of charge on the [NHS TRUD
+  - UK-based users can obtain a licence free of charge on the [NHS TRUD
     website](https://isd.digital.nhs.uk/trud3).
--   residents of other Member Countries and low-income countries are
+  - residents of other Member Countries and low-income countries are
     also eligible. More information can be found on the [SNOMED
     International website](https://www.snomed.org/snomed-ct/get-snomed).
 
 ### Licence
 
-Copyright © 2020 University College London
+Copyright © 2022 University College London
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the
@@ -153,11 +155,11 @@ Public License for more details.
 
 <div style="display: table-cell;">
 
-<a href="https://www.nihr.ac.uk/"><img height="65px" style="vertical-align: bottom;" alt="National Institute of Health Research" src="man/figures/partner-logos/NIHR.svg" ></a>
+<a href="https://www.nihr.ac.uk/"><img width="300px" style="vertical-align: bottom;" alt="National Institute of Health Research" src="man/figures/partner-logos/NIHR.svg" ></a>
   
-<a href="https://esrc.ukri.org/"><img height="70px" style="vertical-align: bottom; bottom;margin-bottom: -7px;" alt="Economic and Social Research Council" src="man/figures/partner-logos/ESRC.svg" ></a>
+<a href="https://esrc.ukri.org/"><img width="250px" style="vertical-align: bottom; bottom;margin-bottom: -7px;" alt="Economic and Social Research Council" src="man/figures/partner-logos/ESRC.svg" ></a>
   
-<a href="https://www.ucl.ac.uk/infection-immunity/people/professor-judith-breuer/precision-amr"><img style="vertical-align: bottom;margin-bottom: -20px;" alt="Precision AMR" src="man/figures/partner-logos/pAMR.jpg" height="100px"></a>
+<a href="https://www.ucl.ac.uk/infection-immunity/people/professor-judith-breuer/precision-amr"><img width="150px" style="vertical-align: bottom;margin-bottom: -20px;" alt="Precision AMR" src="man/figures/partner-logos/pAMR.jpg"></a>
 
 </div>
 

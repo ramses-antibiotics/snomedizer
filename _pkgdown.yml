@@ -12,10 +12,17 @@ template:
 
 url: https://snomedizer.web.app
 
+footer:
+  structure:
+    left:
+    right: built_with
+
 authors:
+    sidebar:
+      roles: [aut, ctb, cre, res, rth, cph]
     University College London:
       href: "https://www.ucl.ac.uk"
-      html: "<img src='reference/figures/partner-logos/UCL.png' height=28>"
+      html: "<img src='reference/figures/partner-logos/UCL.png' width=100px>"
 
 navbar:
   right:
