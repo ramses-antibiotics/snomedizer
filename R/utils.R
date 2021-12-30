@@ -99,7 +99,7 @@ snomedizer_options_set <- function(endpoint = NULL,
     stopifnot(length(endpoint) == 1)
     stopifnot(is.character(endpoint))
 
-    if (httr::http_error(endpoint)) {
+    if ( httr::http_error(httr::GET(endpoint)) ) {
       stop("The provided `endpoint` is not responding.")
     }
 
@@ -141,7 +141,7 @@ snomed_public_endpoint_suggest <- function() {
   )
 
   for(i in seq_along(snomed_public_endpoints)) {
-    endpoint_answers <- try(httr::http_error(snomed_public_endpoints[[i]]))
+    endpoint_answers <- try(httr::http_error(httr::GET(snomed_public_endpoints[[i]])))
     if (!methods::is(endpoint_answers, "try-error") && !endpoint_answers) {
       endpoint <- snomed_public_endpoints[[i]]
       break
