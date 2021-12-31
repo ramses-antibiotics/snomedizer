@@ -24,26 +24,26 @@
 #' @family wrapper
 #' @examples
 #' # Free text search
-#' str(concepts_find("asthma"))
+#' str(concept_find("asthma"))
 #'
 #' # Retrieve multiple concepts
-#' concepts_find(conceptIds =  c("233604007", "68566005"))
+#' concept_find(conceptIds =  c("233604007", "68566005"))
 #'
 #' # Use the SNOMED CT Expression Constraint Language
-#' concepts_find(
+#' concept_find(
 #'   ecl = paste(
 #'     "<! 68566005 | Urinary tract infectious disease (disorder) |",
 #'     "AND",
 #'     "< 87628006 | Bacterial infectious disease (disorder) |"
 #'     )
 #'   )
-concepts_find <- function(term = NULL,
-                          conceptIds = NULL,
-                          ecl = NULL,
-                          activeFilter = TRUE,
-                          encoding = "UTF-8",
-                          silent = FALSE,
-                          ...) {
+concept_find <- function(term = NULL,
+                         conceptIds = NULL,
+                         ecl = NULL,
+                         activeFilter = TRUE,
+                         encoding = "UTF-8",
+                         silent = FALSE,
+                         ...) {
 
   CHUNK_SIZE = 100
 
@@ -124,8 +124,12 @@ concepts_find <- function(term = NULL,
 
 #' Determine whether concept of interest belongs to a target set of concepts
 #'
-#' @description This function examines a vector of \code{concept_ids} identifiers
-#' against a target set defined by an ECL expression
+#' @description This function looks for \code{116680003 | Is a (attribute) |}
+#' relationships. It checks a vector of \code{concept_ids} identifiers
+#' against a target set defined by an ECL expression. It returns \code{TRUE} if
+#' the concept is a subtype of any concept in the target set,
+#' \code{FALSE} if it does not, or
+#' \code{NA} if it is not found in the branch.
 #'
 #' @param concept_ids character vector of identifiers of domain concepts to be analysed
 #' @param target_ecl character ECL expression defining the target set of concepts
@@ -142,24 +146,24 @@ concepts_find <- function(term = NULL,
 #' @export
 #' @seealso \href{https://confluence.ihtsdotools.org/display/DOCECL/Appendix+D+-+ECL+Quick+reference}{ECL quick reference table by SNOMED International}
 #' @examples
-#' concepts_included_in(
+#' concept_is(
 #'   concept_ids = "16227691000119107",  # Post-surgical excision site
 #'   target_ecl = "123037004"            # Body structure
 #' )
-#' concepts_included_in(
+#' concept_is(
 #'   concept_ids = "48800003",           # Ear lobule structure
 #'   target_ecl = "233604007"            # Pneumonia
 #' )
-#' concepts_included_in(
+#' concept_is(
 #'   concept_ids = "39732311000001104",  # Medical product only found UK Edition
 #'   target_ecl = "27658006"             # Product containing amoxicillin
 #' )
-#' concepts_included_in(
+#' concept_is(
 #'   concept_ids = "233604007",          # Pneumonia
 #'   target_ecl = "<<64572001 :
 #'          116676008 = <<409774005"     # Disorder with inflammation as associated morphology
 #' )
-concepts_included_in <- function(
+concept_is <- function(
   concept_ids,
   target_ecl,
   silent = FALSE,
@@ -179,7 +183,7 @@ concepts_included_in <- function(
   }
 
   # First determine whether the input concepts are known
-  valid_concepts <- concepts_find(
+  valid_concepts <- concept_find(
     conceptIds = unique_concept_ids,
     silent = silent,
     endpoint = endpoint,
@@ -271,25 +275,25 @@ concepts_included_in <- function(
 #' for instance \code{endpoint}, \code{branch} or \code{limit}.
 #' @return a named list of data frames
 #' @family wrapper
-#' @aliases concepts_ancestors concepts_descendants
+#' @aliases concept_ancestors concept_descendants
 #' @export
 #' @section Disclaimer:
 #' In order to use SNOMED CT, a licence is required which depends both on the country you are
 #' based in, and the purpose of your work. See details on \link{snomedizer}.
 #' @examples
-#' pneumonia_ancestors <- concepts_ancestors(conceptIds = "233604007")
+#' pneumonia_ancestors <- concept_ancestors(conceptIds = "233604007")
 #' # This will trigger a warning using the default limit set by snomedizer_options_get("limit")
-#' pneumonia_concepts <- concepts_descendants(conceptIds = "233604007")
+#' pneumonia_concepts <- concept_descendants(conceptIds = "233604007")
 #' # Raising the limit
-#' pneumonia_concepts <- concepts_descendants(conceptIds = "233604007", limit = 300)
+#' pneumonia_concepts <- concept_descendants(conceptIds = "233604007", limit = 300)
 #' head(pneumonia_concepts$`233604007`)
-concepts_ancestors <- function(conceptIds,
+concept_ancestors <- function(conceptIds,
                                 include_self = FALSE,
                                 encoding = "UTF-8",
                                 silent = FALSE,
                                 ...) {
 
-  .concepts_xxscendants(conceptIds = conceptIds,
+  .concept_xxscendants(conceptIds = conceptIds,
                         direction = "ancestors",
                         include_self = include_self,
                         encoding = encoding,
@@ -298,15 +302,15 @@ concepts_ancestors <- function(conceptIds,
 }
 
 
-#' @rdname concepts_ancestors
+#' @rdname concept_ancestors
 #' @export
-concepts_descendants <- function(conceptIds,
+concept_descendants <- function(conceptIds,
                                  include_self = FALSE,
                                  encoding = "UTF-8",
                                  silent = FALSE,
                                  ...) {
 
-  .concepts_xxscendants(conceptIds = conceptIds,
+  .concept_xxscendants(conceptIds = conceptIds,
                         direction = "descendants",
                         include_self = include_self,
                         encoding = encoding,
@@ -315,9 +319,9 @@ concepts_descendants <- function(conceptIds,
 }
 
 
-#' Underlying function for concepts_ancestors and concepts_descendants
+#' Underlying function for concept_ancestors and concept_descendants
 #' @noRd
-.concepts_xxscendants <- function(conceptIds,
+.concept_xxscendants <- function(conceptIds,
                                   direction,
                                   include_self,
                                   encoding,
@@ -396,9 +400,9 @@ concepts_descendants <- function(conceptIds,
 #' In order to use SNOMED CT, a licence is required which depends both on the country you are
 #' based in, and the purpose of your work. See details on \link{snomedizer}.
 #' @examples
-#' pneumonia_descriptions <- concepts_descriptions(conceptIds = "233604007")
+#' pneumonia_descriptions <- concept_descriptions(conceptIds = "233604007")
 #' str(pneumonia_descriptions)
-concepts_descriptions <- function(conceptIds,
+concept_descriptions <- function(conceptIds,
                                   encoding = "UTF-8",
                                   silent = FALSE,
                                   ...) {
@@ -468,7 +472,7 @@ concepts_descriptions <- function(conceptIds,
 #' @seealso SNOMED International \href{http://snomed.org/icd10map}{ICD-10 Mapping Technical Guide}
 #' @examples
 #' # find SNOMED CT codes corresponding to ICD-10 code N39.0 urinary tract infections
-#' uti_concepts <- concepts_map(target_code = "N39.0")
+#' uti_concepts <- concept_map(target_code = "N39.0")
 #' str(dplyr::select(uti_concepts,
 #'                   referencedComponentId,
 #'                   referencedComponent.pt.term,
@@ -476,13 +480,13 @@ concepts_descriptions <- function(conceptIds,
 #'                   additionalFields.mapAdvice))
 #'
 #' # map SNOMED CT codes to ICD-10
-#' map_icd10 <- concepts_map(concept_ids = c("431308006", "312124009", "53084003"))
+#' map_icd10 <- concept_map(concept_ids = c("431308006", "312124009", "53084003"))
 #' dplyr::select(map_icd10,
 #'               referencedComponentId,
 #'               referencedComponent.pt.term,
 #'               additionalFields.mapTarget,
 #'               additionalFields.mapAdvice)
-concepts_map <- function(concept_ids = NULL,
+concept_map <- function(concept_ids = NULL,
                          target_code = NULL,
                          map_refset_id = "447562003",
                          active = TRUE,

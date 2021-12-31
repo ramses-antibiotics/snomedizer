@@ -1,4 +1,4 @@
-test_that("concepts_included_in", {
+test_that("concept_is", {
 
   concepts <- dplyr::tibble(
     concept_id = c("407671000",
@@ -16,7 +16,7 @@ test_that("concepts_included_in", {
     expect_medicine = c(F, F, T, NA, NA)
   )
 
-  concepts[["is_pneumonia"]] <- concepts_included_in(
+  concepts[["is_pneumonia"]] <- concept_is(
     concept_ids = concepts$concept_id,
     target_ecl = "233604007" # Pneumonia (disorder)
   )
@@ -24,7 +24,7 @@ test_that("concepts_included_in", {
     concepts[["is_pneumonia"]],
     concepts[["expect_pneumonia"]]
   )
-  concepts[["is_uti"]] <- concepts_included_in(
+  concepts[["is_uti"]] <- concept_is(
     concept_ids = concepts$concept_id,
     target_ecl = "68566005" # Urinary tract infectious disease (disorder)
   )
@@ -32,7 +32,7 @@ test_that("concepts_included_in", {
     concepts[["is_uti"]],
     concepts[["expect_uti"]]
   )
-  concepts[["is_medicine"]] <- concepts_included_in(
+  concepts[["is_medicine"]] <- concept_is(
     concept_ids = concepts$concept_id,
     target_ecl = "763158003", # Medicinal product (product)
     branch = "MAIN"
@@ -44,7 +44,7 @@ test_that("concepts_included_in", {
 
   # When none is valid
   expect_equal(
-    concepts_included_in(
+    concept_is(
       concept_ids = concepts$concept_id[4],
       target_ecl = "763158003",
       branch = "MAIN"
@@ -52,7 +52,7 @@ test_that("concepts_included_in", {
     NA
   )
   expect_equal(
-    concepts_included_in(
+    concept_is(
       concept_ids = NA,
       target_ecl = "763158003",
       branch = "MAIN"
@@ -60,7 +60,7 @@ test_that("concepts_included_in", {
     NA
   )
   expect_equal(
-    concepts_included_in(
+    concept_is(
       concept_ids = "",
       target_ecl = "763158003",
       branch = "MAIN"
@@ -70,7 +70,7 @@ test_that("concepts_included_in", {
 
   # check when none belongs to target field
   expect_equal(
-    concepts_included_in(
+    concept_is(
       concept_ids = concepts$concept_id[1],
       target_ecl = "763158003"
     ),
@@ -80,7 +80,7 @@ test_that("concepts_included_in", {
   # Trigger REST 400 BAD_REQUEST
   expect_warning(
     expect_equal(
-      concepts_included_in(
+      concept_is(
         concept_ids = c(
           "407671000",
           "xxab" # (SNOMED codes should not have letters)

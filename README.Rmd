@@ -68,8 +68,8 @@ api_concepts(term = "pneumonia", activeFilter = TRUE)
 
 Simpler wrapper functions are available for common operations, which provide results as data frames:
 
-```{r concepts_find_pneumonia, warning=TRUE}
-concepts_find(term = "pneumonia", limit = 5) %>% 
+```{r concept_find_pneumonia, warning=TRUE}
+concept_find(term = "pneumonia", limit = 5) %>% 
   dplyr::select(conceptId, fsn.term, pt.term) 
 ```
 

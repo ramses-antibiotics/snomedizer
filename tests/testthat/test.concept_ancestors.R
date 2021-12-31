@@ -1,17 +1,17 @@
 
-test_that("concepts_ancestors (order preserving)", {
-  infections <- concepts_ancestors(conceptIds = c("68566005", "233604007"),
+test_that("concept_ancestors (order preserving)", {
+  infections <- concept_ancestors(conceptIds = c("68566005", "233604007"),
                                    silent = TRUE)
   expect_equal(names(infections),
                c("68566005", "233604007"))
-  infections <- concepts_ancestors(conceptIds = c("233604007", "68566005"),
+  infections <- concept_ancestors(conceptIds = c("233604007", "68566005"),
                                    silent = TRUE)
   expect_equal(names(infections),
                c("233604007", "68566005"))
 })
 
-test_that("concepts_ancestors ", {
-  infections <- concepts_ancestors(conceptIds = c("233604007", "68566005"),
+test_that("concept_ancestors ", {
+  infections <- concept_ancestors(conceptIds = c("233604007", "68566005"),
                                    silent = FALSE)
   expect_true(
     "205237003" %in% #pneumonitis
@@ -29,9 +29,9 @@ test_that("concepts_ancestors ", {
     "40733004" %in% #Infectious disease
       infections[[2]]$conceptId
   )
-  expect_warning(concepts_ancestors(conceptIds = c("233604007", "68566005"), limit = 2))
+  expect_warning(concept_ancestors(conceptIds = c("233604007", "68566005"), limit = 2))
   expect_is(
-    infections <- concepts_ancestors(conceptIds = c("233604007", "68566005"), limit = 300),
+    infections <- concept_ancestors(conceptIds = c("233604007", "68566005"), limit = 300),
     "list"
   )
 
@@ -40,8 +40,8 @@ test_that("concepts_ancestors ", {
 })
 
 
-test_that("concepts_ancestors (include_self)", {
-  infections <- concepts_ancestors(conceptIds = c("68566005", "233604007"),
+test_that("concept_ancestors (include_self)", {
+  infections <- concept_ancestors(conceptIds = c("68566005", "233604007"),
                                    include_self = TRUE,
                                    silent = TRUE)
   expect_true("68566005" %in% infections$`68566005`$conceptId)

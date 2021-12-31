@@ -35,7 +35,7 @@ reference:
 - title: Main functions
   desc:  User-friendly functions provided for every day tasks
   contents:
-  - starts_with("concepts_")
+  - starts_with("concept_")
 - title: Utilities
   desc: Useful functions to set parameters and handle server requests
   contents:

@@ -265,7 +265,7 @@ release_version <- function(endpoint = snomedizer_options_get("endpoint"),
 
   active <- term <- NULL
 
-  ct_version <- concepts_descriptions(
+  ct_version <- concept_descriptions(
     conceptIds = "138875005",
     endpoint = endpoint,
     branch = branch,
