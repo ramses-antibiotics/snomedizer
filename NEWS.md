@@ -1,7 +1,10 @@
 
+# snomedizer 0.2.0-alpha
+
+* Compatible with snowstorm releases 7.3.0-7.5.4
+* Add New Zealand endpoint to `snomed_public_endpoint_suggest()` [#24](https://github.com/ramses-antibiotics/snomedizer/issues/24)
+
 # snomedizer 0.1.0-alpha
 
-* update for snowstorm release 6.2.0
-* introduce Snowstorm release checks with `snomedizer_version_compatibility()`
-* Added `NEWS.md` file to track changes to the package.
+* Compatible with snowstorm releases 7.3.0-7.4.0
 * Initial version
