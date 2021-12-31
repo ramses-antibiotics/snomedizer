@@ -2,7 +2,7 @@
 % Please edit documentation in R/wrapper.R
 \name{concept_is}
 \alias{concept_is}
-\title{Determine whether concept of interest belongs to a target set of concepts}
+\title{Determine whether one or more concept are subtypes of a target set of concepts}
 \usage{
 concept_is(
   concept_ids,
@@ -14,7 +14,7 @@ concept_is(
 )
 }
 \arguments{
-\item{concept_ids}{character vector of identifiers of domain concepts to be analysed}
+\item{concept_ids}{character vector of identifiers of concepts to be analysed}
 
 \item{target_ecl}{character ECL expression defining the target set of concepts}
 
@@ -37,7 +37,8 @@ of a REST error caused by invalid \code{concept_ids} or \code{target_ecl}.
 \description{
 This function looks for \code{116680003 | Is a (attribute) |}
 relationships. It checks a vector of \code{concept_ids} identifiers
-against a target set defined by an ECL expression. It returns \code{TRUE} if
+against a target set defined by an ECL expression \code{target_ecl}.
+It returns \code{TRUE} if
 the concept is a subtype of any concept in the target set,
 \code{FALSE} if it does not, or
 \code{NA} if it is not found in the branch.

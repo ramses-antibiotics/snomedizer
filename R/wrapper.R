@@ -122,16 +122,17 @@ concept_find <- function(term = NULL,
 }
 
 
-#' Determine whether concept of interest belongs to a target set of concepts
+#' Determine whether one or more concept are subtypes of a target set of concepts
 #'
 #' @description This function looks for \code{116680003 | Is a (attribute) |}
 #' relationships. It checks a vector of \code{concept_ids} identifiers
-#' against a target set defined by an ECL expression. It returns \code{TRUE} if
+#' against a target set defined by an ECL expression \code{target_ecl}.
+#' It returns \code{TRUE} if
 #' the concept is a subtype of any concept in the target set,
 #' \code{FALSE} if it does not, or
 #' \code{NA} if it is not found in the branch.
 #'
-#' @param concept_ids character vector of identifiers of domain concepts to be analysed
+#' @param concept_ids character vector of identifiers of concepts to be analysed
 #' @param target_ecl character ECL expression defining the target set of concepts
 #' @param silent whether to hide progress bar. Default is \code{FALSE}
 #' @param endpoint URL of a SNOMED CT Terminology Server REST API endpoint.
