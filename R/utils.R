@@ -113,6 +113,7 @@ snomedizer_options_set <- function(endpoint = NULL,
     } else {
       options(snomedizer.endpoint = endpoint)
       options(snomedizer.branch = branch)
+      test <- snomedizer_version_compatibility()
     }
 
   } else {
@@ -121,6 +122,7 @@ snomedizer_options_set <- function(endpoint = NULL,
       stop("`endpoint` is not returning valid answers.")
     } else {
       options(snomedizer.branch = branch)
+      test <- snomedizer_version_compatibility()
     }
   }
 
