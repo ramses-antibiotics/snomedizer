@@ -27,10 +27,7 @@ div.navbar, .navbar-link {
   background-color: #00519f;
 }
 
-.dropdown-menu>li>a:hover,
-.dropdown-menu>li>a:focus {
- background-color:#c6c6c6 !important;
-}
+
 
 a {
  color:#0069bf !important;
