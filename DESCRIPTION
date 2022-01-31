@@ -25,14 +25,11 @@ Depends:
     R (>= 3.0.0)
 Imports: 
     jsonlite,
-    curl,
     purrr,
     dplyr,
-    stringr,
     httr,
     methods,
-    progress,
-    Rdpack (>= 0.7),
+    progress
 Suggests: 
     testthat,
     tidyr,
@@ -40,12 +37,10 @@ Suggests:
     magrittr,
     rmarkdown,
     covr,
-    tidytext,
-    stopwords,
     pkgdown (>= 2.0.0),
     R.utils,
-    text2vec,
-    oysteR
+    oysteR,
+    Rdpack (>= 0.7)
 RoxygenNote: 7.1.1
 VignetteBuilder: knitr
 RdMacros: Rdpack

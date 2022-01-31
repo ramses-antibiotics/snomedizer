@@ -405,11 +405,11 @@ result_completeness <- function(x, silent = FALSE) {
 
 
 .validate_limit <- function(limit) {
-  if(is.null(limit) || is.na(limit)) {
-    stop("`limit` must not be NULL or missing")
-  }
   if(length(limit) != 1) {
     stop("`limit` must have length == 1")
+  }
+  if(is.null(limit) || is.na(limit)) {
+    stop("`limit` must not be NULL or missing")
   }
   if(!is.numeric(limit) || limit < 0 ||
      # check is whole number
