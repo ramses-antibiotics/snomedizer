@@ -17,6 +17,7 @@ vignette: >
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+options(max.print = 15)
 library(dplyr)
 ```
 
@@ -128,16 +129,16 @@ Let's try and
 
 First, we need to query descendant concepts. There are two ways to accomplish this in `snomedizer`:
 
-* by using `concepts_descendants()`
-* by running an ECL query in the `concepts_find(ecl = "...")` function. For this, you will want to use the `<<` operator (known as `descendantOrSelfOf`) using ECL. 
+* by using `concept_descendants()`
+* by running an ECL query in the `concept_find(ecl = "...")` function. For this, you will want to use the `<<` operator (known as `descendantOrSelfOf`) using ECL. 
 
 All the expressions below are equivalent.
 
 ```{r demo_urine_1}
-urine_specimens <- concepts_descendants(conceptIds = "122575003", 
-                                        include_self = TRUE)
-urine_specimens <- concepts_find(ecl = "<<122575003")
-urine_specimens <- concepts_find(ecl = "<<122575003 | Urine specimen (specimen) |")
+urine_specimens <- concept_descendants(conceptIds = "122575003", 
+                                       include_self = TRUE)
+urine_specimens <- concept_find(ecl = "<<122575003")
+urine_specimens <- concept_find(ecl = "<<122575003 | Urine specimen (specimen) |")
 glimpse(urine_specimens[, c("conceptId", "pt.term")])
 ```
 
@@ -152,7 +153,7 @@ urine_specimens %>%
 To exclude those, we make use of the `MINUS` operator in ECL:
 
 ```{r demo_urine_3}
-urine_specimens <- concepts_find(
+urine_specimens <- concept_find(
   ecl = "
   <<122575003 | Urine specimen (specimen) | MINUS 
      ( <<122565001 | Urinary catheter specimen (specimen) |  OR
@@ -178,7 +179,7 @@ Let's assume you have electronic prescription records referenced to SNOMED CT me
 
 
 ```{r look_med_prod}
-med_product <- concepts_find(conceptIds = "374646004", 
+med_product <- concept_find(conceptIds = "374646004", 
                              branch="MAIN/SNOMEDCT-US/2021-03-01")
 med_product %>% 
   select(conceptId, fsn.term, pt.term) %>% 
@@ -192,7 +193,7 @@ We want to extract *attributes*, which are SNOMED CT relationships giving charac
 First, let's look at the drug type, which is expressed by attribute `762949000 | Has precise active ingredient (attribute) |`.
 
 ```{r find_amox_drug}
-concepts_find(ecl="374646004.(<<762949000 | Has precise active ingredient (attribute) |) ", 
+concept_find(ecl="374646004.(<<762949000 | Has precise active ingredient (attribute) |) ", 
               branch="MAIN/SNOMEDCT-US") %>% 
   select(conceptId, fsn.term)
 ```
@@ -200,7 +201,7 @@ concepts_find(ecl="374646004.(<<762949000 | Has precise active ingredient (attri
 We could query other attributes sequentially (or chain them with `OR` operators in a single ECL expression). But here, the simplest way is to extract all attributes. We do this by remembering that attributes are merely SNOMED CT concepts descending from `762705008 | Concept model object attribute (attribute) |`.
 
 ```{r find_antibiotic_type}
-med_substance <- concepts_find(
+med_substance <- concept_find(
   ecl="374646004.(<<762705008 | Concept model object attribute (attribute) |) ", 
   branch="MAIN/SNOMEDCT-US/2021-03-01")
 med_substance$fsn.term
@@ -230,15 +231,15 @@ Let's extract all infections that can be caused by bacteria belonging to `106544
 
 To do this, we use the `:` operator, known as 'refine' operator. 
 
-```{r find_enterobac_infections, paged.print=FALSE}
-enterobac_infections <- concepts_find(
+```{r find_enterobac_infections}
+enterobac_infections <- concept_find(
   ecl="<<40733004 | Infectious disease (disorder) | :  
              246075003 |Causative agent|  =  <<106544002",
   limit = 5000
 )
 
 enterobac_infections %>% 
-  select(conceptId, pt.term)
+  select(pt.term)
 ``` 
 
 
@@ -264,7 +265,7 @@ Some concepts may have many different names.
 Let's extract synonyms of 'candidiasis':
 
 ```{r syn_78048006}
-concepts_descriptions(conceptIds = "78048006") %>% 
+concept_descriptions(conceptIds = "78048006") %>% 
   .[["78048006"]] %>% 
   filter(type == "SYNONYM") %>% 
   select(term)
@@ -275,7 +276,7 @@ Condition `type == "SYNONYM"` is there to remove the redundant fully specified n
 We can also search for those terms in, say, Spanish, by querying the branch containing the Spanish Edition.
 
 ```{r syn_78048006_fr}
-concepts_descriptions(conceptIds = "78048006", branch = "MAIN/SNOMEDCT-ES/2021-04-30") %>% 
+concept_descriptions(conceptIds = "78048006", branch = "MAIN/SNOMEDCT-ES/2021-04-30") %>% 
   .[["78048006"]] %>% 
   filter(type == "SYNONYM" & lang == "es") %>% 
   select(term)
@@ -297,7 +298,7 @@ For more information, please consult the [ICD-10 Mapping Technical Guide](http:/
 For example, let's extract the ICD-10 code corresponding to `721104000 | Sepsis due to urinary tract infection (disorder) |`:
 
 ```{r map_urosepsis}
-concepts_map(map_refset_id = "447562003", concept_ids = "721104000") %>% 
+concept_map(map_refset_id = "447562003", concept_ids = "721104000") %>% 
   select(additionalFields.mapTarget, additionalFields.mapAdvice)
 ```
 
@@ -309,23 +310,17 @@ This points us to two ICD-10 codes:
 Conversely, let's find all SNOMED CT concepts mapped to ICD-10 code `N39.0`:
 
 ```{r concepts_within_n390}
-concepts_map(map_refset_id = "447562003", target_code = "N39.0") %>% 
+concept_map(map_refset_id = "447562003", target_code = "N39.0") %>% 
   select(referencedComponent.id, 
          referencedComponent.pt.term,
          additionalFields.mapAdvice)
 ```
-We find a total of `r nrow(concepts_map(map_refset_id = "447562003", target_code = "N39.0"))` concepts potentially mappable to `N39.0 Urinary tract infection, site not specified`.
+We find a total of `r nrow(concept_map(map_refset_id = "447562003", target_code = "N39.0"))` concepts potentially mappable to `N39.0 Urinary tract infection, site not specified`.
 
 **Note:** Complete mapping and semantic alignment with the incoming [ICD-11 Mortality and Morbidity Statistics](https://icd.who.int/browse11/) is planned. 
 
 
 ```{css, echo=FALSE }
-
-body {
-  font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
-  line-height: 1.4em;
-  font-size: 16px
-}
 
 .bd-callout {
   padding: 1.5em;

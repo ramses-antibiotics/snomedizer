@@ -1,7 +1,7 @@
 Package: snomedizer
 Type: Package
 Title: R Interface to the SNOMED CT Terminology Server REST API
-Version: 0.1.0
+Version: 0.2.0
 Authors@R: c(
     person(given = "Peter",
            family = "Dutey-Magni",
@@ -25,14 +25,12 @@ Depends:
     R (>= 3.0.0)
 Imports: 
     jsonlite,
-    curl,
     purrr,
     dplyr,
-    stringr,
     httr,
     methods,
     progress,
-    Rdpack (>= 0.7),
+    Rdpack (>= 0.7)
 Suggests: 
     testthat,
     tidyr,
@@ -40,11 +38,8 @@ Suggests:
     magrittr,
     rmarkdown,
     covr,
-    tidytext,
-    stopwords,
-    pkgdown,
+    pkgdown (>= 2.0.0),
     R.utils,
-    text2vec,
     oysteR
 RoxygenNote: 7.1.1
 VignetteBuilder: knitr

@@ -24,47 +24,45 @@
 #' @family wrapper
 #' @examples
 #' # Free text search
-#' str(concepts_find("asthma"))
+#' str(concept_find("asthma"))
 #'
 #' # Retrieve multiple concepts
-#' concepts_find(conceptIds =  c("233604007", "68566005"))
+#' concept_find(conceptIds =  c("233604007", "68566005"))
 #'
 #' # Use the SNOMED CT Expression Constraint Language
-#' concepts_find(
+#' concept_find(
 #'   ecl = paste(
 #'     "<! 68566005 | Urinary tract infectious disease (disorder) |",
 #'     "AND",
 #'     "< 87628006 | Bacterial infectious disease (disorder) |"
 #'     )
 #'   )
-concepts_find <- function(term = NULL,
-                          conceptIds = NULL,
-                          ecl = NULL,
-                          activeFilter = TRUE,
-                          encoding = "UTF-8",
-                          silent = FALSE,
-                          ...) {
+concept_find <- function(term = NULL,
+                         conceptIds = NULL,
+                         ecl = NULL,
+                         activeFilter = TRUE,
+                         encoding = "UTF-8",
+                         silent = FALSE,
+                         ...) {
 
+  CHUNK_SIZE = 100
 
   if(is.null(term) & is.null(conceptIds) & is.null(ecl)) {
     stop("At least `term` or `conceptIds` or `ecl` must be provided.")
   }
 
   if( !is.null(conceptIds) ) {
-    conceptIds <- sort(unique(conceptIds))
+    conceptIds <- .snomed_identifiers_deduplicate(conceptIds)
   }
 
-  if( !is.null(conceptIds) && length(unique(conceptIds)) > 100 ) {
+  if( !is.null(conceptIds) && length(conceptIds) > CHUNK_SIZE ) {
 
-    if( !silent ) {
-      progress_bar <- progress::progress_bar$new(
-        format = "  [:bar] :percent :eta",
-        total = (trunc(length(conceptIds)/100) + 1)
-      )
-      progress_bar$tick(0)
-    }
+    progress_bar <- .progress_bar_initiate(x = conceptIds,
+                                           chunk_size = CHUNK_SIZE,
+                                           silent = silent)
 
-    conceptIds <-  split(conceptIds, sort(trunc(seq_len(length(conceptIds))/100)))
+    conceptIds <- .split_into_chunks(x = conceptIds,
+                                     max_length = CHUNK_SIZE)
 
     x <- purrr::map(
       .x = conceptIds,
@@ -73,6 +71,7 @@ concepts_find <- function(term = NULL,
                     ecl,
                     activeFilter,
                     encoding,
+                    progress_bar,
                     silent,
                     ...) {
         conc <- api_concepts(conceptIds = chunk, ...)
@@ -91,6 +90,7 @@ concepts_find <- function(term = NULL,
       ecl = ecl,
       activeFilter = activeFilter,
       encoding = encoding,
+      progress_bar = progress_bar,
       silent = silent,
       ...
     )
@@ -122,6 +122,143 @@ concepts_find <- function(term = NULL,
 }
 
 
+#' Determine whether one or more concept are subtypes of a target set of concepts
+#'
+#' @description This function looks for \code{116680003 | Is a (attribute) |}
+#' relationships. It checks a vector of \code{concept_ids} identifiers
+#' against a target set defined by an ECL expression \code{target_ecl}.
+#' It returns \code{TRUE} if
+#' the concept is a subtype of any concept in the target set,
+#' \code{FALSE} if it does not, or
+#' \code{NA} if it is not found in the branch.
+#'
+#' @param concept_ids character vector of identifiers of concepts to be analysed
+#' @param target_ecl character ECL expression defining the target set of concepts
+#' @param silent whether to hide progress bar. Default is \code{FALSE}
+#' @param endpoint URL of a SNOMED CT Terminology Server REST API endpoint.
+#'  See \code{\link{snomedizer_options}}.
+#' @param branch a string for the name of the API endpoint branch to use (most
+#' commonly \code{"MAIN"}). See \code{\link{snomedizer_options}}.
+#' @param encoding HTTP charset parameter to use (default is \code{"UTF-8"})
+#' @return a logical vector with the same order as \code{concept_ids} indicating
+#' whether each concept is included in the target set or not. \code{NA} is returned
+#' when \code{concept_ids} are not present on the target \code{branch}, or in case
+#' of a REST error caused by invalid \code{concept_ids} or \code{target_ecl}.
+#' @export
+#' @seealso \href{https://confluence.ihtsdotools.org/display/DOCECL/Appendix+D+-+ECL+Quick+reference}{ECL quick reference table by SNOMED International}
+#' @examples
+#' concept_is(
+#'   concept_ids = "16227691000119107",  # Post-surgical excision site
+#'   target_ecl = "123037004"            # Body structure
+#' )
+#' concept_is(
+#'   concept_ids = "48800003",           # Ear lobule structure
+#'   target_ecl = "233604007"            # Pneumonia
+#' )
+#' concept_is(
+#'   concept_ids = "39732311000001104",  # Medical product only found UK Edition
+#'   target_ecl = "27658006"             # Product containing amoxicillin
+#' )
+#' concept_is(
+#'   concept_ids = "233604007",          # Pneumonia
+#'   target_ecl = "<<64572001 :
+#'          116676008 = <<409774005"     # Disorder with inflammation as associated morphology
+#' )
+concept_is <- function(
+  concept_ids,
+  target_ecl,
+  silent = FALSE,
+  endpoint = snomedizer_options_get("endpoint"),
+  branch = snomedizer_options_get("branch"),
+  encoding = "UTF-8"
+) {
+
+  CHUNK_SIZE = 200
+
+  stopifnot(length(target_ecl) == 1)
+
+  unique_concept_ids <- .snomed_identifiers_deduplicate(concept_ids)
+
+  if( length(unique_concept_ids) == 0 ) {
+    return(rep(as.logical(NA), length(concept_ids)))
+  }
+
+  # First determine whether the input concepts are known
+  valid_concepts <- concept_find(
+    conceptIds = unique_concept_ids,
+    silent = silent,
+    endpoint = endpoint,
+    branch = branch,
+    encoding = encoding
+  )
+
+  if( is.null(valid_concepts) ) {
+    return(rep(as.logical(NA), length(concept_ids)))
+  }
+
+  progress_bar <- .progress_bar_initiate(x = unique_concept_ids,
+                                         chunk_size = CHUNK_SIZE,
+                                         silent = silent)
+
+  unique_concept_ids <- .split_into_chunks(x = unique_concept_ids,
+                                           max_length = CHUNK_SIZE)
+
+  x <- purrr::map(
+    .x = unique_concept_ids,
+    .f = function(chunk,
+                  ecl,
+                  endpoint,
+                  branch,
+                  encoding,
+                  progress_bar,
+                  silent) {
+      output <- api_concepts(
+        conceptIds = chunk,
+        ecl = ecl,
+        endpoint = endpoint,
+        branch = branch,
+        limit = 250)
+      if ( !silent ) {
+        progress_bar$tick()
+      }
+
+      if(httr::http_error(output)) {
+        return(httr::content(output, encoding = encoding))
+      } else if(length(httr::content(output, encoding = encoding)$items) == 0) {
+        return(NULL)
+      } else {
+        ignore <- result_completeness(output)
+        output <- result_flatten(output, encoding = encoding)
+        return(output)
+      }},
+    ecl = paste0("<<(", target_ecl, ")"),
+    endpoint = endpoint,
+    branch = branch,
+    encoding = encoding,
+    progress_bar = progress_bar,
+    silent = silent
+  )
+
+  x <- dplyr::bind_rows(x)
+
+  if( nrow(x) == 0 ) {
+    dplyr::case_when(
+      concept_ids %in% valid_concepts$conceptId ~ FALSE,
+      TRUE ~ as.logical(NA)
+    )
+  } else {
+    dplyr::case_when(
+      concept_ids %in% x$conceptId &
+        concept_ids %in% valid_concepts$conceptId ~ TRUE,
+      !(concept_ids %in% x$conceptId) &
+        concept_ids %in% valid_concepts$conceptId ~ FALSE,
+      TRUE ~ as.logical(NA)
+    )
+  }
+}
+
+
+
 #' Fetch active ancestors/descendants of one or more concepts
 #'
 #' @description Wrapper functions of \code{\link{api_concepts}} that fetch ancestors
@@ -139,25 +276,25 @@ concepts_find <- function(term = NULL,
 #' for instance \code{endpoint}, \code{branch} or \code{limit}.
 #' @return a named list of data frames
 #' @family wrapper
-#' @aliases concepts_ancestors concepts_descendants
+#' @aliases concept_ancestors concept_descendants
 #' @export
 #' @section Disclaimer:
 #' In order to use SNOMED CT, a licence is required which depends both on the country you are
 #' based in, and the purpose of your work. See details on \link{snomedizer}.
 #' @examples
-#' pneumonia_ancestors <- concepts_ancestors(conceptIds = "233604007")
+#' pneumonia_ancestors <- concept_ancestors(conceptIds = "233604007")
 #' # This will trigger a warning using the default limit set by snomedizer_options_get("limit")
-#' pneumonia_concepts <- concepts_descendants(conceptIds = "233604007")
+#' pneumonia_concepts <- concept_descendants(conceptIds = "233604007")
 #' # Raising the limit
-#' pneumonia_concepts <- concepts_descendants(conceptIds = "233604007", limit = 300)
+#' pneumonia_concepts <- concept_descendants(conceptIds = "233604007", limit = 300)
 #' head(pneumonia_concepts$`233604007`)
-concepts_ancestors <- function(conceptIds,
+concept_ancestors <- function(conceptIds,
                                 include_self = FALSE,
                                 encoding = "UTF-8",
                                 silent = FALSE,
                                 ...) {
 
-  .concepts_xxscendants(conceptIds = conceptIds,
+  .concept_xxscendants(conceptIds = conceptIds,
                         direction = "ancestors",
                         include_self = include_self,
                         encoding = encoding,
@@ -166,15 +303,15 @@ concepts_ancestors <- function(conceptIds,
 }
 
 
-#' @rdname concepts_ancestors
+#' @rdname concept_ancestors
 #' @export
-concepts_descendants <- function(conceptIds,
+concept_descendants <- function(conceptIds,
                                  include_self = FALSE,
                                  encoding = "UTF-8",
                                  silent = FALSE,
                                  ...) {
 
-  .concepts_xxscendants(conceptIds = conceptIds,
+  .concept_xxscendants(conceptIds = conceptIds,
                         direction = "descendants",
                         include_self = include_self,
                         encoding = encoding,
@@ -183,9 +320,9 @@ concepts_descendants <- function(conceptIds,
 }
 
 
-#' Underlying function for concepts_ancestors and concepts_descendants
+#' Underlying function for concept_ancestors and concept_descendants
 #' @noRd
-.concepts_xxscendants <- function(conceptIds,
+.concept_xxscendants <- function(conceptIds,
                                   direction,
                                   include_self,
                                   encoding,
@@ -198,18 +335,18 @@ concepts_descendants <- function(conceptIds,
     stop("`include_self` must be TRUE or FALSE.")
   }
 
-  if ( !silent ) {
-    progress_bar <- progress::progress_bar$new(
-      format = "  [:bar] :percent :eta",
-      total = length(conceptIds)
-    )
-    progress_bar$tick(0)
-  }
+  progress_bar <- .progress_bar_initiate(x = conceptIds,
+                                         chunk_size = 1,
+                                         silent = silent)
 
   x <- purrr::pmap(
     list(conceptIds,
          include_self),
-    function(conceptId, include_self, ...) {
+    function(conceptId,
+             include_self,
+             direction,
+             progress_bar,
+             silent,...) {
 
       if (direction == "ancestors") {
         ecl <- paste0(dplyr::if_else(include_self, ">>", ">"), conceptId)
@@ -234,7 +371,10 @@ concepts_descendants <- function(conceptIds,
         return(result_flatten(xxscendants, encoding = encoding))
       }
     },
-    direction = direction, silent = silent, ...
+    direction = direction,
+    progress_bar = progress_bar,
+    silent = silent,
+    ...
   )
 
   names(x) <- conceptIds
@@ -261,32 +401,27 @@ concepts_descendants <- function(conceptIds,
 #' In order to use SNOMED CT, a licence is required which depends both on the country you are
 #' based in, and the purpose of your work. See details on \link{snomedizer}.
 #' @examples
-#' pneumonia_descriptions <- concepts_descriptions(conceptIds = "233604007")
+#' pneumonia_descriptions <- concept_descriptions(conceptIds = "233604007")
 #' str(pneumonia_descriptions)
-concepts_descriptions <- function(conceptIds,
+concept_descriptions <- function(conceptIds,
                                   encoding = "UTF-8",
                                   silent = FALSE,
                                   ...) {
+  CHUNK_SIZE = 100
 
   stopifnot(is.vector(conceptIds))
-  stopifnot(all(conceptIds != ""))
+  conceptIds <- .snomed_identifiers_deduplicate(conceptIds)
+  stopifnot(length(conceptIds) > 0)
 
-  if( !silent ) {
-    progress_bar <- progress::progress_bar$new(
-      format = "  [:bar] :percent :eta",
-      total = (trunc(length(conceptIds)/100) + 1)
-    )
-    progress_bar$tick(0)
-  }
+  progress_bar <- .progress_bar_initiate(x = conceptIds,
+                                         chunk_size = CHUNK_SIZE,
+                                         silent = silent)
 
-  stopifnot(all(conceptIds != ""))
-  conceptIds <- sort(unique(conceptIds))
-
-  x <-  split(conceptIds, sort(trunc(seq_len(length(conceptIds))/100)))
+  x <- .split_into_chunks(x = conceptIds, max_length = CHUNK_SIZE)
 
   x <- purrr::map(
     .x = x,
-    .f = function(chunk, encoding, silent, ...) {
+    .f = function(chunk, encoding, progress_bar, silent, ...) {
       desc <- api_descriptions(conceptIds = chunk, ...)
       if ( !silent ) {
         progress_bar$tick()
@@ -301,6 +436,7 @@ concepts_descriptions <- function(conceptIds,
         return(result_flatten(desc, encoding = encoding))
       }},
     encoding = encoding,
+    progress_bar = progress_bar,
     silent = silent,
     ...
   )
@@ -337,7 +473,7 @@ concepts_descriptions <- function(conceptIds,
 #' @seealso SNOMED International \href{http://snomed.org/icd10map}{ICD-10 Mapping Technical Guide}
 #' @examples
 #' # find SNOMED CT codes corresponding to ICD-10 code N39.0 urinary tract infections
-#' uti_concepts <- concepts_map(target_code = "N39.0")
+#' uti_concepts <- concept_map(target_code = "N39.0")
 #' str(dplyr::select(uti_concepts,
 #'                   referencedComponentId,
 #'                   referencedComponent.pt.term,
@@ -345,13 +481,13 @@ concepts_descriptions <- function(conceptIds,
 #'                   additionalFields.mapAdvice))
 #'
 #' # map SNOMED CT codes to ICD-10
-#' map_icd10 <- concepts_map(concept_ids = c("431308006", "312124009", "53084003"))
+#' map_icd10 <- concept_map(concept_ids = c("431308006", "312124009", "53084003"))
 #' dplyr::select(map_icd10,
 #'               referencedComponentId,
 #'               referencedComponent.pt.term,
 #'               additionalFields.mapTarget,
 #'               additionalFields.mapAdvice)
-concepts_map <- function(concept_ids = NULL,
+concept_map <- function(concept_ids = NULL,
                          target_code = NULL,
                          map_refset_id = "447562003",
                          active = TRUE,
@@ -359,21 +495,20 @@ concepts_map <- function(concept_ids = NULL,
                          silent = FALSE,
                          ...) {
 
+  CHUNK_SIZE = 100
+
   if( !is.null(concept_ids) ) {
-    concept_ids <- sort(unique(concept_ids))
+    concept_ids <- .snomed_identifiers_deduplicate(concept_ids)
   }
 
-  if( !is.null(concept_ids) && length(unique(concept_ids)) > 100 ) {
+  if( !is.null(concept_ids) && length(unique(concept_ids)) > CHUNK_SIZE ) {
 
-    if( !silent ) {
-      progress_bar <- progress::progress_bar$new(
-        format = "  [:bar] :percent :eta",
-        total = (trunc(length(concept_ids)/100) + 1)
-      )
-      progress_bar$tick(0)
-    }
+    progress_bar <- .progress_bar_initiate(x = concept_ids,
+                                           chunk_size = CHUNK_SIZE,
+                                           silent = silent)
 
-    concept_ids <- split(concept_ids, sort(trunc(seq_len(length(concept_ids))/100)))
+    concept_ids <- .split_into_chunks(x = concept_ids,
+                                      max_length = CHUNK_SIZE)
 
     x <- purrr::map(
       .x = concept_ids,
@@ -382,6 +517,7 @@ concepts_map <- function(concept_ids = NULL,
                     active,
                     mapTarget,
                     encoding,
+                    progress_bar,
                     silent,
                     ...) {
         conc <- api_refset_members(
@@ -409,13 +545,12 @@ concepts_map <- function(concept_ids = NULL,
       active = active,
       mapTarget = target_code,
       encoding = encoding,
+      progress_bar = progress_bar,
       silent = silent,
       ...
     )
 
     x <- dplyr::bind_rows(x)
-
-    return(x)
 
   } else {
     x <- api_refset_members(
@@ -438,49 +573,7 @@ concepts_map <- function(concept_ids = NULL,
       return(concepts)
     }
   }
+
+  x
 }
 
-
-
-#' Fetch SNOMED CT RF2 release version
-#'
-#' @description Provides the date of the release of the specified endpoint
-#' and branch. SNOMED CT is currently released released twice a year
-#' on 31 January and 31 July in a format known as Release Format 2 (RF2).
-#' @param endpoint the URL of a SNOMED CT Terminology Server REST API endpoint.
-#'  See \code{\link{snomedizer_options}}.
-#' @param branch a string for the name of the API endpoint branch to use (most
-#' commonly \code{"MAIN"}). See \code{\link{snomedizer_options}}.
-#' @return a list containing two character strings: \code{rf2_date}
-#' (YYYYMMDD release date) and \code{rf2_month_year} (month and year string)
-#' @family wrapper
-#' @references \href{SNOMED CT Release File Specifications}{http://snomed.org/rfs}
-#' @export
-release_version <- function(endpoint = snomedizer_options_get("endpoint"),
-                            branch = snomedizer_options_get("branch")) {
-
-  active <- term <- NULL
-
-  ct_version <- concepts_descriptions(
-    conceptIds = "138875005",
-    endpoint = endpoint,
-    branch = branch,
-    limit = 1000
-  )[[1]]
-
-  ct_version <- dplyr::filter(ct_version,
-                              active == TRUE,
-                              grepl("version:", term))
-
-  list(
-    "rf2_date" = regmatches(
-      ct_version$term,
-      regexpr("[0-9]{8}", ct_version$term)
-    ),
-    "rf2_month_year" = regmatches(
-      ct_version$term,
-      regexpr("(?<=[(])(.*)(?= Release[)]$)",
-              ct_version$term, perl = T)
-    )
-  )
-}

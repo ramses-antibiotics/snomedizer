@@ -27,6 +27,16 @@ test_that("snomedizer_default_options", {
   expect_invisible(snomedizer_options_set(limit = 50))
 })
 
+
+# release_version ---------------------------------------------------------
+
+test_that("release_version", {
+  ct_version <- release_version(branch = "MAIN/2021-07-31")
+  expect_equal(ct_version$rf2_date, "20210731")
+  expect_equal(ct_version$rf2_month_year, "July 2021")
+})
+
+
 # result_flatten ----------------------------------------------------------
 
 test_that("result_flatten", {
@@ -118,3 +128,30 @@ test_that("snomedizer_version_compatibility", {
   expect_true(snomedizer_version_compatibility(), "logical")
 })
 
+
+
+# .snomed_identifiers_deduplicate ----------------------------------------
+
+test_that(".snomed_identifiers_deduplicate", {
+  expect_equal(
+    .snomed_identifiers_deduplicate(c("001", " 001", NA, "")),
+    "001"
+  )
+  expect_equal(
+    .snomed_identifiers_deduplicate(1:3),
+    c("1", "2", "3")
+  )
+})
+
+# .split_into_chunks ------------------------------------------------------
+
+test_that(".split_into_chunks", {
+  expect_equal(
+    .split_into_chunks(x = c(1, 2, 2, 3, 3), max_length = 2),
+    list(
+      "0" = c(1),
+      "1" = c(2,2),
+      "2" = c(3,3)
+    )
+  )
+})

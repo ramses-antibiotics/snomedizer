@@ -30,16 +30,16 @@
 #' }
 #' This parameter corresponds to \code{
 #' 900000000000449001 | Characteristic type (core metadata concept)}
-#' @param conceptId character string of a SNOMED CT concept id (for example:
+#' @param conceptId character string of a SNOMED CT concept identifier (for example:
 #' \code{"233604007"})
-#' @param conceptIds a character vector of SNOMED CT concept ids (for example:
+#' @param conceptIds a character vector of SNOMED CT concept identifiers (for example:
 #' \code{c("233604007", "68566005")})
 #' @param conceptActive optional boolean: \itemize{
 #'     \item \code{TRUE} returns only active concepts
 #'     \item \code{FALSE} returns only inactive concepts
 #'     \item \code{NULL} (the default) returns both active and inactive concepts
 #' }
-#' @param conceptRefset character vector of reference sets concept ids
+#' @param conceptRefset character vector of reference sets concept identifiers
 #' to include (example: \code{"900000000000497000"} for CTV3 terminology).
 #' See \code{api_concept_descendants("900000000000455006")}
 #' for valid reference set concepts.

@@ -99,7 +99,7 @@ snomedizer_options_set <- function(endpoint = NULL,
     stopifnot(length(endpoint) == 1)
     stopifnot(is.character(endpoint))
 
-    if (httr::http_error(endpoint)) {
+    if ( httr::http_error(httr::GET(endpoint)) ) {
       stop("The provided `endpoint` is not responding.")
     }
 
@@ -113,6 +113,7 @@ snomedizer_options_set <- function(endpoint = NULL,
     } else {
       options(snomedizer.endpoint = endpoint)
       options(snomedizer.branch = branch)
+      test <- snomedizer_version_compatibility()
     }
 
   } else {
@@ -121,6 +122,7 @@ snomedizer_options_set <- function(endpoint = NULL,
       stop("`endpoint` is not returning valid answers.")
     } else {
       options(snomedizer.branch = branch)
+      test <- snomedizer_version_compatibility()
     }
   }
 
@@ -141,7 +143,7 @@ snomed_public_endpoint_suggest <- function() {
   )
 
   for(i in seq_along(snomed_public_endpoints)) {
-    endpoint_answers <- try(httr::http_error(snomed_public_endpoints[[i]]))
+    endpoint_answers <- try(httr::http_error(httr::GET(snomed_public_endpoints[[i]])))
     if (!methods::is(endpoint_answers, "try-error") && !endpoint_answers) {
       endpoint <- snomed_public_endpoints[[i]]
       break
@@ -229,12 +231,12 @@ snomedizer_version_compatibility <- function(
 
   if (
     (version_main < 7) |
-    (version_main == 7 & version_minor < 3)
+    (version_main == 7 & version_minor < 6)
   ) {
     warning(
       paste(
         paste0("The selected endpoint version is ", endpoint_version, "."),
-        "This version of snomedizer is designed for endpoint versions 7.3.0 or greater.",
+        "This version of snomedizer is designed for endpoint versions 7.6.0 or greater.",
         "Some function may not work as intended.",
         sep = "\n"
       )
@@ -243,6 +245,50 @@ snomedizer_version_compatibility <- function(
   } else {
     return(TRUE)
   }
+}
+
+
+#' Fetch SNOMED CT RF2 release version
+#'
+#' @description Provides the date of the release of the specified endpoint
+#' and branch. SNOMED CT is currently released released twice a year
+#' on 31 January and 31 July in a format known as Release Format 2 (RF2).
+#' @param endpoint the URL of a SNOMED CT Terminology Server REST API endpoint.
+#'  See \code{\link{snomedizer_options}}.
+#' @param branch a string for the name of the API endpoint branch to use (most
+#' commonly \code{"MAIN"}). See \code{\link{snomedizer_options}}.
+#' @return a list containing two character strings: \code{rf2_date}
+#' (YYYYMMDD release date) and \code{rf2_month_year} (month and year string)
+#' @family wrapper
+#' @references \href{SNOMED CT Release File Specifications}{http://snomed.org/rfs}
+#' @export
+release_version <- function(endpoint = snomedizer_options_get("endpoint"),
+                            branch = snomedizer_options_get("branch")) {
+
+  active <- term <- NULL
+
+  ct_version <- concept_descriptions(
+    conceptIds = "138875005",
+    endpoint = endpoint,
+    branch = branch,
+    limit = 1000
+  )[[1]]
+
+  ct_version <- dplyr::filter(ct_version,
+                              active == TRUE,
+                              grepl("version:", term))
+
+  list(
+    "rf2_date" = regmatches(
+      ct_version$term,
+      regexpr("[0-9]{8}", ct_version$term)
+    ),
+    "rf2_month_year" = regmatches(
+      ct_version$term,
+      regexpr("(?<=[(])(.*)(?= Release[)]$)",
+              ct_version$term, perl = T)
+    )
+  )
 }
 
 
@@ -359,11 +405,11 @@ result_completeness <- function(x, silent = FALSE) {
 
 
 .validate_limit <- function(limit) {
-  if(is.null(limit) || is.na(limit)) {
-    stop("`limit` must not be NULL or missing")
-  }
   if(length(limit) != 1) {
     stop("`limit` must have length == 1")
+  }
+  if(is.null(limit) || is.na(limit)) {
+    stop("`limit` must not be NULL or missing")
   }
   if(!is.numeric(limit) || limit < 0 ||
      # check is whole number
@@ -373,7 +419,7 @@ result_completeness <- function(x, silent = FALSE) {
   if(limit > 10000){
     # This is controlled by Java class
     # org.snomed.snowstorm.rest.ControllerHelper
-    # https://github.com/IHTSDO/snowstorm/blob/master/src/main/java/org/snomed/snowstorm/rest/ControllerHelper.java#L183
+    # https://github.com/IHTSDO/snowstorm/blob/master/src/main/java/org/snomed/snowstorm/rest/ControllerHelper.java#L212
     warning("Please note the maximum limit on public endpoints is 10,000.")
   }
 
@@ -402,3 +448,64 @@ result_completeness <- function(x, silent = FALSE) {
   }
   utils::URLencode(URL = branch, reserved = TRUE)
 }
+
+
+
+#' Deduplicate, clean and sort SNOMED CT identifiers
+#'
+#' @param x a vector of identifiers, such as SNOMED CT concept IDs
+#'
+#' @return a character vector of unique identifiers, without NA or empty strings.
+#' @noRd
+.snomed_identifiers_deduplicate <- function(x) {
+
+  # remove NA and turn to character
+  x <- trimws(as.character(stats::na.omit(x)))
+  # remove empty strings
+  x <- grep(pattern = "^$",
+            x = x,
+            value = TRUE, invert = TRUE)
+  x <- sort(unique(x))
+
+  x
+}
+
+
+#' Initiate progress bar
+#'
+#' @param x vector to determine the length of the progress bar
+#' @param chunk_size integer interval size to determine the
+#' length of the progress bar (for example, 10 will mean the progress
+#' bar unit corresponds to chunks of 10 observations in vector \code{x})
+#' @param silent if TRUE, returns a progress bar object, otherwise return
+#' \code{NULL}
+#'
+#' @return an R6 object of class \code{progress_bar} if
+#' \code{silent} is \code{TRUE}, \code{NULL} otherwise
+#' @noRd
+.progress_bar_initiate <- function(x, chunk_size, silent) {
+  if (silent) {
+    NULL
+  } else {
+    progress_bar <- progress::progress_bar$new(
+      format = "  [:bar] :percent :eta",
+      total = trunc(length(x)/chunk_size) + as.integer(length(x) %% chunk_size > 0)
+    )
+    progress_bar$tick(0)
+
+    progress_bar
+  }
+}
+
+
+#' Split a vector into a list of smaller vectors
+#'
+#' @param x a vector to split
+#' @param max_length the maximum length of vectors to return
+#'
+#' @return a list of vector of length between 1 and \code{max_length}
+#' @noRd
+.split_into_chunks <- function(x, max_length){
+  split(x, sort(trunc(seq_len(length(x))/max_length)))
+}
+

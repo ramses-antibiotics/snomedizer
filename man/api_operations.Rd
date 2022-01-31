@@ -228,7 +228,7 @@ api_refset_members(
 )
 }
 \arguments{
-\item{conceptId}{character string of a SNOMED CT concept id (for example:
+\item{conceptId}{character string of a SNOMED CT concept identifier (for example:
 \code{"233604007"})}
 
 \item{endpoint}{URL of a SNOMED CT Terminology Server REST API endpoint.
@@ -242,7 +242,7 @@ commonly \code{"MAIN"}). See \code{\link{snomedizer_options}}.}
 
 \item{term}{character vector of terms to search}
 
-\item{conceptIds}{a character vector of SNOMED CT concept ids (for example:
+\item{conceptIds}{a character vector of SNOMED CT concept identifiers (for example:
 \code{c("233604007", "68566005")})}
 
 \item{ecl}{a character expression constraint query (with full relationship inference).
@@ -331,7 +331,7 @@ The description must be preferred OR acceptable in at least one of these to matc
     \item \code{NULL} (the default) returns both active and inactive concepts
 }}
 
-\item{conceptRefset}{character vector of reference sets concept ids
+\item{conceptRefset}{character vector of reference sets concept identifiers
 to include (example: \code{"900000000000497000"} for CTV3 terminology).
 See \code{api_concept_descendants("900000000000455006")}
 for valid reference set concepts.}
