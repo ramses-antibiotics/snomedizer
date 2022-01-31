@@ -29,7 +29,8 @@ Imports:
     dplyr,
     httr,
     methods,
-    progress
+    progress,
+    Rdpack (>= 0.7)
 Suggests: 
     testthat,
     tidyr,
@@ -39,8 +40,7 @@ Suggests:
     covr,
     pkgdown (>= 2.0.0),
     R.utils,
-    oysteR,
-    Rdpack (>= 0.7)
+    oysteR
 RoxygenNote: 7.1.1
 VignetteBuilder: knitr
 RdMacros: Rdpack
