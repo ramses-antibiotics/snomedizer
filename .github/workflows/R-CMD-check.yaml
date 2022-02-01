@@ -105,5 +105,5 @@ jobs:
 
       - name: Code coverage
         if: success() && github.ref == 'refs/heads/master' && github.event_name == 'push' && matrix.config.os == 'ubuntu-20.04' &&  matrix.config.r == 'release'
-        run: covr::codecov(type = "tests", quiet = FALSE)
+        run: covr::codecov(quiet = FALSE)
         shell: Rscript {0}
