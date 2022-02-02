@@ -82,6 +82,7 @@ jobs:
           path: check
 
       - name: Look up vulnerabilities
+        if: success() &&  (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop') && github.event_name == 'push' && matrix.config.os == 'ubuntu-20.04' &&  matrix.config.r == 'release'
         run: |
           check_lib <- oysteR::audit_description()
           if (nrow(oysteR::get_vulnerabilities(check_lib)) > 0 ) {
