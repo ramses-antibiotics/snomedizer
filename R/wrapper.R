@@ -122,18 +122,17 @@ concept_find <- function(term = NULL,
 }
 
 
-#' Determine whether one or more concept are subtypes of a target set of concepts
+#' Determine whether one or more concepts belong to a target set of concepts
 #'
-#' @description This function looks for \code{116680003 | Is a (attribute) |}
-#' relationships. It checks a vector of \code{concept_ids} identifiers
+#' @description This function compares a vector of \code{concept_ids} identifiers
 #' against a target set defined by an ECL expression \code{target_ecl}.
-#' It returns \code{TRUE} if
-#' the concept is a subtype of any concept in the target set,
+#' It returns \code{TRUE} if the concept belongs to the target set,
 #' \code{FALSE} if it does not, or
 #' \code{NA} if it is not found in the branch.
 #'
 #' @param concept_ids character vector of identifiers of concepts to be analysed
-#' @param target_ecl character ECL expression defining the target set of concepts
+#' @param target_ecl character ECL expression defining the target set of concepts.
+#' The "<<" operator is required to include subtypes of a concept
 #' @param silent whether to hide progress bar. Default is \code{FALSE}
 #' @param endpoint URL of a SNOMED CT Terminology Server REST API endpoint.
 #'  See \code{\link{snomedizer_options}}.
@@ -147,24 +146,34 @@ concept_find <- function(term = NULL,
 #' @export
 #' @seealso \href{https://confluence.ihtsdotools.org/display/DOCECL/Appendix+D+-+ECL+Quick+reference}{ECL quick reference table by SNOMED International}
 #' @examples
-#' concept_is(
+#' concept_included_in(
 #'   concept_ids = "16227691000119107",  # Post-surgical excision site
-#'   target_ecl = "123037004"            # Body structure
+#'   target_ecl = "<<123037004"          # Subtypes of 'body structure'
 #' )
-#' concept_is(
+#' concept_included_in(
 #'   concept_ids = "48800003",           # Ear lobule structure
-#'   target_ecl = "233604007"            # Pneumonia
+#'   target_ecl = "<<233604007"          # Subtypes of 'pneumonia'
 #' )
-#' concept_is(
+#' concept_included_in(
 #'   concept_ids = "39732311000001104",  # Medical product only found UK Edition
-#'   target_ecl = "27658006"             # Product containing amoxicillin
+#'   target_ecl = "27658006"             # Products containing amoxicillin
 #' )
-#' concept_is(
+#' concept_included_in(
 #'   concept_ids = "233604007",          # Pneumonia
 #'   target_ecl = "<<64572001 :
-#'          116676008 = <<409774005"     # Disorder with inflammation as associated morphology
+#'          116676008 = <<409774005"     # Disorders with inflammation as associated morphology
 #' )
-concept_is <- function(
+#' concept_included_in(
+#'   concept_ids = "233604007",          # Pneumonia
+#'   target_ecl = "<<64572001 :
+#'          116676008 = <<409774005"     # Disorders with inflammation as associated morphology
+#' )
+#' concept_included_in(
+#'   concept_ids = "10625071000119104",  # Bronchopneumonia caused by bacteria (disorder) |
+#'   target_ecl = "<<233604007 MINUS <<53084003"
+#'                                       # Pneumonia excluding all bacterial pneumonia concepts
+#' )
+concept_included_in <- function(
   concept_ids,
   target_ecl,
   silent = FALSE,
@@ -231,7 +240,7 @@ concept_is <- function(
         output <- result_flatten(output, encoding = encoding)
         return(output)
       }},
-    ecl = paste0("<<(", target_ecl, ")"),
+    ecl = target_ecl,
     endpoint = endpoint,
     branch = branch,
     encoding = encoding,
