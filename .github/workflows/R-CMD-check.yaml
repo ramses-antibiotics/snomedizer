@@ -104,6 +104,6 @@ jobs:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
 
       - name: Code coverage
-        if: success() && github.ref == 'refs/heads/master' && github.event_name == 'push' && matrix.config.os == 'ubuntu-20.04' &&  matrix.config.r == 'release'
-        run: covr::codecov(quiet = FALSE)
+        if: success() && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop') && github.event_name == 'push' && matrix.config.os == 'ubuntu-20.04' &&  matrix.config.r == 'release'
+        run: covr::codecov(quiet = FALSE, branch = tail(strsplit(Sys.getenv("github.ref"), "/")[[1]], 1))
         shell: Rscript {0}

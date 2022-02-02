@@ -70,6 +70,7 @@
 #' This program is distributed in the hope that it will be useful, but WITHOUT
 #' ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
 #' FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+#' @importFrom Rdpack reprompt
 "_PACKAGE"
 
 # The following block is used by usethis to automatically manage
