@@ -3,7 +3,7 @@
 
 * Compatible with snowstorm release 7.6.0
 * Refactor functions `concepts_*()` into `concept_*()`
-* Add function `concept_is()`
+* Add function `concept_included_in()`
 * Add New Zealand endpoint to `snomed_public_endpoint_suggest()` [#24](https://github.com/ramses-antibiotics/snomedizer/issues/24)
 
 # snomedizer 0.1.0-alpha
