@@ -182,7 +182,7 @@ concept_included_in <- function(
   encoding = "UTF-8"
 ) {
 
-  CHUNK_SIZE = 200
+  CHUNK_SIZE = 100
 
   stopifnot(length(target_ecl) == 1)
 
@@ -226,7 +226,7 @@ concept_included_in <- function(
         ecl = ecl,
         endpoint = endpoint,
         branch = branch,
-        limit = 250)
+        limit = CHUNK_SIZE)
       if ( !silent ) {
         progress_bar$tick()
       }
@@ -245,7 +245,8 @@ concept_included_in <- function(
     branch = branch,
     encoding = encoding,
     progress_bar = progress_bar,
-    silent = silent
+    silent = silent,
+    CHUNK_SIZE = CHUNK_SIZE
   )
 
   x <- dplyr::bind_rows(x)
