@@ -220,7 +220,8 @@ concept_included_in <- function(
                   branch,
                   encoding,
                   progress_bar,
-                  silent) {
+                  silent,
+                  CHUNK_SIZE) {
       output <- api_concepts(
         conceptIds = chunk,
         ecl = ecl,
