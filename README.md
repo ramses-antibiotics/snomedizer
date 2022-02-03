@@ -59,7 +59,7 @@ library(snomedizer)
 
 api_concepts(term = "pneumonia", activeFilter = TRUE)
 #> Response [https://snowstorm.ihtsdotools.org/snowstorm/snomed-ct/MAIN/concepts?term=pneumonia&limit=50&offset=0&activeFilter=TRUE]
-#>   Date: 2021-12-30 18:07
+#>   Date: 2022-02-03 16:23
 #>   Status: 200
 #>   Content-Type: application/json
 #>   Size: 22 kB
@@ -80,10 +80,10 @@ Simpler wrapper functions are available for common operations, which
 provide results as data frames:
 
 ``` r
-concepts_find(term = "pneumonia", limit = 5) %>% 
+concept_find(term = "pneumonia", limit = 5) %>% 
   dplyr::select(conceptId, fsn.term, pt.term) 
 #> Warning: 
-#> This server request returned just 5 of a total 608 results.
+#> This server request returned just 5 of a total 610 results.
 #> Please increase the server `limit` to fetch all results.
 #>   conceptId                         fsn.term            pt.term
 #> 1 233604007             Pneumonia (disorder)          Pneumonia
