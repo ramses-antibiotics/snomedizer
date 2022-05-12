@@ -147,11 +147,11 @@ test_that(".snomed_identifiers_deduplicate", {
 
 test_that(".split_into_chunks", {
   expect_equal(
-    .split_into_chunks(x = c(1, 2, 2, 3, 3), max_length = 2),
+    .split_into_chunks(x = c(1, 1, 2, 2, 3), max_length = 2),
     list(
-      "0" = c(1),
+      "0" = c(1,1),
       "1" = c(2,2),
-      "2" = c(3,3)
+      "2" = c(3)
     )
   )
 })

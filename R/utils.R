@@ -506,6 +506,6 @@ result_completeness <- function(x, silent = FALSE) {
 #' @return a list of vector of length between 1 and \code{max_length}
 #' @noRd
 .split_into_chunks <- function(x, max_length){
-  split(x, sort(trunc(seq_len(length(x))/max_length)))
+  split(x, sort(trunc((seq_len(length(x)) - 1)/max_length)))
 }
 
