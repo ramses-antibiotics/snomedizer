@@ -159,7 +159,7 @@ api_concept <- function(conceptId,
                         endpoint = snomedizer_options_get("endpoint"),
                         branch = snomedizer_options_get("branch"),
                         catch404 = TRUE) {
-
+  # GET /{branch}/concepts/{conceptId}
 
   stopifnot(is.character(conceptId))
   stopifnot(length(conceptId) == 1)
@@ -194,6 +194,7 @@ api_concepts <- function(
   catch404 = TRUE,
   ...
 ) {
+  # GET /{branch}/concepts
 
   stopifnot(is.vector(conceptIds) | is.null(conceptIds))
   stopifnot(length(term) == 1 | is.null(term))
@@ -241,6 +242,7 @@ api_concept_descendants <- function(
   branch = snomedizer_options_get("branch"),
   catch404 = TRUE
 ) {
+  # GET /{branch}/concepts/{conceptId}/descendants
 
   stopifnot(is.character(conceptId))
   stopifnot(is.null(offset) | length(offset) == 1)
@@ -278,6 +280,7 @@ api_concept_descriptions <- function(
   branch = snomedizer_options_get("branch"),
   catch404 = TRUE
 ) {
+  # GET /{branch}/concepts/{conceptId}/descriptions
 
   stopifnot(is.character(conceptId))
   stopifnot(length(conceptId) == 1)
@@ -303,6 +306,8 @@ api_concept_descriptions <- function(
 #' @export
 api_all_branches <- function(endpoint = snomedizer_options_get("endpoint"),
                              catch404 = TRUE) {
+  # GET /branches
+
   rest_url <- httr::parse_url(endpoint)
   rest_url$path <- c(rest_url$path[rest_url$path != ""],
                      "branches")
@@ -321,6 +326,7 @@ api_branch <- function(endpoint = snomedizer_options_get("endpoint"),
                        branch = snomedizer_options_get("branch"),
                        catch404 = TRUE,
                        ...) {
+  # GET /branches/{path}
 
   rest_url <- httr::parse_url(endpoint)
   rest_url$path <- c(rest_url$path[rest_url$path != ""],
@@ -346,6 +352,7 @@ api_branch_descendants <- function(
   branch = snomedizer_options_get("branch"),
   catch404 = TRUE,
   ...) {
+  # GET /branches/{path}/children
 
   rest_url <- httr::parse_url(endpoint)
   rest_url$path <- c(rest_url$path[rest_url$path != ""],
@@ -375,6 +382,7 @@ api_descriptions <- function(
   limit = snomedizer_options_get("limit"),
   catch404 = TRUE,
   ...) {
+  # GET /{branch}/descriptions
 
   stopifnot(is.character(conceptIds))
   conceptIds <- .concatenate_array_parameter(conceptIds)
@@ -407,6 +415,7 @@ api_descriptions <- function(
 api_version <- function(
   endpoint = snomedizer_options_get("endpoint"),
   catch404 = TRUE) {
+  # GET /version
 
   rest_url <- httr::parse_url(endpoint)
   rest_url$path <- c(rest_url$path[rest_url$path != ""],
@@ -430,6 +439,7 @@ api_browser_concepts <- function(
     branch = snomedizer_options_get("branch"),
     catch404 = TRUE
   ) {
+  # GET /browser/{branch}/concepts/{conceptId}
 
   stopifnot(is.character(conceptId))
   stopifnot(length(conceptId) == 1)
@@ -468,6 +478,7 @@ api_browser_concept_ancestors <- function(
   branch = snomedizer_options_get("branch"),
   catch404 = TRUE
 ) {
+  # GET /browser/{branch}/concepts/{conceptId}/ancestors
 
   stopifnot(is.character(conceptId))
   stopifnot(length(conceptId) == 1)
@@ -508,6 +519,7 @@ api_browser_concept_children <- function(
   branch = snomedizer_options_get("branch"),
   catch404 = TRUE
 ) {
+  # GET /browser/{branch}/concepts/{conceptId}/children
 
   stopifnot(is.character(conceptId))
   stopifnot(length(conceptId) == 1)
@@ -554,13 +566,14 @@ api_browser_concept_parents <- function(
   branch = snomedizer_options_get("branch"),
   catch404 = TRUE
 ) {
+  # GET /browser/{branch}/concepts/{conceptId}/parents
 
-  # TODO: Unlike api_browser_concept_children, this only provides leaf flag
-  # if includeDescendantCount = TRUE
+  # Note: Unlike api_browser_concept_children, this only provides
+  # isleafInferred flag if includeDescendantCount = TRUE
   # https://github.com/IHTSDO/snowstorm/blob/07e3f7ea08f8091b20f856a4775f867608961329/src/main/java/org/snomed/snowstorm/rest/ConceptController.java#L406
   # Consequently chose to set includeDescendantCount as TRUE by default
-  # to avoid misleading behaviour - since this goes against the Rd documented
-  # default (FALSE) will need to review this in the future
+  # to avoid misleading behaviour
+  # This deviates from the default in snowstorm (includeDescendantCount = FALSE)
 
   stopifnot(is.character(conceptId))
   stopifnot(length(conceptId) == 1)
@@ -619,6 +632,7 @@ api_browser_concept_descriptions <- function(
   branch = snomedizer_options_get("branch"),
   catch404 = TRUE
 ) {
+  # GET /browser/{branch}/descriptions
 
   stopifnot(length(term) == 1)
   stopifnot(is.null(active) | (
@@ -685,6 +699,7 @@ api_descriptions_semantic_tags <- function(
   endpoint = snomedizer_options_get("endpoint"),
   branch = snomedizer_options_get("branch"),
   catch404 = TRUE) {
+  # GET /{branch}/descriptions/semantictags
 
   rest_url <- httr::parse_url(endpoint)
   rest_url$path <- c(rest_url$path[rest_url$path != ""],
@@ -713,6 +728,7 @@ api_relationships <- function(
   offset = 0,
   catch404 = TRUE,
   ...) {
+  # GET /{branch}/relationships
 
   stopifnot(is.null(active) | length(active) == 1)
   stopifnot(is.null(source) | length(source) == 1)
@@ -765,6 +781,7 @@ api_relationship <- function(
   relationshipId,
   catch404 = TRUE,
   ...) {
+  # GET /{branch}/relationships/{relationshipId}
 
   stopifnot(length(relationshipId) == 1)
 
@@ -791,6 +808,7 @@ api_relationship <- function(
 api_all_code_systems <- function(endpoint = snomedizer_options_get("endpoint"),
                                  forBranch = NULL,
                                  catch404 = TRUE) {
+  # GET /codesystems
 
   if( !is.null(forBranch) ) {
     stopifnot(length(forBranch) == 1)
@@ -819,6 +837,7 @@ api_all_code_systems <- function(endpoint = snomedizer_options_get("endpoint"),
 api_code_system <- function(endpoint = snomedizer_options_get("endpoint"),
                             shortName,
                             catch404 = TRUE) {
+  # GET /codesystems/{shortName}
 
   stopifnot(length(shortName) == 1)
   stopifnot(is.character(shortName))
@@ -845,6 +864,8 @@ api_code_system_all_versions <- function(endpoint = snomedizer_options_get("endp
                                          showFutureVersions = FALSE,
                                          showInternalReleases = FALSE,
                                          catch404 = TRUE) {
+  # GET /codesystems/{shortName}/versions
+
   stopifnot(length(shortName) == 1)
   stopifnot(is.character(shortName))
 
@@ -890,8 +911,8 @@ api_browser_refset_members <- function(
   limit = snomedizer_options_get("limit"),
   catch404 = TRUE
 ) {
+  # GET /browser/{branch}/members
 
-  # get /browser/{branch}/members
   # RF2 reference set descriptor data structure
   # https://confluence.ihtsdotools.org/display/DOCRELFMT/5.2.11+Reference+Set+Descriptor
 
@@ -945,8 +966,8 @@ api_refset_members <- function(
   limit = snomedizer_options_get("limit"),
   catch404 = TRUE
 ) {
+  # GET /{branch}/members
 
-  # get /{branch}/members
   # RF2 reference set descriptor data structure
   # https://confluence.ihtsdotools.org/display/DOCRELFMT/5.2.11+Reference+Set+Descriptor
 
