@@ -39,6 +39,7 @@ api_concepts(
   ecl = NULL,
   eclStated = NULL,
   activeFilter = NULL,
+  searchAfter = NULL,
   endpoint = snomedizer_options_get("endpoint"),
   branch = snomedizer_options_get("branch"),
   limit = snomedizer_options_get("limit"),
@@ -205,6 +206,7 @@ api_browser_refset_members(
   referencedComponentId = NULL,
   active = NULL,
   offset = NULL,
+  searchAfter = NULL,
   endpoint = snomedizer_options_get("endpoint"),
   branch = snomedizer_options_get("branch"),
   limit = snomedizer_options_get("limit"),
@@ -217,6 +219,7 @@ api_refset_members(
   referencedComponentId = NULL,
   active = NULL,
   offset = NULL,
+  searchAfter = NULL,
   targetComponent = NULL,
   mapTarget = NULL,
   owlExpression.conceptId = NULL,
@@ -258,6 +261,9 @@ for more detail.}
     \item \code{FALSE} returns only inactive terminology
     \item \code{NULL} (the default) returns both active and inactive terminology
 }}
+
+\item{searchAfter}{integer for the number of results to skip. May be used for
+for querying more that 10,000 records (current \code{limit} on results returned)}
 
 \item{limit}{a positive integer for the maximum number of results to return.
 See \code{\link{snomedizer_options}}. The maximum limit on public endpoints
