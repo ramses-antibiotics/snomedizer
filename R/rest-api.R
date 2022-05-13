@@ -99,6 +99,8 @@
 #' SNOMED CT components to be included. For Map Reference Sets, this refers
 #' to the SNOMED CT concept that is mapped to the other terminology or code system
 #' @param relationshipId string of a relationship concept
+#' @param searchAfter integer for the number of results to skip. May be used for
+#' for querying more that 10,000 records (current \code{limit} on results returned)
 #' @param searchMode a character string for the search mode. Must be either
 #' \code{"STANDARD"} (default) or \code{"REGEX"}.
 #' @param semanticTag character string of a description semantic tag
@@ -187,6 +189,7 @@ api_concepts <- function(
   ecl = NULL,
   eclStated = NULL,
   activeFilter = NULL,
+  searchAfter = NULL,
   endpoint = snomedizer_options_get("endpoint"),
   branch = snomedizer_options_get("branch"),
   limit = snomedizer_options_get("limit"),
@@ -216,7 +219,8 @@ api_concepts <- function(
     eclStated = eclStated,
     limit = limit,
     offset = offset,
-    activeFilter = activeFilter
+    activeFilter = activeFilter,
+    searchAfter = searchAfter
   )
   rest_url$query <- append(rest_url$query, list(...))
   .check_rest_query_length1(rest_url)
@@ -906,6 +910,7 @@ api_browser_refset_members <- function(
   referencedComponentId = NULL,
   active = NULL,
   offset = NULL,
+  searchAfter = NULL,
   endpoint = snomedizer_options_get("endpoint"),
   branch = snomedizer_options_get("branch"),
   limit = snomedizer_options_get("limit"),
@@ -934,7 +939,8 @@ api_browser_refset_members <- function(
     referencedComponentId = referencedComponentId,
     active = active,
     offset = offset,
-    limit = limit
+    limit = limit,
+    searchAfter = searchAfter
   )
   .check_rest_query_length1(rest_url)
 
@@ -957,6 +963,7 @@ api_refset_members <- function(
   referencedComponentId = NULL,
   active = NULL,
   offset = NULL,
+  searchAfter = NULL,
   targetComponent = NULL,
   mapTarget = NULL,
   owlExpression.conceptId = NULL,
@@ -991,6 +998,7 @@ api_refset_members <- function(
     referencedComponentId = referencedComponentId,
     active = active,
     offset = offset,
+    searchAfter = searchAfter,
     targetComponent = targetComponent,
     mapTarget = mapTarget,
     owlExpression.conceptId = owlExpression.conceptId,
