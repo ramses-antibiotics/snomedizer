@@ -52,4 +52,13 @@ test_that("concept_find (batch)", {
   )
   expect_equal(sort(concepts$conceptId),
                sort(concepts_batch$conceptId))
+
+  # Test when limit is overridden by long conceptId input
+  concepts_batch_limit_50 <- concept_find(
+    conceptIds = concepts$conceptId,
+    limit = 50,
+    silent = FALSE
+  )
+  expect_equal(sort(concepts$conceptId),
+               sort(concepts_batch_limit_50$conceptId))
 })

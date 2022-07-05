@@ -14,6 +14,9 @@
 #' Consult the \href{http://snomed.org/gl}{SNOMED glossary} for more detail.
 #' @param encoding HTTP charset parameter to use (default is \code{"UTF-8"})
 #' @param silent whether to hide progress bar. Default is \code{FALSE}
+#' @param limit a positive integer for the maximum number of results to return.
+#' See \code{\link{snomedizer_options}}. The maximum limit on public endpoints
+#' is 10,000.
 #' @param ... other optional arguments listed in \code{\link{api_operations}}, such as
 #' \code{endpoint}, \code{branch} or \code{limit}
 #' @return a data frame
@@ -43,6 +46,7 @@ concept_find <- function(term = NULL,
                          activeFilter = TRUE,
                          encoding = "UTF-8",
                          silent = FALSE,
+                         limit = snomedizer_options_get("limit"),
                          ...) {
 
   CHUNK_SIZE = 100
@@ -56,6 +60,10 @@ concept_find <- function(term = NULL,
   }
 
   if( !is.null(conceptIds) && length(conceptIds) > CHUNK_SIZE ) {
+
+    if ( limit < CHUNK_SIZE ) {
+      limit <- CHUNK_SIZE
+    }
 
     progress_bar <- .progress_bar_initiate(x = conceptIds,
                                            chunk_size = CHUNK_SIZE,
@@ -73,8 +81,9 @@ concept_find <- function(term = NULL,
                     encoding,
                     progress_bar,
                     silent,
+                    limit,
                     ...) {
-        conc <- api_concepts(conceptIds = chunk, ...)
+        conc <- api_concepts(conceptIds = chunk, limit = limit, ...)
         if( !silent ) {
           progress_bar$tick()
         }
@@ -92,6 +101,7 @@ concept_find <- function(term = NULL,
       encoding = encoding,
       progress_bar = progress_bar,
       silent = silent,
+      limit = limit,
       ...
     )
 
@@ -105,6 +115,7 @@ concept_find <- function(term = NULL,
       conceptIds = conceptIds,
       ecl = ecl,
       activeFilter = activeFilter,
+      limit = limit,
       ...
     )
 
@@ -401,6 +412,9 @@ concept_descendants <- function(conceptIds,
 #' @param conceptIds a character vector of concept identifiers
 #' @param encoding HTTP charset parameter to use. Default is \code{"UTF-8"}.
 #' @param silent whether to hide progress bar. Default is \code{FALSE}.
+#' @param limit a positive integer for the maximum number of results to return.
+#' See \code{\link{snomedizer_options}}. The maximum limit on public endpoints
+#' is 10,000.
 #' @param ... other optional arguments listed in \code{\link{api_operations}}, such as
 #' \code{endpoint}, \code{branch} or \code{limit}
 #' @return a named list of data frames sorted by \code{conceptIds}
@@ -415,10 +429,14 @@ concept_descendants <- function(conceptIds,
 #' pneumonia_descriptions <- concept_descriptions(conceptIds = "233604007")
 #' str(pneumonia_descriptions)
 concept_descriptions <- function(conceptIds,
-                                  encoding = "UTF-8",
-                                  silent = FALSE,
+                                 encoding = "UTF-8",
+                                 silent = FALSE,
+                                 limit = snomedizer_options_get("limit"),
                                   ...) {
   CHUNK_SIZE = 100
+  if ( length(conceptIds) > CHUNK_SIZE & limit < CHUNK_SIZE ) {
+    limit <- 10000
+  }
 
   stopifnot(is.vector(conceptIds))
   conceptIds <- .snomed_identifiers_deduplicate(conceptIds)
@@ -432,8 +450,8 @@ concept_descriptions <- function(conceptIds,
 
   x <- purrr::map(
     .x = x,
-    .f = function(chunk, encoding, progress_bar, silent, ...) {
-      desc <- api_descriptions(conceptIds = chunk, ...)
+    .f = function(chunk, encoding, progress_bar, silent, limit,...) {
+      desc <- api_descriptions(conceptIds = chunk, limit = limit, ...)
       if ( !silent ) {
         progress_bar$tick()
       }
@@ -449,6 +467,7 @@ concept_descriptions <- function(conceptIds,
     encoding = encoding,
     progress_bar = progress_bar,
     silent = silent,
+    limit = limit,
     ...
   )
 
@@ -473,6 +492,9 @@ concept_descriptions <- function(conceptIds,
 #' @param active whether to restrict results to active concepts. Default is \code{TRUE}.
 #' @param encoding HTTP charset parameter to use (default is \code{"UTF-8"})
 #' @param silent whether to hide progress bar. Default is \code{FALSE}
+#' @param limit a positive integer for the maximum number of results to return.
+#' See \code{\link{snomedizer_options}}. The maximum limit on public endpoints
+#' is 10,000.
 #' @param ... other optional arguments listed in \code{\link{api_operations}}, such as
 #' \code{endpoint}, \code{branch} or \code{limit}
 #'
@@ -499,12 +521,13 @@ concept_descriptions <- function(conceptIds,
 #'               additionalFields.mapTarget,
 #'               additionalFields.mapAdvice)
 concept_map <- function(concept_ids = NULL,
-                         target_code = NULL,
-                         map_refset_id = "447562003",
-                         active = TRUE,
-                         encoding = "UTF-8",
-                         silent = FALSE,
-                         ...) {
+                        target_code = NULL,
+                        map_refset_id = "447562003",
+                        active = TRUE,
+                        encoding = "UTF-8",
+                        silent = FALSE,
+                        limit = snomedizer_options_get("limit"),
+                        ...) {
 
   CHUNK_SIZE = 100
 
@@ -513,6 +536,10 @@ concept_map <- function(concept_ids = NULL,
   }
 
   if( !is.null(concept_ids) && length(unique(concept_ids)) > CHUNK_SIZE ) {
+
+    if ( limit < CHUNK_SIZE ) {
+      limit <- 10000
+    }
 
     progress_bar <- .progress_bar_initiate(x = concept_ids,
                                            chunk_size = CHUNK_SIZE,
@@ -530,12 +557,14 @@ concept_map <- function(concept_ids = NULL,
                     encoding,
                     progress_bar,
                     silent,
+                    limit,
                     ...) {
         conc <- api_refset_members(
           referencedComponentId = chunk,
           referenceSet = referenceSet,
           active = active,
           mapTarget = mapTarget,
+          limit = limit,
           ...
         )
         if( !silent ) {
@@ -558,6 +587,7 @@ concept_map <- function(concept_ids = NULL,
       encoding = encoding,
       progress_bar = progress_bar,
       silent = silent,
+      limit = limit,
       ...
     )
 
@@ -569,6 +599,7 @@ concept_map <- function(concept_ids = NULL,
       referenceSet = map_refset_id,
       active = active,
       mapTarget = target_code,
+      limit = limit,
       ...
     )
 

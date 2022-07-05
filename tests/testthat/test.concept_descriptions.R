@@ -30,4 +30,12 @@ test_that("concept_descriptions (batch)", {
     sort(concepts$conceptId)
   )
 
+  # Test when limit is overridden by long conceptId input
+  infection_descriptions_batch_limit_50 <- concept_descriptions(
+    conceptIds = concepts$conceptId,
+    limit = 50,
+    silent = FALSE
+  )
+  expect_equal(sort(names(infection_descriptions_batch_limit_50)),
+               sort(concepts$conceptId))
 })
