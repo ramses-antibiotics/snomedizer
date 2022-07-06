@@ -1,8 +1,9 @@
 
 # snomedizer 0.3.0-beta
 
-* Compatible with snowstorm releases 7.6.0-7.8.0
-* added searchAfter argument used in `api_concepts()`, `api_browser_refset_members()`, `api_refset_members()`
+* Compatible with snowstorm releases 7.6.0-7.9.3
+* Added searchAfter argument used in `api_concepts()`, `api_browser_refset_members()`, `api_refset_members()`
+* Minor usability improvement [#22](https://github.com/ramses-antibiotics/snomedizer/issues/22)
 
 # snomedizer 0.2.0-alpha
 
