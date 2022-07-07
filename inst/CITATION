@@ -1,0 +1,22 @@
+citHeader("To cite snomedizer in publications use:")
+
+citEntry(
+  entry = "Unpublished",
+  author = c(as.person("Peter Dutey-Magni"), as.person("Anika Cawthorn")),
+  title = "{snomedizer}: R Interface to the SNOMED CT Terminology Server REST API",
+  year = 2022,
+  note = "https://github.com/peterdutey/snomedizer-paper/blob/master/snomedizer-paper.pdf",
+  textVersion = paste("Dutey-Magni, Peter & Cawthorn, Anika (2022). snomedizer: R Interface to the SNOMED CT Terminology Server REST API. https://github.com/peterdutey/snomedizer-paper/blob/master/snomedizer-paper.pdf"))
+
+year <- sub("-.*", "", meta$Date)
+note <- sprintf("R package version %s", meta$Version)
+bibentry(bibtype = "Manual",
+         title = "{snomedizer}: R Interface to the SNOMED CT Terminology Server REST API",
+         author = c(person("Peter", "Dutey-Magni")),
+         year = year,
+         note = note,
+     url = "https://snomedizer.web.app/")
+ textVersion = paste0("Dutey-Magni, Peter (", year, ").",
+  "snomedizer: R Interface to the SNOMED CT Terminology Server REST API.",
+  note, ".",
+  " https://snomedizer.web.app/")

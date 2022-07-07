@@ -2,6 +2,7 @@ Package: snomedizer
 Type: Package
 Title: R Interface to the SNOMED CT Terminology Server REST API
 Version: 0.3.0
+Date: 2022-07-07
 Authors@R: c(
     person(given = "Peter",
            family = "Dutey-Magni",
