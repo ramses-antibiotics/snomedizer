@@ -65,7 +65,7 @@ Try for yourself with the quick exercise below:
 7. In the 'Refsets' tab, you will see that this concept is mapped to ICD-10 code J20.2.
 
 
-<div class="figure"><img src="40600002_diagram.svg" style="width:100.0%" alt="Concept diagram: raw (unprocessed) electronic prescribing records"></div>
+<!-- <div class="figure"><img src="40600002_diagram.svg" style="width:100.0%" alt="Concept diagram: raw (unprocessed) electronic prescribing records"></div> -->
 
 <!-- <div class="bd-callout bd-callout-info"> -->
 <!-- <h4>Bonus exercise</h4> -->
@@ -84,19 +84,19 @@ For instance, once can search for all the different subtypes of pneumonia. For t
 The corresponding ECL query is `<233604007 | Pneumonia (disorder) |`, where `<` is the ECL operator selecting descendants of a concept.
 
  
-<div class="bd-callout bd-callout-info">
-<h4>Trying ECL in the web browser</h4>
-<ul>
-<li>Navigate to the [SNOMED International Browser](https://browser.ihtsdotools.org/?perspective=full)</li>
-<li>Accept the licence conditions</li>
-<li>Click on the 'Expression Constraint Queries' tab in the right panel</li>
-<li>Paste ECL queries from this vignette into the 'Expression...' box as shown below</li>
-<li>Press 'Execute'.</li>
-</ul>
-<br>
-<div class="figure" style="text-align:center"><img src="browser_ECL_box.png" style="width:70%" alt="SNOMED International Browser ECL interface"></div>
-</p>
-</div>
+<!-- <div class="bd-callout bd-callout-info"> -->
+<!-- <h4>Trying ECL in the web browser</h4> -->
+<!-- <ul> -->
+<!-- <li>Navigate to the [SNOMED International Browser](https://browser.ihtsdotools.org/?perspective=full)</li> -->
+<!-- <li>Accept the licence conditions</li> -->
+<!-- <li>Click on the 'Expression Constraint Queries' tab in the right panel</li> -->
+<!-- <li>Paste ECL queries from this vignette into the 'Expression...' box as shown below</li> -->
+<!-- <li>Press 'Execute'.</li> -->
+<!-- </ul> -->
+<!-- <br> -->
+<!-- <div class="figure" style="text-align:center"><img src="browser_ECL_box.png" style="width:70%" alt="SNOMED International Browser ECL interface"></div> -->
+<!-- </p> -->
+<!-- </div> -->
 
 
 
@@ -243,19 +243,19 @@ enterobac_infections %>%
 ``` 
 
 
-<div class="bd-callout bd-callout-info">
-<h4>Bonus exercise</h4>
-<p>Now, extract all body structures that can be infected by the family <i>Enterobacteriaceae</i>.</p>
-<p><i>Tip:</i> you will need the reversed refine operator <code>: R</code>.</p>
-<details>
-    <summary>Solution</summary>
-<pre>
-<code><<123037004 | Body structure (body structure) |  : R  363698007 |Finding site|  =
-(<<40733004 | Infectious disease (disorder) | :  
-             246075003 |Causative agent|  =  <<106544002)</code>
-</pre>
-</details>
-</div>
+<!-- <div class="bd-callout bd-callout-info"> -->
+<!-- <h4>Bonus exercise</h4> -->
+<!-- <p>Now, extract all body structures that can be infected by the family <i>Enterobacteriaceae</i>.</p> -->
+<!-- <p><i>Tip:</i> you will need the reversed refine operator <code>: R</code>.</p> -->
+<!-- <details> -->
+<!--     <summary>Solution</summary> -->
+<!-- <pre> -->
+<!-- <code><<123037004 | Body structure (body structure) |  : R  363698007 |Finding site|  = -->
+<!-- (<<40733004 | Infectious disease (disorder) | :   -->
+<!--              246075003 |Causative agent|  =  <<106544002)</code> -->
+<!-- </pre> -->
+<!-- </details> -->
+<!-- </div> -->
 
 
 ## 4. Find synonyms of a concept
@@ -320,7 +320,7 @@ We find a total of `r nrow(concept_map(map_refset_id = "447562003", target_code 
 **Note:** Complete mapping and semantic alignment with the incoming [ICD-11 Mortality and Morbidity Statistics](https://icd.who.int/browse11/) is planned. 
 
 
-```{css, echo=FALSE }
+```{css, echo=FALSE, eval=FALSE, include=FALSE}
 
 .bd-callout {
   padding: 1.5em;
