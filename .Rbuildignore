@@ -16,3 +16,4 @@
 ^\.firebase$
 ^firebase\.json$
 ^\.covrignore$
+^codemeta\.json$
