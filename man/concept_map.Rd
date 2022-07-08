@@ -11,6 +11,7 @@ concept_map(
   active = TRUE,
   encoding = "UTF-8",
   silent = FALSE,
+  limit = snomedizer_options_get("limit"),
   ...
 )
 }
@@ -29,6 +30,10 @@ The default is \code{"447562003"} for the ICD-10 Map Reference Set.}
 \item{encoding}{HTTP charset parameter to use (default is \code{"UTF-8"})}
 
 \item{silent}{whether to hide progress bar. Default is \code{FALSE}}
+
+\item{limit}{a positive integer for the maximum number of results to return.
+See \code{\link{snomedizer_options}}. The maximum limit on public endpoints
+is 10,000.}
 
 \item{...}{other optional arguments listed in \code{\link{api_operations}}, such as
 \code{endpoint}, \code{branch} or \code{limit}}

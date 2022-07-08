@@ -103,3 +103,22 @@ test_that("concept_included_in", {
   )
 
 })
+
+
+test_that("concept_included_in (batch)", {
+  concepts <- concept_find(ecl = "<233604007", limit = 300)
+  concepts_batch <- concept_included_in(
+    concept_ids = concepts$conceptId,
+    target_ecl = "763158003 | Medicinal product (product) |",
+
+  )
+  expect_false(any(concepts_batch))
+  # Test when limit is overridden by long conceptId input
+  concepts_batch_limit_50 <- concept_find(
+    conceptIds = concepts$conceptId,
+    limit = 50,
+    silent = FALSE
+  )
+
+
+})
