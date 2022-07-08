@@ -1,5 +1,5 @@
 
-# snomedizer 0.3.0 (2022-07-08)
+# snomedizer 0.3.0-beta (2022-07-08)
 
 * Compatible with snowstorm releases 7.6.0-7.9.3
 * Added searchAfter argument used in `api_concepts()`, `api_browser_refset_members()`, `api_refset_members()`
