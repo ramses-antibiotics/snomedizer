@@ -1,13 +1,13 @@
 
-test_that("concept_included_in (batch)", {
-  concepts_pneumo <- concept_find(ecl = "<233604007", limit = 300)
-  concepts_batch <- concept_included_in(
-    concept_ids = concepts_pneumo$conceptId,
-    target_ecl = "763158003", # Medicinal products
-    silent = TRUE
-  )
-  expect_false(any(concepts_batch))
-})
+# test_that("concept_included_in (batch)", {
+#   concepts_pneumo <- concept_find(ecl = "<233604007", limit = 300)
+#   concepts_batch <- concept_included_in(
+#     concept_ids = concepts_pneumo$conceptId,
+#     target_ecl = "763158003", # Medicinal products
+#     silent = TRUE
+#   )
+#   expect_false(any(concepts_batch))
+# })
 
 test_that("concept_included_in", {
 
