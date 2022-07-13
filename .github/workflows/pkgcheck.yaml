@@ -19,4 +19,5 @@ jobs:
   pkgcheck:
     runs-on: ubuntu-latest
     steps:
-      - uses: ropensci-review-tools/pkgcheck-action@main
+    - uses: r-lib/actions/setup-pandoc@v2
+    - uses: ropensci-review-tools/pkgcheck-action@main
