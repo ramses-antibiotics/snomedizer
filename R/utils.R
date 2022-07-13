@@ -1,14 +1,16 @@
 
 #' Set SNOMED CT endpoint and other \code{snomedizer} options
 #'
-#' @description Functions to get and set \code{snomedizer} default endpoint and other options
+#' @description Functions to get and set \code{snomedizer} default endpoint
+#' and other options
 #' @param option.name name of a single option to return: \code{"endpoint"},
 #' \code{"branch"}, or \code{"limit"}. If \code{NULL} (the default),
 #' \code{snomedizer_options_get()} returns a list of all options.
 #' @param endpoint address of a SNOMED CT Terminology Server REST API endpoint
 #' @param branch string for the branch name to use on endpoint, for instance
 #' \code{"MAIN"} for the root branch (usually the latest release of
-#' SNOMED CT's International Edition), or \code{"MAIN/2017-07-31"} for a past release.
+#' SNOMED CT's International Edition), or \code{"MAIN/2017-07-31"}
+#' for a past release.
 #' To obtain a list of all branches available on the current endpoint,
 #' see \code{\link{api_branch}()}
 #' @param limit integer for the maximum number of results to return.
@@ -17,8 +19,8 @@
 #' When loaded, the snomedizer package will look up for settings provided
 #' to the following environment variables:
 #' \describe{
-#'    \item{\code{SNOMEDIZER_ENDPOINT}}{for the \code{endpoint}. If this variable
-#'    is not specified, snomedizer uses
+#'    \item{\code{SNOMEDIZER_ENDPOINT}}{for the \code{endpoint}. If this
+#'    variable is not specified, snomedizer uses
 #'    \code{\link{snomed_public_endpoint_suggest}()} to pick a public endpoint.}
 #'    \item{\code{SNOMEDIZER_BRANCH}}{for the \code{branch}. If this variable is
 #'    not specified, snomedizer chooses branch \code{"MAIN"} by default.}
@@ -29,8 +31,8 @@
 #'
 #' @family utilities
 #' @return The factory setting of the target API parameter.
-#' @seealso To learn how to set environment variables in `.Rprofile` or `.Renviron`, see
-#' \link[base]{Startup}
+#' @seealso To learn how to set environment variables in `.Rprofile`
+#' or `.Renviron`, see \link[base]{Startup}
 #' @examples
 #' snomedizer_options_get()
 #' @name snomedizer_options
@@ -38,13 +40,14 @@ NULL
 
 #' @rdname snomedizer_options
 #' @export
-snomedizer_options_get <- function(option.name = NULL){
+snomedizer_options_get <- function(option.name = NULL) {
 
-  if ( !is.null(option.name) &&
-       option.name != "endpoint" &&
-       option.name != "branch" &&
-       option.name != "limit" ) {
-    stop("`option.name` must be of length 1 and equal to \"endpoint\", \"branch\" or \"limit\"")
+  if (!is.null(option.name) &&
+      option.name != "endpoint" &&
+      option.name != "branch" &&
+      option.name != "limit") {
+    stop("`option.name` must be of length 1 ",
+         "and equal to \"endpoint\", \"branch\" or \"limit\"")
   }
 
   default_options <- list(
@@ -53,12 +56,13 @@ snomedizer_options_get <- function(option.name = NULL){
     limit = getOption("snomedizer.limit")
   )
 
-  if ( any(is.null(default_options)) ) {
+  if (any(is.null(default_options))) {
     print(default_options)
-    warning("Invalid snomedizer default options. See `?snomedizer_options_set`")
+    warning("Invalid snomedizer default options. ",
+            "See `?snomedizer_options_set`")
   }
 
-  if ( !is.null(option.name) ) {
+  if (!is.null(option.name)) {
     return(
       default_options[[
         grep(option.name, names(default_options))
@@ -99,7 +103,7 @@ snomedizer_options_set <- function(endpoint = NULL,
     stopifnot(length(endpoint) == 1)
     stopifnot(is.character(endpoint))
 
-    if ( httr::http_error(httr::GET(endpoint)) ) {
+    if (httr::http_error(httr::GET(endpoint))) {
       stop("The provided `endpoint` is not responding.")
     }
 
@@ -117,7 +121,7 @@ snomedizer_options_set <- function(endpoint = NULL,
     }
 
   } else {
-    if(!snomed_endpoint_test(endpoint = snomedizer_options_get()$endpoint,
+    if (!snomed_endpoint_test(endpoint = snomedizer_options_get()$endpoint,
                              branch = branch)) {
       stop("`endpoint` is not returning valid answers.")
     } else {
@@ -132,7 +136,8 @@ snomedizer_options_set <- function(endpoint = NULL,
 
 #' Find a public SNOMED CT endpoint
 #'
-#' @return a string object containing the URL to a responsive SNOMED CT Terminology Server REST API endpoint.
+#' @return a string object containing the URL to a responsive SNOMED CT
+#' Terminology Server REST API endpoint.
 #' @family utilities
 #' @examples snomed_public_endpoint_suggest()
 #' @export
@@ -143,15 +148,19 @@ snomed_public_endpoint_suggest <- function() {
     snomed_public_endpoint_list()
   )
 
-  for(i in seq_along(snomed_public_endpoints)) {
-    endpoint_answers <- try(httr::http_error(httr::GET(snomed_public_endpoints[[i]])))
+  for (i in seq_along(snomed_public_endpoints)) {
+    endpoint_answers <- try(
+      httr::http_error(
+        httr::GET(snomed_public_endpoints[[i]])
+      )
+    )
     if (!methods::is(endpoint_answers, "try-error") && !endpoint_answers) {
       endpoint <- snomed_public_endpoints[[i]]
       break
     }
   }
 
-  if(!exists("endpoint")) {
+  if (!exists("endpoint")) {
     warning("No working SNOMED endpoint found. Try again later.")
     return(NULL)
   } else {
@@ -211,16 +220,18 @@ snomed_endpoint_test <- function(endpoint, branch) {
 
 #' Verify the endpoint compatibility with snomedizer
 #'
-#' @description This function compares the SNOMED CT terminology server endpoint version
-#' with `snomedizer`'s supported version. The SNOMED CT terminology server API
-#' is continuously developed and may introduce breaking changes in REST operations
-#' and parameters.
+#' @description This function compares the SNOMED CT terminology server
+#' endpoint versionwith `snomedizer`'s supported version. The SNOMED CT
+#' terminology server API is continuously developed and may introduce
+#' breaking changes in REST operations and parameters.
 #' @param endpoint URL of a SNOMED CT Terminology Server REST API endpoint
 #' @param silent whether to hide warnings. Default is `FALSE`
 #' @return a logical value indicating whether the endpoint version is supported
 #' @export
 #' @examples
-#' snomedizer_version_compatibility(endpoint = "https://snowstorm.ihtsdotools.org/snowstorm/snomed-ct")
+#' snomedizer_version_compatibility(
+#'   endpoint = "https://snowstorm.ihtsdotools.org/snowstorm/snomed-ct"
+#' )
 #' @family utilities
 snomedizer_version_compatibility <- function(
   endpoint = snomedizer_options_get("endpoint"),
@@ -234,13 +245,13 @@ snomedizer_version_compatibility <- function(
   version_minor <- (endpoint_version_num[2] + endpoint_version_num[3] * 0.001)
 
   if (
-    (version_main < 7) |
-    (version_main == 7 & version_minor < 6)
+    (version_main < 7) ||
+    (version_main == 7 && version_minor < 6)
   ) {
     warning(
       paste(
         paste0("The selected endpoint version is ", endpoint_version, "."),
-        "This version of snomedizer is designed for endpoint versions 7.6.0 or greater.",
+        "This version of snomedizer is designed for endpoint versions >=7.6.0.",
         "Some function may not work as intended.",
         sep = "\n"
       )
@@ -264,7 +275,8 @@ snomedizer_version_compatibility <- function(
 #' @return a list containing two character strings: \code{rf2_date}
 #' (YYYYMMDD release date) and \code{rf2_month_year} (month and year string)
 #' @family wrapper
-#' @references \href{SNOMED CT Release File Specifications}{http://snomed.org/rfs}
+#' @references
+#' \href{SNOMED CT Release File Specifications}{http://snomed.org/rfs}
 #' @examples
 #' release_version(
 #'   endpoint = "https://snowstorm.ihtsdotools.org/snowstorm/snomed-ct",
@@ -295,7 +307,7 @@ release_version <- function(endpoint = snomedizer_options_get("endpoint"),
     "rf2_month_year" = regmatches(
       ct_version$term,
       regexpr("(?<=[(])(.*)(?= Release[)]$)",
-              ct_version$term, perl = T)
+              ct_version$term, perl = TRUE)
     )
   )
 }
@@ -321,7 +333,7 @@ result_flatten <- function(x, encoding = "UTF-8") {
   x <- httr::content(x, as = "text", encoding = encoding)
   x <- jsonlite::fromJSON(x, flatten = TRUE)
   empty_index <- sapply(x, length) == 0
-  if(any(empty_index)) {
+  if (any(empty_index)) {
     x[empty_index] <- NA
   }
   x <- as.data.frame(x, stringsAsFactors = FALSE)
@@ -352,7 +364,7 @@ result_completeness <- function(x, silent = FALSE) {
 
   complete <- httr::content(x)$total <= httr::content(x)$limit
 
-  if(!complete & !silent) {
+  if (!complete && !silent) {
     warning(paste0(
       "\nThis server request returned just ", httr::content(x)$limit,
       " of a total ", httr::content(x)$total, " results.",
@@ -370,7 +382,7 @@ result_completeness <- function(x, silent = FALSE) {
 #' @keywords internal
 #' @noRd
 .catch_http_error <- function(x) {
-  if(httr::http_error(x)) {
+  if (httr::http_error(x)) {
     warning(paste0(
       "Status ", x$status_code, " ", httr::content(x, encoding = "UTF-8")$error,
       "\n", httr::content(x, encoding = "UTF-8")$message
@@ -381,14 +393,18 @@ result_completeness <- function(x, silent = FALSE) {
 
 #' Check that all REST query parameters have length 1
 #'
-#' @param rest_url a list of class \code{url} generated by \code{\link[httr]{parse_url}()}
-#' and containing a \code{query} list
+#' @param rest_url a list of class \code{url} generated by
+#' \code{\link[httr]{parse_url}()} and containing a \code{query} list
 #' @keywords internal
 #' @noRd
 .check_rest_query_length1 <- function(rest_url) {
-  if(any(sapply(rest_url$query, length) > 1)){
-    stop(paste0("The following arguments must have length <= 1: `",
-                paste(names(rest_url$query)[length(rest_url$query) > 1], collapse = "`, `"), "`"))
+  if (any(sapply(rest_url$query, length) > 1)) {
+    stop(
+      "The following arguments must have length <= 1: `",
+      paste(names(rest_url$query)[length(rest_url$query) > 1],
+            collapse = "`, `"),
+      "`"
+    )
   }
 }
 
@@ -400,7 +416,7 @@ result_completeness <- function(x, silent = FALSE) {
 #' @keywords internal
 #' @noRd
 .concatenate_array_parameter <- function(param) {
-  if(length(param>1)){
+  if (length(param>1)) {
     # `AsIs` used to prevent URL encoding of the ampersand
     # by httr:::compose_query (curl::curl_escape)
     param <- I(
@@ -414,18 +430,21 @@ result_completeness <- function(x, silent = FALSE) {
 
 
 .validate_limit <- function(limit) {
-  if(length(limit) != 1) {
+  if (length(limit) != 1) {
     stop("`limit` must have length == 1")
   }
-  if(is.null(limit) || is.na(limit)) {
+  if (is.null(limit) || is.na(limit)) {
     stop("`limit` must not be NULL or missing")
   }
-  if(!is.numeric(limit) || limit < 0 ||
-     # check is whole number
-     abs(limit - round(limit)) >= .Machine$double.eps^0.5) {
+  if (
+    !is.numeric(limit) ||
+    limit < 0 ||
+    # check is whole number
+    abs(limit - round(limit)) >= .Machine$double.eps^0.5
+  ) {
     stop("`limit` must be a strictly positive integer")
   }
-  if(limit > 10000){
+  if (limit > 10000) {
     # This is controlled by Java class
     # org.snomed.snowstorm.rest.ControllerHelper
     # https://github.com/IHTSDO/snowstorm/blob/master/src/main/java/org/snomed/snowstorm/rest/ControllerHelper.java#L212
@@ -452,7 +471,7 @@ result_completeness <- function(x, silent = FALSE) {
   stopifnot(!is.na(branch))
   stopifnot(is.character(branch))
   stopifnot(branch != "")
-  if ( !grepl("^MAIN", branch) ) {
+  if (!grepl("^MAIN", branch)) {
     stop("snowstorm branches must begin with `MAIN`")
   }
   utils::URLencode(URL = branch, reserved = TRUE)

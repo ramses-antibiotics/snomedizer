@@ -7,7 +7,8 @@
 snomed_public_endpoint_suggest()
 }
 \value{
-a string object containing the URL to a responsive SNOMED CT Terminology Server REST API endpoint.
+a string object containing the URL to a responsive SNOMED CT
+Terminology Server REST API endpoint.
 }
 \description{
 Find a public SNOMED CT endpoint

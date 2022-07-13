@@ -1,23 +1,39 @@
 
+test_that("concept_included_in (batch)", {
+  concepts_pneumo <- concept_find(ecl = "<233604007", limit = 300)
+  concepts_batch <- concept_included_in(
+    concept_ids = concepts_pneumo$conceptId,
+    target_ecl = "763158003", # Medicinal products
+    silent = TRUE
+  )
+  expect_false(any(concepts_batch))
+})
+
 test_that("concept_included_in", {
 
   concepts <- dplyr::tibble(
     concept_id = c("407671000",
                    "422747000",
                    "27658006",
-                   "39732311000001104", # unknown to MAIN branch (International Edition)
+
+                   # unknown to MAIN branch (International Edition)
+                   "39732311000001104",
+
                    "10625071000119104",
                    NA_character_),
     concept_fsn = c("Bilateral pneumonia (disorder)",
                     "Upper urinary tract infection (disorder)",
                     "Product containing amoxicillin (medicinal product)",
-                    "Amoxicillin 250mg capsules (product)", # in UK edition only
+
+                    # in UK edition only
+                    "Amoxicillin 250mg capsules (product)",
+
                     "Bronchopneumonia caused by bacteria",
                     NA_character_),
-    expect_pneumonia = c(T, F, F, NA, T, NA),
-    expect_uti = c(F, T, F, NA, F, NA),
-    expect_medicine = c(F, F, T, NA, F, NA),
-    expect_nonbact_pneumonia = c(T, F, F, NA, F, NA)
+    expect_pneumonia = c(TRUE, FALSE, FALSE, NA, TRUE, NA),
+    expect_uti = c(FALSE, TRUE, FALSE, NA, FALSE, NA),
+    expect_medicine = c(FALSE, FALSE, TRUE, NA, FALSE, NA),
+    expect_nonbact_pneumonia = c(TRUE, FALSE, FALSE, NA, FALSE, NA)
   )
 
   concepts[["is_pneumonia"]] <- concept_included_in(
@@ -47,7 +63,8 @@ test_that("concept_included_in", {
   )
   concepts[["is_nonbact_pneumonia"]] <- concept_included_in(
     concept_ids = concepts$concept_id,
-    target_ecl = "<<233604007 MINUS <<53084003" # Pneumonia excluding bacterial pneumonia
+    target_ecl = "<<233604007 MINUS <<53084003"
+    # Pneumonia excluding bacterial pneumonia
   )
   expect_equal(
     concepts[["is_nonbact_pneumonia"]],
@@ -103,14 +120,4 @@ test_that("concept_included_in", {
     )
   )
 
-})
-
-test_that("concept_included_in (batch)", {
-  concepts_pneumo <- concept_find(ecl = "<233604007", limit = 300)
-  concepts_batch <- concept_included_in(
-    concept_ids = concepts_pneumo$conceptId,
-    target_ecl = "763158003", #Medicinal products
-    silent = TRUE
-  )
-  expect_false(any(concepts_batch))
 })

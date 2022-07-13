@@ -71,13 +71,13 @@ test_that(".check_rest_query_length1", {
 # .concatenate_array_parameter --------------------------------------------
 
 test_that(".concatenate_array_parameter", {
-  conceptIds = c("233604007", "68566005")
+  conceptIds <- c("233604007", "68566005")
   expect_equal(
     .concatenate_array_parameter(conceptIds),
     I("233604007&conceptIds=68566005")
   )
 
-  thingummy = c("233604007", "68566005")
+  thingummy <- c("233604007", "68566005")
   expect_equal(
     .concatenate_array_parameter(thingummy),
     I("233604007&thingummy=68566005")
@@ -149,8 +149,8 @@ test_that(".split_into_chunks", {
   expect_equal(
     .split_into_chunks(x = c(1, 1, 2, 2, 3), max_length = 2),
     list(
-      "0" = c(1,1),
-      "1" = c(2,2),
+      "0" = c(1, 1),
+      "1" = c(2, 2),
       "2" = c(3)
     )
   )
