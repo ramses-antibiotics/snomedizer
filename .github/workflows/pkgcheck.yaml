@@ -19,4 +19,4 @@ jobs:
   pkgcheck:
     runs-on: ubuntu-latest
     steps:
-      - uses: ropensci-review-tools/pkgcheck-action@main
+      - uses: ropensci-review-tools/pkgcheck-action@d296778f779ddf598cdb8e91f182e4754ce86dd0
