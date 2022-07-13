@@ -12,6 +12,9 @@ a string object containing the URL to a responsive SNOMED CT Terminology Server 
 \description{
 Find a public SNOMED CT endpoint
 }
+\examples{
+snomed_public_endpoint_suggest()
+}
 \seealso{
 Other utilities: 
 \code{\link{result_completeness}()},

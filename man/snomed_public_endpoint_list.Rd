@@ -14,6 +14,9 @@ List a range of know public SNOMED CT Terminology Server
 REST API endpoint. To select a currently active endpoint, see
 \code{\link{snomed_public_endpoint_suggest}()}
 }
+\examples{
+snomed_public_endpoint_list()
+}
 \seealso{
 Other utilities: 
 \code{\link{result_completeness}()},

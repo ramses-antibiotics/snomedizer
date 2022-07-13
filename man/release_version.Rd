@@ -25,6 +25,12 @@ Provides the date of the release of the specified endpoint
 and branch. SNOMED CT is currently released released twice a year
 on 31 January and 31 July in a format known as Release Format 2 (RF2).
 }
+\examples{
+release_version(
+  endpoint = "https://snowstorm.ihtsdotools.org/snowstorm/snomed-ct",
+  branch = "MAIN"
+)
+}
 \references{
 \href{SNOMED CT Release File Specifications}{http://snomed.org/rfs}
 }

@@ -134,6 +134,7 @@ snomedizer_options_set <- function(endpoint = NULL,
 #'
 #' @return a string object containing the URL to a responsive SNOMED CT Terminology Server REST API endpoint.
 #' @family utilities
+#' @examples snomed_public_endpoint_suggest()
 #' @export
 snomed_public_endpoint_suggest <- function() {
 
@@ -167,6 +168,7 @@ snomed_public_endpoint_suggest <- function() {
 #' \code{\link{snomed_public_endpoint_suggest}()}
 #' @return a vector of URLs
 #' @family utilities
+#' @examples snomed_public_endpoint_list()
 #' @export
 snomed_public_endpoint_list <- function() {
 
@@ -217,6 +219,8 @@ snomed_endpoint_test <- function(endpoint, branch) {
 #' @param silent whether to hide warnings. Default is `FALSE`
 #' @return a logical value indicating whether the endpoint version is supported
 #' @export
+#' @examples
+#' snomedizer_version_compatibility(endpoint = "https://snowstorm.ihtsdotools.org/snowstorm/snomed-ct")
 #' @family utilities
 snomedizer_version_compatibility <- function(
   endpoint = snomedizer_options_get("endpoint"),
@@ -261,6 +265,11 @@ snomedizer_version_compatibility <- function(
 #' (YYYYMMDD release date) and \code{rf2_month_year} (month and year string)
 #' @family wrapper
 #' @references \href{SNOMED CT Release File Specifications}{http://snomed.org/rfs}
+#' @examples
+#' release_version(
+#'   endpoint = "https://snowstorm.ihtsdotools.org/snowstorm/snomed-ct",
+#'   branch = "MAIN"
+#' )
 #' @export
 release_version <- function(endpoint = snomedizer_options_get("endpoint"),
                             branch = snomedizer_options_get("branch")) {

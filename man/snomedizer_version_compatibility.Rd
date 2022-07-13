@@ -23,6 +23,9 @@ with `snomedizer`'s supported version. The SNOMED CT terminology server API
 is continuously developed and may introduce breaking changes in REST operations
 and parameters.
 }
+\examples{
+snomedizer_version_compatibility(endpoint = "https://snowstorm.ihtsdotools.org/snowstorm/snomed-ct")
+}
 \seealso{
 Other utilities: 
 \code{\link{result_completeness}()},
