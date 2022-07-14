@@ -1,0 +1,377 @@
+---
+title: "snomedizer: R Interface to the SNOMED CT Terminology Server REST API"
+date: '`r format(Sys.Date(), "%d %B %Y")`'
+output: 
+  rmarkdown::html_vignette:
+    toc: true
+    always_allow_html: yes
+    df_print: tibble
+bibliography: ../inst/REFERENCES.bib
+csl: the-open-university-numeric.csl
+vignette: >
+  %\VignetteIndexEntry{snomedizer: R Interface to the SNOMED CT Terminology Server REST API}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+options(max.print = 15)
+library(dplyr)
+```
+
+# Overview
+
+## What is SNOMED CT?
+
+SNOMED CT is the international standard ontology of clinical terms. It can be thought of as an encyclopedia on all things relevant to medicine, for instance: anatomical structures, diagnoses, medications, tests,  surgical procedures, pathogens such as SARS-CoV-2 or *Candida auris*, or even clinical findings, such as a high temperature. 
+
+SNOMED CT is not just a list of terms. It is an ontology made up of concepts which are fully defined in relation to each other. This allows complex inferences illustrated throughout the present vignette. You can learn more about ontologies in this [introduction workshop](https://github.com/nicolevasilevsky/CSH_IntroToOntologies/blob/master/IntroToOntologies_CSH_2018-10-28g.pdf) [@ontology101].
+
+SNOMED CT is currently used in more than 80 countries. It is present in over 70% of clinical systems commercialised in Europe and North America [@snomed2020; @snomedvalue2021], and it is mandated across the English National Health Service for:
+
+* records of symptoms, diagnoses, procedures, medications, observations or allergies [@SCCI0034]
+* electronic prescribing and pathology laboratory systems [@DAPB4013; @DAPB4017].
+
+The best ways to learn about SNOMED CT are:
+
+* the [SNOMED International Browser](https://browser.ihtsdotools.org/)
+* the [SNOMED CT for Data Analysts](https://elearning.ihtsdotools.org/enrol/index.php?id=26) free online learning course
+* the official [SNOMED CT Starter Guide](http://snomed.org/sg), particularly chapters [5. Logical Model](http://snomed.org/sg/5.+SNOMED+CT+Logical+Model) and [6. Concept Model](http://snomed.org/sg/6.+SNOMED+CT+Concept+Model).
+
+## What is snomedizer?
+
+`snomedizer` is an R package to interrogate the SNOMED CT terminology based on [Snowstorm](https://github.com/IHTSDO/snowstorm/), the official SNOMED CT Terminology Server. 
+
+Snowstorm is the back-end terminology service for both the [SNOMED International Browser](https://browser.ihtsdotools.org/) and the SNOMED International Authoring Platform.
+
+`snomedizer` allows you to perform the same operations as the [SNOMED International Browser](https://browser.ihtsdotools.org/) directly from your R console.
+
+# Introduction to SNOMED CT
+
+## Browsing the ontology
+
+SNOMED CT contains rich knowledge about medical concepts.
+
+Try for yourself with the quick exercise below:
+
+1. Go to the [SNOMED CT International Browser](https://browser.ihtsdotools.org/?perspective=full) and accept licence terms.
+2. In the 'Search' tab, type in `40600002`.
+3. Click on 'Pneumococcal bronchitis' in the result list.
+4. In the right panel ('Concept Details'), click the 'Details' tab.
+5. Look for the relationships: the ontology defines that this concept is a bronchitis, and that the pathological process is infectious (non-infective bronchites exist). It also specifies that the pathogen is *Streptococcus pneumoniae*.
+6. Now click on the 'Diagram' tab. The same information is displayed graphically. Purple boxes refer to `116680003 | Is a (attribute) |` relationships, while yellow boxes notate other attributes of the concept.
+7. In the 'Refsets' tab, you will see that this concept is mapped to ICD-10 code J20.2.
+
+
+<div class="figure"><img src="40600002_diagram.svg" style="width:100.0%" alt="Concept diagram: raw (unprocessed) electronic prescribing records"></div>
+
+<!-- <div class="bd-callout bd-callout-info"> -->
+<!-- <h4>Bonus exercise</h4> -->
+<!-- <p>Search for <code>9861002</code> and inspect the various tabs. As you can see, SNOMED CT knows that<p> -->
+<!-- <ul><li><i>Streptococcus pneumoniae</i> is the scientific name of pneumonoccus, and that</li>  -->
+<!-- <li>it is a gram-positive baterium of genus <i>Streptococcus</i>.</li></ul></p> -->
+<!-- </div> -->
+
+
+## Performing advanced queries (ECL)
+
+SNOMED CT has a query language named ['ECL' (Expression Constraint Language)](http://snomed.org/ecl). Using ECL, users can perform logical searches and learn new facts from any SNOMED CT concept using a range of operators listed in [this ECL quick reference table](https://confluence.ihtsdotools.org/display/DOCECL/Appendix+D+-+ECL+Quick+reference).
+
+For instance, once can search for all the different subtypes of pneumonia. For this, we need to query the *descendants* of concept `233604007 | Pneumonia (disorder) |`.
+
+The corresponding ECL query is `<233604007 | Pneumonia (disorder) |`, where `<` is the ECL operator selecting descendants of a concept.
+
+ 
+<div class="bd-callout bd-callout-info">
+<h4>Trying ECL in the web browser</h4>
+<ul>
+<li>Navigate to the [SNOMED International Browser](https://browser.ihtsdotools.org/?perspective=full)</li>
+<li>Accept the licence conditions</li>
+<li>Click on the 'Expression Constraint Queries' tab in the right panel</li>
+<li>Paste ECL queries from this vignette into the 'Expression...' box as shown below</li>
+<li>Press 'Execute'.</li>
+</ul>
+<br>
+<div class="figure" style="text-align:center"><img src="browser_ECL_box.png" style="width:70%" alt="SNOMED International Browser ECL interface"></div>
+</p>
+</div>
+
+# Examples
+
+First, load and set up `snomedizer`.
+
+```{r setup_snomedizer }
+library(dplyr)
+library(snomedizer)
+
+# Connect to the SNOMED International endpoint 
+# (see licence conditions in `vignette("snomedizer")`).
+snomedizer_options_set(
+  endpoint = "https://snowstorm.ihtsdotools.org/snowstorm/snomed-ct", 
+  branch = "MAIN/2021-07-31"
+)
+```
+
+## 1. Search for relevant urine specimens
+
+Urine tests are commonly performed in hospitals, for instance when looking for bacteria (microbial cultures). Let's assume we access a laboratory database in which all bacterial cultures are stored with SNOMED CT codes for the specimen type.
+
+There are many types of urine samples, eg: samples of morning urine, mid-stream urine, etc. Some are not optimal samples: for example, urine catheter samples are often contaminated and may give poor information. 
+
+Let's try and
+
+* fetch all the codes corresponding to urine specimens: they are descendants of `122575003 | Urine specimen (specimen) |`
+* while excluding the ones from urinary catheters (`122565001 | Urinary catheter specimen (specimen) |`).
+
+First, we need to query descendant concepts. There are two ways to accomplish this in `snomedizer`:
+
+* by using `concept_descendants()`
+* by running an ECL query in the `concept_find(ecl = "...")` function. For this, you will want to use the `<<` operator (known as `descendantOrSelfOf`) using ECL. 
+
+All the expressions below are equivalent.
+
+```{r demo_urine_1}
+urine_specimens <- concept_descendants(conceptIds = "122575003", 
+                                       include_self = TRUE)
+urine_specimens <- concept_find(ecl = "<<122575003")
+urine_specimens <- concept_find(ecl = "<<122575003 | Urine specimen (specimen) |")
+glimpse(urine_specimens[, c("conceptId", "pt.term")])
+```
+
+We obtain 40 concepts. But these include some samples obtained from catheters:
+
+```{r demo_urine_2}
+urine_specimens %>% 
+  filter(grepl("catheter", pt.term)) %>% 
+  select(pt.term)
+```
+
+To exclude those, we make use of the `MINUS` operator in ECL:
+
+```{r demo_urine_3}
+urine_specimens <- concept_find(
+  ecl = "
+  <<122575003 | Urine specimen (specimen) | MINUS 
+     ( <<122565001 | Urinary catheter specimen (specimen) |  OR
+       <<447589008 | Urine specimen obtained by single catheterization of bladder (specimen) | )
+  ")
+glimpse(urine_specimens[, c("conceptId", "pt.term")])
+```
+
+This now gives us the set of 34 target concepts.
+
+*Note:* For guidance on ECL operators such as `MINUS` or `OR`, see the [ECL quick reference table](https://confluence.ihtsdotools.org/display/DOCECL/Appendix+D+-+ECL+Quick+reference).
+
+
+## 2. Find the dose of a medical product
+
+Let's assume you have electronic prescription records referenced to SNOMED CT medical products. We come across a prescription for SNOMED CT code `374646004`, and want to extract the drug type, dose and unit.
+
+<div class="bd-callout bd-callout-warning">
+<h4>Note</h4>
+<p>Medical product definitions vary considerably across SNOMED CT editions.</p>
+<p>In this example, we will use the United States Edition.</p>
+</div>
+
+
+```{r look_med_prod}
+med_product <- concept_find(conceptIds = "374646004", 
+                            branch="MAIN/SNOMEDCT-US/2021-03-01")
+med_product %>% 
+  select(conceptId, fsn.term, pt.term) %>% 
+  glimpse()
+```
+
+This prescription is for Amoxicillin 500 mg oral tablets.
+
+We want to extract *attributes*, which are SNOMED CT relationships giving characteristics of a concept. Attributes can be queries using the `.` (dot) operator.
+
+First, let's look at the drug type, which is expressed by attribute `762949000 | Has precise active ingredient (attribute) |`.
+
+```{r find_amox_drug}
+concept_find(ecl="374646004.(<<762949000 | Has precise active ingredient (attribute) |) ", 
+             branch="MAIN/SNOMEDCT-US") %>% 
+  select(conceptId, fsn.term)
+```
+
+We could query other attributes sequentially (or chain them with `OR` operators in a single ECL expression). But here, the simplest way is to extract all attributes. We do this by remembering that attributes are merely SNOMED CT concepts descending from `762705008 | Concept model object attribute (attribute) |`.
+
+```{r find_antibiotic_type}
+med_substance <- concept_find(
+  ecl="374646004.(<<762705008 | Concept model object attribute (attribute) |) ", 
+  branch="MAIN/SNOMEDCT-US/2021-03-01"
+)
+med_substance$fsn.term
+```
+
+However, this approach only provides the value of the attribute, not the attribute name.
+
+A more complex, but effective approach involves a special REST endpoint in Snowstorm: [`GET /{branch}/relationships`](https://snowstorm.ihtsdotools.org/snowstorm/snomed-ct/swagger-ui.html#!/Relationships/findRelationshipsUsingGET). We can issue a request to this endpoint directly using the low-level function `api_relationships()`. Like all low-level `api_operations`, it is necessary to (1) explicitly request only active concepts, and (2) flatten the output into a data frame. We shall also exclude `116680003 | Is a |` attributes (which express inheritance from parent concepts) as they are not relevant in this instance.
+
+```{r drug_attributes}
+drug_attributes <- api_relationships(
+  source = "374646004", 
+  active = TRUE, 
+  branch="MAIN/SNOMEDCT-US/2021-03-01"
+) %>% 
+  snomedizer::result_flatten()
+
+drug_attributes %>% 
+  filter(type.pt.term != "Is a") %>% 
+  select(type.fsn.term, target.pt.term) %>% 
+  arrange(type.fsn.term)
+```
+
+## 3. Find all diseases caused by a type of bacterium
+
+Let's extract all infections that can be caused by bacteria belonging to `106544002 | Family Enterobacteriaceae (organism) |`.
+
+To do this, we use the `:` operator, known as 'refine' operator. 
+
+```{r find_enterobac_infections}
+enterobac_infections <- concept_find(
+  ecl="<<40733004 | Infectious disease (disorder) | :  
+             246075003 |Causative agent|  =  <<106544002",
+  limit = 5000
+)
+
+enterobac_infections %>% 
+  select(pt.term)
+``` 
+
+
+<div class="bd-callout bd-callout-info">
+<h4>Bonus exercise</h4>
+<p>Now, extract all body structures that can be infected by the family <i>Enterobacteriaceae</i>.</p>
+<p><i>Tip:</i> you will need the reversed refine operator <code>: R</code>.</p>
+<details>
+    <summary>Solution</summary>
+<pre>
+<code><<123037004 | Body structure (body structure) |  : R  363698007 |Finding site|  =
+(<<40733004 | Infectious disease (disorder) | :  
+             246075003 |Causative agent|  =  <<106544002)</code>
+</pre>
+</details>
+</div>
+
+
+## 4. Find synonyms of a concept
+
+Some concepts may have many different names.
+
+Let's extract synonyms of 'candidiasis':
+
+```{r syn_78048006}
+concept_descriptions(conceptIds = "78048006") %>% 
+  .[["78048006"]] %>% 
+  filter(type == "SYNONYM") %>% 
+  select(term)
+```
+
+Condition `type == "SYNONYM"` is there to remove the redundant fully specified name 'Candidiasis (disorder)'.
+
+We can also search for those terms in, say, Spanish, by querying the branch containing the Spanish Edition.
+
+```{r syn_78048006_fr}
+concept_descriptions(conceptIds = "78048006", branch = "MAIN/SNOMEDCT-ES/2021-04-30") %>% 
+  .[["78048006"]] %>% 
+  filter(type == "SYNONYM" & lang == "es") %>% 
+  select(term)
+```
+
+
+## 5. Map SNOMED CT concept codes to ICD-10
+
+SNOMED CT International Edition provides maps to other terminologies and code systems via [Map Reference Sets](https://confluence.ihtsdotools.org/display/DOCRELFMT/5.2.10+Complex+and+Extended+Map+Reference+Sets).
+
+Once such map is a map to the World Health Organisation [International Classification of Diseases and Related Health Problems 10th Revision](https://icd.who.int/browse10/2016/en) (ICD-10). At the time of writing, the Reference Set `447562003 | ICD-10 complex map reference set (foundation metadata concept) |` provides a link to zero, one, or several codes of the ICD-10 2016 Edition for concepts descending from:
+
+* `404684003 |clinical finding|`, 
+* `272379006 |event|` and 
+* `243796009 |situation with explicit context|`.
+
+For more information, please consult the [ICD-10 Mapping Technical Guide](http://snomed.org/icd10map).
+
+For example, let's extract the ICD-10 code corresponding to `721104000 | Sepsis due to urinary tract infection (disorder) |`:
+
+```{r map_urosepsis}
+concept_map(map_refset_id = "447562003", concept_ids = "721104000") %>% 
+  select(additionalFields.mapTarget, additionalFields.mapAdvice)
+```
+
+This points us to two ICD-10 codes:
+
+* `A41.9 Sepsis, unspecified`
+* `N39.0 Urinary tract infection, site not specified`, with a disclaimer indicating that the target ICD-10 code can be extended. On examination, the [ICD-10 documentation](https://icd.who.int/browse10/2016/en#/N39.0) recommends to "use additional code (B95-B98), if desired, to identify infectious agent."
+
+Conversely, let's find all SNOMED CT concepts mapped to ICD-10 code `N39.0`:
+
+```{r concepts_within_n390}
+concept_map(map_refset_id = "447562003", target_code = "N39.0") %>% 
+  select(referencedComponent.id, 
+         referencedComponent.pt.term,
+         additionalFields.mapAdvice)
+```
+We find a total of `r nrow(concept_map(map_refset_id = "447562003", target_code = "N39.0"))` concepts potentially mappable to `N39.0 Urinary tract infection, site not specified`.
+
+**Note:** Complete mapping and semantic alignment with the incoming [ICD-11 Mortality and Morbidity Statistics](https://icd.who.int/browse11/) is planned. 
+
+
+```{css, echo=FALSE }
+
+.bd-callout {
+  padding: 1.5em;
+  margin-top: 2em;
+  margin-bottom: 2em;
+  border: 1px solid #eee;
+  border-left-width: .25rem;
+  border-radius: .25rem;
+}
+
+.bd-callout h4, h3 {
+  padding-top: 0;
+  margin-top: 0;
+  margin-bottom: .25rem;
+}
+ 
+.bd-callout p:last-child {
+  margin-bottom: 0;
+}
+
+.bd-callout code {
+  border-radius: .25rem;
+}
+
+.bd-callout + .bd-callout {
+  margin-top: -.25rem;
+}
+
+.bd-callout-info {
+  border-left-color: #5bc0de;
+}
+
+.bd-callout-warning {
+  border-left-color: #f0ad4e;
+}
+
+
+.bd-callout-danger {
+  border-left-color: #d9534f;
+}
+
+.bd-examples .img-thumbnail {
+  margin-bottom: .75rem;
+}
+
+.bd-examples h4 {
+  margin-bottom: .25rem;
+}
+
+.bd-examples p {
+  margin-bottom: 1.25rem;
+}
+```
+
+# References
