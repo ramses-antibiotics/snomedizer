@@ -797,8 +797,7 @@ api_relationship <- function(
   endpoint = snomedizer_options_get("endpoint"),
   branch = snomedizer_options_get("branch"),
   relationshipId,
-  catch404 = TRUE,
-  ...) {
+  catch404 = TRUE) {
   # GET /{branch}/relationships/{relationshipId}
 
   stopifnot(length(relationshipId) == 1)
