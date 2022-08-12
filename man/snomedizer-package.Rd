@@ -6,10 +6,9 @@
 \alias{snomedizer-package}
 \title{snomedizer: R Interface to the SNOMED CT Terminology Server REST API}
 \description{
-\if{html}{\figure{logo.png}{options: align='right' alt='logo' width='120'}}
+\if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
 
-Interrogate the SNOMED CT clinical ontology using the 
-   SNOMED International Terminology Server REST API <https://github.com/IHTSDO/snowstorm>.
+Interrogate the SNOMED CT clinical ontology using the SNOMED International Terminology Server REST API \url{https://github.com/IHTSDO/snowstorm}.
 }
 \section{SNOMED CT licensing}{
 

@@ -99,7 +99,7 @@ snomedizer_options_set <- function(endpoint = NULL,
     stopifnot(length(endpoint) == 1)
     stopifnot(is.character(endpoint))
 
-    if ( httr::http_error(httr::GET(endpoint)) ) {
+    if ( httr::http_error(httr::GET(endpoint, .snomedizer_rest_user_agent())) ) {
       stop("The provided `endpoint` is not responding.")
     }
 
@@ -143,7 +143,10 @@ snomed_public_endpoint_suggest <- function() {
   )
 
   for(i in seq_along(snomed_public_endpoints)) {
-    endpoint_answers <- try(httr::http_error(httr::GET(snomed_public_endpoints[[i]])))
+    endpoint_answers <- try(
+      httr::http_error(httr::GET(snomed_public_endpoints[[i]],
+                                 .snomedizer_rest_user_agent()))
+    )
     if (!methods::is(endpoint_answers, "try-error") && !endpoint_answers) {
       endpoint <- snomed_public_endpoints[[i]]
       break
@@ -509,3 +512,12 @@ result_completeness <- function(x, silent = FALSE) {
   split(x, sort(trunc((seq_len(length(x)) - 1)/max_length)))
 }
 
+
+#' User agent object to provide to httr::GET method to identify
+#' snomedizer in HTTP REST requests
+#'
+#' @return a user agent signature of class \code{request}
+#' @noRd
+.snomedizer_rest_user_agent <- function() {
+  httr::user_agent(paste0("snomedizer/", utils::packageVersion("snomedizer")))
+}

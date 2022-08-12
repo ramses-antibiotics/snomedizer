@@ -172,7 +172,7 @@ api_concept <- function(conceptId,
                      "concepts",
                      conceptId)
   rest_url <- httr::build_url(rest_url)
-  rest_result <- GET(rest_url)
+  rest_result <- GET(rest_url, .snomedizer_rest_user_agent())
 
   if(catch404) {
     .catch_http_error(rest_result)
@@ -226,7 +226,7 @@ api_concepts <- function(
   .check_rest_query_length1(rest_url)
 
   rest_url <- httr::build_url(rest_url)
-  rest_result <- GET(rest_url)
+  rest_result <- GET(rest_url, .snomedizer_rest_user_agent())
 
   if(catch404){
     .catch_http_error(rest_result)
@@ -267,7 +267,7 @@ api_concept_descendants <- function(
   )
   rest_url <- httr::build_url(rest_url)
 
-  rest_result <- GET(rest_url)
+  rest_result <- GET(rest_url, .snomedizer_rest_user_agent())
 
   if(catch404) {
     .catch_http_error(rest_result)
@@ -297,7 +297,7 @@ api_concept_descriptions <- function(
                      "descriptions")
   rest_url <- httr::build_url(rest_url)
 
-  rest_result <- GET(rest_url)
+  rest_result <- GET(rest_url, .snomedizer_rest_user_agent())
 
   if(catch404) {
     .catch_http_error(rest_result)
@@ -315,7 +315,7 @@ api_all_branches <- function(endpoint = snomedizer_options_get("endpoint"),
   rest_url <- httr::parse_url(endpoint)
   rest_url$path <- c(rest_url$path[rest_url$path != ""],
                      "branches")
-  rest_result <- GET(rest_url)
+  rest_result <- GET(rest_url, .snomedizer_rest_user_agent())
 
   if(catch404){
     .catch_http_error(rest_result)
@@ -340,7 +340,7 @@ api_branch <- function(endpoint = snomedizer_options_get("endpoint"),
   .check_rest_query_length1(rest_url)
 
   rest_url <- httr::build_url(rest_url)
-  rest_result <- GET(rest_url)
+  rest_result <- GET(rest_url, .snomedizer_rest_user_agent())
 
   if(catch404){
     .catch_http_error(rest_result)
@@ -367,7 +367,7 @@ api_branch_descendants <- function(
   .check_rest_query_length1(rest_url)
 
   rest_url <- httr::build_url(rest_url)
-  rest_result <- GET(rest_url)
+  rest_result <- GET(rest_url, .snomedizer_rest_user_agent())
 
   if(catch404){
     .catch_http_error(rest_result)
@@ -405,7 +405,7 @@ api_descriptions <- function(
   .check_rest_query_length1(rest_url)
 
   rest_url <- httr::build_url(rest_url)
-  rest_result <- GET(rest_url)
+  rest_result <- GET(rest_url, .snomedizer_rest_user_agent())
 
   if(catch404){
     .catch_http_error(rest_result)
@@ -425,7 +425,7 @@ api_version <- function(
   rest_url$path <- c(rest_url$path[rest_url$path != ""],
                      "version")
 
-  rest_result <- GET(rest_url)
+  rest_result <- GET(rest_url, .snomedizer_rest_user_agent())
 
   if(catch404){
     .catch_http_error(rest_result)
@@ -464,7 +464,7 @@ api_browser_concepts <- function(
   .check_rest_query_length1(rest_url)
 
   rest_url <- httr::build_url(rest_url)
-  rest_result <- GET(rest_url)
+  rest_result <- GET(rest_url, .snomedizer_rest_user_agent())
 
   if(catch404){
     .catch_http_error(rest_result)
@@ -504,7 +504,7 @@ api_browser_concept_ancestors <- function(
   .check_rest_query_length1(rest_url)
 
   rest_url <- httr::build_url(rest_url)
-  rest_result <- GET(rest_url)
+  rest_result <- GET(rest_url, .snomedizer_rest_user_agent())
 
   if(catch404){
     .catch_http_error(rest_result)
@@ -550,7 +550,7 @@ api_browser_concept_children <- function(
   .check_rest_query_length1(rest_url)
 
   rest_url <- httr::build_url(rest_url)
-  rest_result <- GET(rest_url)
+  rest_result <- GET(rest_url, .snomedizer_rest_user_agent())
 
   if(catch404){
     .catch_http_error(rest_result)
@@ -604,7 +604,7 @@ api_browser_concept_parents <- function(
   .check_rest_query_length1(rest_url)
 
   rest_url <- httr::build_url(rest_url)
-  rest_result <- GET(rest_url)
+  rest_result <- GET(rest_url, .snomedizer_rest_user_agent())
 
   if(catch404){
     .catch_http_error(rest_result)
@@ -688,7 +688,7 @@ api_browser_concept_descriptions <- function(
   .check_rest_query_length1(rest_url)
 
   rest_url <- httr::build_url(rest_url)
-  rest_result <- GET(rest_url)
+  rest_result <- GET(rest_url, .snomedizer_rest_user_agent())
 
   if(catch404){
     .catch_http_error(rest_result)
@@ -710,7 +710,7 @@ api_descriptions_semantic_tags <- function(
                      branch,
                      "descriptions",
                      "semantictags")
-  rest_result <- GET(rest_url)
+  rest_result <- GET(rest_url, .snomedizer_rest_user_agent())
   if(catch404){
     .catch_http_error(rest_result)
   }
@@ -767,7 +767,7 @@ api_relationships <- function(
   .check_rest_query_length1(rest_url)
 
   rest_url <- httr::build_url(rest_url)
-  rest_result <- GET(rest_url)
+  rest_result <- GET(rest_url, .snomedizer_rest_user_agent())
 
   if(catch404){
     .catch_http_error(rest_result)
@@ -797,7 +797,7 @@ api_relationship <- function(
   .check_rest_query_length1(rest_url)
 
   rest_url <- httr::build_url(rest_url)
-  rest_result <- GET(rest_url)
+  rest_result <- GET(rest_url, .snomedizer_rest_user_agent())
 
   if(catch404){
     .catch_http_error(rest_result)
@@ -826,7 +826,7 @@ api_all_code_systems <- function(endpoint = snomedizer_options_get("endpoint"),
     forBranch = forBranch
   )
   rest_url <- httr::build_url(rest_url)
-  rest_result <- GET(rest_url)
+  rest_result <- GET(rest_url, .snomedizer_rest_user_agent())
 
   if(catch404){
     .catch_http_error(rest_result)
@@ -851,7 +851,7 @@ api_code_system <- function(endpoint = snomedizer_options_get("endpoint"),
                      "codesystems",
                      shortName)
   rest_url <- httr::build_url(rest_url)
-  rest_result <- GET(rest_url)
+  rest_result <- GET(rest_url, .snomedizer_rest_user_agent())
 
   if(catch404){
     .catch_http_error(rest_result)
@@ -892,7 +892,7 @@ api_code_system_all_versions <- function(endpoint = snomedizer_options_get("endp
     showFutureVersions = showFutureVersions
   )
   rest_url <- httr::build_url(rest_url)
-  rest_result <- GET(rest_url)
+  rest_result <- GET(rest_url, .snomedizer_rest_user_agent())
 
   if(catch404){
     .catch_http_error(rest_result)
@@ -945,7 +945,7 @@ api_browser_refset_members <- function(
   .check_rest_query_length1(rest_url)
 
   rest_url <- httr::build_url(rest_url)
-  rest_result <- GET(rest_url)
+  rest_result <- GET(rest_url, .snomedizer_rest_user_agent())
 
   if(catch404){
     .catch_http_error(rest_result)
@@ -1008,7 +1008,7 @@ api_refset_members <- function(
   .check_rest_query_length1(rest_url)
 
   rest_url <- httr::build_url(rest_url)
-  rest_result <- GET(rest_url)
+  rest_result <- GET(rest_url, .snomedizer_rest_user_agent())
 
   if(catch404){
     .catch_http_error(rest_result)
