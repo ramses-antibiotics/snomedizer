@@ -3,10 +3,7 @@ on:
     branches:
       - master
       - develop
-  pull_request:
-    branches:
-      - master
-      - develop
+      - bugfix/*
 
 name: R-CMD-check
 
