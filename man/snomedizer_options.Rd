@@ -19,7 +19,8 @@ snomedizer_options_set(endpoint = NULL, branch = NULL, limit = NULL)
 
 \item{branch}{string for the branch name to use on endpoint, for instance
 \code{"MAIN"} for the root branch (usually the latest release of
-SNOMED CT's International Edition), or \code{"MAIN/2017-07-31"} for a past release.
+SNOMED CT's International Edition), or \code{"MAIN/2017-07-31"}
+for a past release.
 To obtain a list of all branches available on the current endpoint,
 see \code{\link{api_branch}()}}
 
@@ -29,7 +30,8 @@ see \code{\link{api_branch}()}}
 The factory setting of the target API parameter.
 }
 \description{
-Functions to get and set \code{snomedizer} default endpoint and other options
+Functions to get and set \code{snomedizer} default endpoint
+and other options
 }
 \section{Default settings and environment variables}{
 
@@ -37,8 +39,8 @@ Functions to get and set \code{snomedizer} default endpoint and other options
 When loaded, the snomedizer package will look up for settings provided
 to the following environment variables:
 \describe{
-   \item{\code{SNOMEDIZER_ENDPOINT}}{for the \code{endpoint}. If this variable
-   is not specified, snomedizer uses
+   \item{\code{SNOMEDIZER_ENDPOINT}}{for the \code{endpoint}. If this
+   variable is not specified, snomedizer uses
    \code{\link{snomed_public_endpoint_suggest}()} to pick a public endpoint.}
    \item{\code{SNOMEDIZER_BRANCH}}{for the \code{branch}. If this variable is
    not specified, snomedizer chooses branch \code{"MAIN"} by default.}
@@ -52,8 +54,8 @@ to the following environment variables:
 snomedizer_options_get()
 }
 \seealso{
-To learn how to set environment variables in `.Rprofile` or `.Renviron`, see
-\link[base]{Startup}
+To learn how to set environment variables in `.Rprofile`
+or `.Renviron`, see \link[base]{Startup}
 
 Other utilities: 
 \code{\link{result_completeness}()},

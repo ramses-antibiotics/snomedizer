@@ -23,15 +23,15 @@ concept_descriptions(
 See \code{\link{snomedizer_options}}. The maximum limit on public endpoints
 is 10,000.}
 
-\item{...}{other optional arguments listed in \code{\link{api_operations}}, such as
-\code{endpoint}, \code{branch} or \code{limit}}
+\item{...}{other optional arguments listed in \code{\link{api_operations}},
+such as \code{endpoint}, \code{branch} or \code{limit}}
 }
 \value{
 a named list of data frames sorted by \code{conceptIds}
 }
 \description{
-This function is a wrapper of \code{\link{api_descriptions}} that
-fetches description of one or several concept identifiers.
+This function is a wrapper of \code{\link{api_descriptions}}
+that fetches description of one or several concept identifiers.
 }
 \section{Note}{
 
@@ -40,8 +40,9 @@ Duplicate \code{conceptIds} will be removed.
 
 \section{Disclaimer}{
 
-In order to use SNOMED CT, a licence is required which depends both on the country you are
-based in, and the purpose of your work. See details on \link{snomedizer}.
+In order to use SNOMED CT, a licence is required which depends both on
+the country you are based in, and the purpose of your work.
+See details on \link{snomedizer}.
 }
 
 \examples{

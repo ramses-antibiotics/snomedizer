@@ -1,9 +1,9 @@
 on:
+  workflow_dispatch:
   push:
     branches:
       - master
       - develop
-      - bugfix/*
 
 name: R-CMD-check
 

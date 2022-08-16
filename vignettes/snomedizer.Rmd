@@ -98,8 +98,6 @@ The corresponding ECL query is `<233604007 | Pneumonia (disorder) |`, where `<` 
 </p>
 </div>
 
-
-
 # Examples
 
 First, load and set up `snomedizer`.
@@ -180,7 +178,7 @@ Let's assume you have electronic prescription records referenced to SNOMED CT me
 
 ```{r look_med_prod}
 med_product <- concept_find(conceptIds = "374646004", 
-                             branch="MAIN/SNOMEDCT-US/2021-03-01")
+                            branch="MAIN/SNOMEDCT-US/2021-03-01")
 med_product %>% 
   select(conceptId, fsn.term, pt.term) %>% 
   glimpse()
@@ -194,7 +192,7 @@ First, let's look at the drug type, which is expressed by attribute `762949000 |
 
 ```{r find_amox_drug}
 concept_find(ecl="374646004.(<<762949000 | Has precise active ingredient (attribute) |) ", 
-              branch="MAIN/SNOMEDCT-US") %>% 
+             branch="MAIN/SNOMEDCT-US") %>% 
   select(conceptId, fsn.term)
 ```
 
@@ -203,7 +201,8 @@ We could query other attributes sequentially (or chain them with `OR` operators 
 ```{r find_antibiotic_type}
 med_substance <- concept_find(
   ecl="374646004.(<<762705008 | Concept model object attribute (attribute) |) ", 
-  branch="MAIN/SNOMEDCT-US/2021-03-01")
+  branch="MAIN/SNOMEDCT-US/2021-03-01"
+)
 med_substance$fsn.term
 ```
 

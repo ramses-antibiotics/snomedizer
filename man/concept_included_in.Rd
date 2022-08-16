@@ -30,14 +30,16 @@ commonly \code{"MAIN"}). See \code{\link{snomedizer_options}}.}
 \item{encoding}{HTTP charset parameter to use (default is \code{"UTF-8"})}
 }
 \value{
-a logical vector with the same order as \code{concept_ids} indicating
-whether each concept is included in the target set or not. \code{NA} is returned
-when \code{concept_ids} are not present on the target \code{branch}, or in case
-of a REST error caused by invalid \code{concept_ids} or \code{target_ecl}.
+a logical vector with the same order as \code{concept_ids}
+indicating whether each concept is included in the target set or not.
+\code{NA} is returned when \code{concept_ids} are not present on the target
+\code{branch}, or in case of a REST error caused by invalid
+\code{concept_ids} or \code{target_ecl}.
 }
 \description{
-This function compares a vector of \code{concept_ids} identifiers
-against a target set defined by an ECL expression \code{target_ecl}.
+This function compares a vector of \code{concept_ids}
+identifiers against a target set defined by an ECL expression
+\code{target_ecl}.
 It returns \code{TRUE} if the concept belongs to the target set,
 \code{FALSE} if it does not, or
 \code{NA} if it is not found in the branch.
@@ -52,23 +54,24 @@ concept_included_in(
   target_ecl = "<<233604007"          # Subtypes of 'pneumonia'
 )
 concept_included_in(
-  concept_ids = "39732311000001104",  # Medical product only found UK Edition
+  concept_ids = "39732311000001104",  # Medical product only in UK Edition
   target_ecl = "27658006"             # Products containing amoxicillin
 )
 concept_included_in(
   concept_ids = "233604007",          # Pneumonia
-  target_ecl = "<<64572001 :
-         116676008 = <<409774005"     # Disorders with inflammation as associated morphology
+  target_ecl = "<<64572001 :          # Disorders with inflammation
+         116676008 = <<409774005"     # as associated morphology
 )
 concept_included_in(
   concept_ids = "233604007",          # Pneumonia
-  target_ecl = "<<64572001 :
-         116676008 = <<409774005"     # Disorders with inflammation as associated morphology
+  target_ecl = "<<64572001 :          # Disorders with inflammation
+         116676008 = <<409774005"     # as associated morphology
 )
 concept_included_in(
-  concept_ids = "10625071000119104",  # Bronchopneumonia caused by bacteria (disorder) |
+  # Bronchopneumonia caused by bacteria
+  concept_ids = "10625071000119104",
+  # Pneumonia excluding all bacterial pneumonia concepts
   target_ecl = "<<233604007 MINUS <<53084003"
-                                      # Pneumonia excluding all bacterial pneumonia concepts
 )
 }
 \seealso{

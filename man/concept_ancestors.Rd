@@ -39,24 +39,27 @@ for instance \code{endpoint}, \code{branch} or \code{limit}.}
 a named list of data frames
 }
 \description{
-Wrapper functions of \code{\link{api_concepts}} that fetch ancestors
-or descendants of one or several concept identifiers using full SNOMED CT
-inference.
+Wrapper functions of \code{\link{api_concepts}} that fetch
+ancestorsor descendants of one or several concept identifiers using full
+SNOMED CT inference.
 
 Note: these functions can only fetch active concepts.
 }
 \section{Disclaimer}{
 
-In order to use SNOMED CT, a licence is required which depends both on the country you are
-based in, and the purpose of your work. See details on \link{snomedizer}.
+In order to use SNOMED CT, a licence is required which depends both on the
+country you are based in, and the purpose of your work.
+See details on \link{snomedizer}.
 }
 
 \examples{
 pneumonia_ancestors <- concept_ancestors(conceptIds = "233604007")
-# This will trigger a warning using the default limit set by snomedizer_options_get("limit")
+# This will trigger a warning using the default limit
+# set by snomedizer_options_get("limit")
 pneumonia_concepts <- concept_descendants(conceptIds = "233604007")
 # Raising the limit
-pneumonia_concepts <- concept_descendants(conceptIds = "233604007", limit = 300)
+pneumonia_concepts <- concept_descendants(conceptIds = "233604007",
+                                          limit = 300)
 head(pneumonia_concepts$`233604007`)
 }
 \seealso{

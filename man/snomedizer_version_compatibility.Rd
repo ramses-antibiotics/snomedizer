@@ -18,10 +18,15 @@ snomedizer_version_compatibility(
 a logical value indicating whether the endpoint version is supported
 }
 \description{
-This function compares the SNOMED CT terminology server endpoint version
-with `snomedizer`'s supported version. The SNOMED CT terminology server API
-is continuously developed and may introduce breaking changes in REST operations
-and parameters.
+This function compares the SNOMED CT terminology server
+endpoint versionwith `snomedizer`'s supported version. The SNOMED CT
+terminology server API is continuously developed and may introduce
+breaking changes in REST operations and parameters.
+}
+\examples{
+snomedizer_version_compatibility(
+  endpoint = "https://snowstorm.ihtsdotools.org/snowstorm/snomed-ct"
+)
 }
 \seealso{
 Other utilities: 

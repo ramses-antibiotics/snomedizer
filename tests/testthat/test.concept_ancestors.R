@@ -29,9 +29,12 @@ test_that("concept_ancestors ", {
     "40733004" %in% #Infectious disease
       infections[[2]]$conceptId
   )
-  expect_warning(concept_ancestors(conceptIds = c("233604007", "68566005"), limit = 2))
+  expect_warning(
+    concept_ancestors(conceptIds = c("233604007", "68566005"), limit = 2)
+  )
   expect_is(
-    infections <- concept_ancestors(conceptIds = c("233604007", "68566005"), limit = 300),
+    infections <- concept_ancestors(conceptIds = c("233604007", "68566005"),
+                                    limit = 300),
     "list"
   )
 

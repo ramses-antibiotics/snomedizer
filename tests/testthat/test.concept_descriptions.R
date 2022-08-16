@@ -7,7 +7,10 @@ test_that("concept_descriptions", {
     c("233604007", "68566005")
   )
   expect_true("Pneumonia" %in% infection_descriptions[["233604007"]]$term)
-  expect_true("Urinary tract infectious disease" %in% infection_descriptions[["68566005"]]$term)
+  expect_true(
+    "Urinary tract infectious disease" %in%
+      infection_descriptions[["68566005"]]$term
+  )
   expect_error(concept_descriptions(""))
 })
 

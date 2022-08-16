@@ -2,9 +2,13 @@
 # api_concept --------------------------------------------------------
 
 test_that("api_concept", {
-  expect_equal(httr::content(api_concept(conceptId = "233604007"))$fsn$term, "Pneumonia (disorder)")
   expect_equal(
-    expect_warning(httr::content(api_concept(conceptId = "biduletruccestleurtruc")))$error,
+    httr::content(api_concept(conceptId = "233604007"))$fsn$term,
+    "Pneumonia (disorder)"
+  )
+  expect_equal(
+    expect_warning(
+      httr::content(api_concept(conceptId = "biduletruccestleurtruc")))$error,
     "NOT_FOUND")
   expect_error(
     api_concept(conceptId = c("233604007", "68566005"))
@@ -16,33 +20,41 @@ test_that("api_concept", {
 test_that("api_concepts", {
   # by term
   pneumo_term <- api_concepts(term = "pneumonia")
-  pneumo_term_codes <- sapply(httr::content(pneumo_term)[["items"]], function(X) X$conceptId)
+  pneumo_term_codes <- sapply(httr::content(pneumo_term)[["items"]],
+                              function(X) X$conceptId)
   expect_true("233604007" %in% pneumo_term_codes)
 
   # one concept code
   infection_id <- api_concepts(conceptIds = "233604007")
-  infection_id_code <- sapply(httr::content(infection_id)[["items"]], function(X) X$conceptId)
+  infection_id_code <- sapply(httr::content(infection_id)[["items"]],
+                              function(X) X$conceptId)
   expect_equal(infection_id_code, "233604007")
 
   # several concept codes
   infections_id <- api_concepts(conceptIds = c("233604007", "68566005"))
-  infections_id_codes <- sapply(httr::content(infections_id)[["items"]], function(X) X$conceptId)
+  infections_id_codes <- sapply(httr::content(infections_id)[["items"]],
+                                function(X) X$conceptId)
   expect_setequal(infections_id_codes, c("233604007", "68566005"))
 
   # additional arguments from `...`
   # `Pneumonia` is a descendant of `Clinical finding`
-  infection_id <- api_concepts(conceptIds = "233604007", ecl = "<404684003|Clinical finding|")
-  infection_id_code <- sapply(httr::content(infection_id)[["items"]], function(X) X$conceptId)
+  infection_id <- api_concepts(conceptIds = "233604007",
+                               ecl = "<404684003|Clinical finding|")
+  infection_id_code <- sapply(httr::content(infection_id)[["items"]],
+                              function(X) X$conceptId)
   expect_equal(infection_id_code, "233604007")
   # `Pneumonia` is not an ancestor of `Clinical finding`
-  infection_id <- api_concepts(conceptIds = "233604007",  ecl = ">404684003|Clinical finding|")
-  infection_id_code <- sapply(httr::content(infection_id)[["items"]], function(X) X$conceptId)
+  infection_id <- api_concepts(conceptIds = "233604007",
+                               ecl = ">404684003|Clinical finding|")
+  infection_id_code <- sapply(httr::content(infection_id)[["items"]],
+                              function(X) X$conceptId)
   expect_equal(infection_id_code, list())
 
-  uti_children <- sapply(httr::content(api_concepts(ecl = "<!68566005"))[["items"]],
-                         function(X) X$conceptId)
+  uti_children <- sapply(
+    httr::content(api_concepts(ecl = "<!68566005"))[["items"]],
+    function(X) X$conceptId
+  )
   expect_true("422747000" %in% uti_children)
-
 
   # invalid arguments
   expect_error(api_concepts(conceptIds = "422747000", limit = "blurgh"))
@@ -57,7 +69,7 @@ test_that("api_concepts", {
 test_that("api_concept_descendants", {
   pneumo_desc <- httr::content(api_concept_descendants("205237003"))
   pneumo_desc_stated <- httr::content(api_concept_descendants("205237003",
-                                                              stated = T))
+                                                              stated = TRUE))
   expect_true(exists("conceptId", pneumo_desc$items[[1]]))
   expect_true(pneumo_desc_stated$total < pneumo_desc$total)
   expect_error(api_concept_descendants(conceptId = c("a", "b")))
@@ -97,11 +109,13 @@ test_that("api_branch_descendants", {
 
 test_that("api_descriptions", {
   expect_setequal(
-    snomedizer::result_flatten(api_descriptions(conceptIds = c("233604007")))$descriptionId,
+    snomedizer::result_flatten(
+      api_descriptions(conceptIds = c("233604007")))$descriptionId,
     c("350049016", "621810017")
   )
   expect_setequal(
-    snomedizer::result_flatten(api_descriptions(conceptIds = c("233604007", "205237003")))$descriptionId,
+    snomedizer::result_flatten(
+      api_descriptions(conceptIds = c("233604007", "205237003")))$descriptionId,
     c("314740018", "350049016", "621810017", "590574014")
   )
 })
@@ -128,16 +142,20 @@ test_that("api_browser_concepts", {
   expect_true(exists("descendantCount", pneumo_stated_desc))
   expect_equal(pneumo_stated_desc$conceptId, "233604007")
 
-  expect_error(api_browser_concepts(conceptId = "233604007",
-                                    descendantCountForm = "biduletruccestleurtruc"))
+  expect_error(
+    api_browser_concepts(conceptId = "233604007",
+                         descendantCountForm = "biduletruccestleurtruc")
+  )
 })
 
 # api_browser_concept_ancestors -------------------------------------------
 
 test_that("api_browser_concept_ancestors", {
 
-  pneumo <- httr::content(api_browser_concept_ancestors(conceptId = "233604007")) %>%
-    purrr::map(~dplyr::as_tibble(.x))%>% dplyr::bind_rows()
+  pneumo <- api_browser_concept_ancestors(conceptId = "233604007") %>%
+    httr::content() %>%
+    purrr::map(~dplyr::as_tibble(.x)) %>%
+    dplyr::bind_rows()
   expect_true("609623002" %in% pneumo$conceptId)
   expect_error(api_browser_concept_ancestors(conceptId = "233604007",
                                              form = NULL))
@@ -153,30 +171,40 @@ test_that("api_browser_concept_ancestors", {
 # api_browser_concept_children --------------------------------------------
 
 test_that("api_browser_concept_children", {
-  uti_children <- httr::content(api_browser_concept_children(conceptId = "233604007"))
+  uti_children <- httr::content(
+    api_browser_concept_children(conceptId = "233604007")
+  )
   # descendantCount = TRUE by default unlike snowstorm default.
   expect_true(exists("descendantCount", uti_children[[1]]))
   expect_false(exists("isLeafStated", uti_children[[1]]))
   expect_true(exists("isLeafInferred", uti_children[[1]]))
-  uti_children <- httr::content(api_browser_concept_children(conceptId = "68566005",
-                                                                form = "stated",
-                                                                includeDescendantCount = FALSE))
+  uti_children <- httr::content(api_browser_concept_children(
+    conceptId = "68566005",
+    form = "stated",
+    includeDescendantCount = FALSE
+  ))
   # descendantCount = TRUE by default unlike snowstorm default.
   expect_false(exists("descendantCount", uti_children[[1]]))
   expect_true(exists("isLeafStated", uti_children[[1]]) &
                 uti_children[[1]]$isLeafStated)
   expect_false(exists("isLeafInferred", uti_children[[1]]))
 
-
-  expect_error(api_browser_concept_children(conceptId = "233604007",
-                                            includeDescendantCount = NA))
-  expect_error(api_browser_concept_children(conceptId = "233604007",
-                                            includeDescendantCount = "blah"))
-  expect_error(api_browser_concept_children(conceptId = "233604007",
-                                            includeDescendantCount = as.logical(NA)))
-  expect_error(api_browser_concept_children(conceptId = "233604007",
-                                            includeDescendantCount = NULL))
-
+  expect_error(
+    api_browser_concept_children(conceptId = "233604007",
+                                 includeDescendantCount = NA)
+  )
+  expect_error(
+    api_browser_concept_children(conceptId = "233604007",
+                                 includeDescendantCount = "blah")
+  )
+  expect_error(
+    api_browser_concept_children(conceptId = "233604007",
+                                 includeDescendantCount = as.logical(NA))
+  )
+  expect_error(
+    api_browser_concept_children(conceptId = "233604007",
+                                 includeDescendantCount = NULL)
+  )
 })
 
 
@@ -184,30 +212,41 @@ test_that("api_browser_concept_children", {
 
 test_that("api_browser_concept_parents", {
 
-  pneumo_parents <- httr::content(api_browser_concept_parents(conceptId = "233604007",
-                                                              form = "inferred"))
+  pneumo_parents <- httr::content(
+    api_browser_concept_parents(conceptId = "233604007",
+                                form = "inferred")
+  )
   # descendantCount = TRUE by default unlike snowstorm default.
   expect_true(exists("descendantCount", pneumo_parents[[1]]))
   expect_false(exists("isLeafStated", pneumo_parents[[1]]))
   expect_true(exists("isLeafInferred", pneumo_parents[[1]]))
   expect_equal(pneumo_parents[[1]]$conceptId, "205237003")
-  pneumo_parents <- httr::content(api_browser_concept_parents(conceptId = "233604007",
-                                                              form = "stated"))
+  pneumo_parents <- httr::content(
+    api_browser_concept_parents(conceptId = "233604007",
+                                form = "stated")
+  )
   # descendantCount = TRUE by default unlike snowstorm default.
   expect_true(exists("descendantCount", pneumo_parents[[1]]))
   expect_true(exists("isLeafStated", pneumo_parents[[1]]))
   expect_false(exists("isLeafInferred", pneumo_parents[[1]]))
   expect_equal(pneumo_parents[[1]]$conceptId, "64572001")
 
-  expect_error(api_browser_concept_parents(conceptId = "233604007",
-                                            includeDescendantCount = NA))
-  expect_error(api_browser_concept_parents(conceptId = "233604007",
-                                            includeDescendantCount = "blah"))
-  expect_error(api_browser_concept_parents(conceptId = "233604007",
-                                            includeDescendantCount = as.logical(NA)))
-  expect_error(api_browser_concept_parents(conceptId = "233604007",
-                                            includeDescendantCount = NULL))
-
+  expect_error(
+    api_browser_concept_parents(conceptId = "233604007",
+                                includeDescendantCount = NA)
+  )
+  expect_error(
+    api_browser_concept_parents(conceptId = "233604007",
+                                includeDescendantCount = "blah")
+  )
+  expect_error(
+    api_browser_concept_parents(conceptId = "233604007",
+                                includeDescendantCount = as.logical(NA))
+  )
+  expect_error(
+    api_browser_concept_parents(conceptId = "233604007",
+                                includeDescendantCount = NULL)
+  )
 })
 
 
@@ -242,15 +281,29 @@ test_that("api_descriptions_semantic_tags", {
 
 test_that("api_relationships", {
   #test that NULL is equivalent to c("NULL", "NULL")
-  bacter_pneumo_relationships <- result_flatten(api_relationships(source = "312119006"))
-  expect_true(all(c("116680003", "246075003", "370135005", "363698007") %in%
-                    bacter_pneumo_relationships$type.conceptId))
+  bacter_pneumo_relationships <- result_flatten(
+    api_relationships(source = "312119006")
+  )
+  expect_true(
+    all(c("116680003", "246075003", "370135005", "363698007") %in%
+          bacter_pneumo_relationships$type.conceptId)
+  )
 
-  caused_by_ecoli <- result_flatten(api_relationships(type = "246075003", destination = "112283007"))
-  expect_true(all(c("9323009", "10625111000119106") %in% caused_by_ecoli$source.conceptId))
+  caused_by_ecoli <- api_relationships(
+    type = "246075003",
+    destination = "112283007"
+  ) %>%
+    result_flatten()
+  expect_true(
+    all(c("9323009", "10625111000119106") %in% caused_by_ecoli$source.conceptId)
+  )
 
-  caused_by_ecoli <- result_flatten(api_relationships(type = "246075003", destination = "112283007",
-                                                      characteristicType = "STATED_RELATIONSHIP"))
+  caused_by_ecoli <- api_relationships(
+    type = "246075003",
+    destination = "112283007",
+    characteristicType = "STATED_RELATIONSHIP"
+  ) %>%
+    result_flatten()
   expect_false("INFERRED_RELATIONSHIP" %in% caused_by_ecoli$characteristicType)
 
   expect_equal(api_relationships()$status_code, 200)
@@ -286,7 +339,8 @@ test_that("api_code_system", {
   expect_error(api_code_system(shortName = NULL))
   expect_error(api_code_system(shortName = c("a", "b")))
   expect_true(
-    "SNOMEDCT" %in% result_flatten(api_code_system(shortName = "SNOMEDCT"))$shortName
+    "SNOMEDCT" %in%
+      result_flatten(api_code_system(shortName = "SNOMEDCT"))$shortName
   )
 })
 
@@ -297,7 +351,10 @@ test_that("api_code_system_all_versions", {
   expect_error(api_code_system_all_versions(shortName = NULL))
   expect_error(api_code_system_all_versions(shortName = c("a", "b")))
   expect_true(
-    "SNOMEDCT" %in% result_flatten(api_code_system_all_versions(shortName = "SNOMEDCT"))$shortName
+    "SNOMEDCT" %in%
+      result_flatten(
+        api_code_system_all_versions(shortName = "SNOMEDCT")
+      )$shortName
   )
 })
 
@@ -311,7 +368,9 @@ test_that("api_browser_refset_members includes ICD10 map", {
 })
 
 test_that("api_browser_refset_members filtering by RefSet member", {
-  refsets <- httr::content(api_browser_refset_members(referencedComponentId = "49436004"))
+  refsets <- httr::content(
+    api_browser_refset_members(referencedComponentId = "49436004")
+  )
   refsets <- dplyr::bind_rows(lapply(refsets$referenceSets, as.data.frame))
   expect_true("447562003" %in% refsets$id)
 })
@@ -364,4 +423,3 @@ test_that("api_members find ICD code(s) corresponding to bacteriuria", {
     "N39.0"
   )
 })
-

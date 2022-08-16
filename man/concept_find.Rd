@@ -21,11 +21,13 @@ concept_find(
 \item{conceptIds}{a character vector of one or more SNOMED CT codes
 to search}
 
-\item{ecl}{a character expression constraint query (with full inference). Consult the
+\item{ecl}{a character expression constraint query (with full inference).
+Consult the
 \href{http://snomed.org/ecl}{Expression Constraint Language guide}
 for more detail.}
 
-\item{activeFilter}{whether to restrict results to active concepts. Default is `TRUE`.
+\item{activeFilter}{whether to restrict results to active concepts.
+Default is \code{TRUE}.
 Consult the \href{http://snomed.org/gl}{SNOMED glossary} for more detail.}
 
 \item{encoding}{HTTP charset parameter to use (default is \code{"UTF-8"})}
@@ -36,20 +38,21 @@ Consult the \href{http://snomed.org/gl}{SNOMED glossary} for more detail.}
 See \code{\link{snomedizer_options}}. The maximum limit on public endpoints
 is 10,000.}
 
-\item{...}{other optional arguments listed in \code{\link{api_operations}}, such as
-\code{endpoint}, \code{branch} or \code{limit}}
+\item{...}{other optional arguments listed in \code{\link{api_operations}},
+such as \code{endpoint}, \code{branch} or \code{limit}}
 }
 \value{
 a data frame
 }
 \description{
-A wrapper function for \code{\link{api_concepts}} searching for a
-term or a list of concepts
+A wrapper function for \code{\link{api_concepts}} searching
+for a term or a list of concepts
 }
 \section{Disclaimer}{
 
-In order to use SNOMED CT, a licence is required which depends both on the country you are
-based in, and the purpose of your work. See details on \link{snomedizer}.
+In order to use SNOMED CT, a licence is required which depends
+both on the country you are#' based in, and the purpose of your work.
+See details on \link{snomedizer}.
 }
 
 \examples{

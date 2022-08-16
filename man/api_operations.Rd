@@ -231,8 +231,8 @@ api_refset_members(
 )
 }
 \arguments{
-\item{conceptId}{character string of a SNOMED CT concept identifier (for example:
-\code{"233604007"})}
+\item{conceptId}{character string of a SNOMED CT concept identifier
+(for example: \code{"233604007"})}
 
 \item{endpoint}{URL of a SNOMED CT Terminology Server REST API endpoint.
 See \code{\link{snomedizer_options}}.}
@@ -245,25 +245,29 @@ commonly \code{"MAIN"}). See \code{\link{snomedizer_options}}.}
 
 \item{term}{character vector of terms to search}
 
-\item{conceptIds}{a character vector of SNOMED CT concept identifiers (for example:
-\code{c("233604007", "68566005")})}
+\item{conceptIds}{a character vector of SNOMED CT concept identifiers
+(for example: \code{c("233604007", "68566005")})}
 
-\item{ecl}{a character expression constraint query (with full relationship inference).
-Consult the \href{http://snomed.org/ecl}{Expression Constraint Language guide}
+\item{ecl}{a character expression constraint query
+(with full relationship inference). Consult the
+ \href{http://snomed.org/ecl}{Expression Constraint Language guide}
 for more detail.}
 
-\item{eclStated}{a character expression constraint query (limited to stated relationships).
-Consult the \href{http://snomed.org/ecl}{Expression Constraint Language guide}
+\item{eclStated}{a character expression constraint query
+(limited to stated relationships). Consult the
+\href{http://snomed.org/ecl}{Expression Constraint Language guide}
 for more detail.}
 
 \item{activeFilter}{optional boolean: \itemize{
     \item \code{TRUE} returns only active terminology
     \item \code{FALSE} returns only inactive terminology
-    \item \code{NULL} (the default) returns both active and inactive terminology
+    \item \code{NULL} (the default) returns both active and inactive
+    terminology
 }}
 
-\item{searchAfter}{integer for the number of results to skip. May be used for
-for querying more that 10,000 records (current \code{limit} on results returned)}
+\item{searchAfter}{integer for the number of results to skip. May be used
+for querying more that 10,000 records (current \code{limit} on
+results returned)}
 
 \item{limit}{a positive integer for the maximum number of results to return.
 See \code{\link{snomedizer_options}}. The maximum limit on public endpoints
@@ -283,7 +287,8 @@ Default is \code{NULL} for no descendant count reported.}
 
 \item{form}{a character string indicating which ancestors/parents or
 descendants/children to extract based on stated or inferred relationships.
-Must be one of \code{"inferred"} (default), \code{"stated"}, or \code{"additional"}.}
+Must be one of \code{"inferred"} (default), \code{"stated"}, or
+\code{"additional"}.}
 
 \item{includeDescendantCount}{a boolean indicating whether a number of
 children/descendants counter should be included in the result}
@@ -291,7 +296,8 @@ children/descendants counter should be included in the result}
 \item{active}{optional boolean: \itemize{
     \item \code{TRUE} returns only active terminology
     \item \code{FALSE} returns only inactive terminology
-    \item \code{NULL} (the default) returns both active and inactive terminology
+    \item \code{NULL} (the default) returns both active and inactive
+    terminology
 }}
 
 \item{module}{character vector of SNOMED CT modules to include (example:
@@ -300,8 +306,9 @@ children/descendants counter should be included in the result}
 \item{language}{vector of two-character language codes to include
 (example: \code{c("en", "de")}).}
 
-\item{type}{character vector of concept codes defining the type of description or
-the type of attribute/relationship to include, depending on the function:
+\item{type}{character vector of concept codes defining the type of
+description or the type of attribute/relationship to include, depending
+on the function:
 \itemize{
    \item see \code{api_concept_descendants("900000000000446008")} for valid
    description type concepts.
@@ -327,9 +334,9 @@ The description must be preferred in at least one of these to match.}
 (example: \code{"900000000000509007"}).
 The description must be acceptable in at least one of these to match.}
 
-\item{preferredOrAcceptableIn}{character vector of description language reference sets
-(example: \code{"900000000000509007"}).
-The description must be preferred OR acceptable in at least one of these to match.}
+\item{preferredOrAcceptableIn}{character vector of description language
+reference sets (example: \code{"900000000000509007"}). The description
+must be preferred OR acceptable in at least one of these to match.}
 
 \item{conceptActive}{optional boolean: \itemize{
     \item \code{TRUE} returns only active concepts
@@ -367,8 +374,9 @@ This parameter corresponds to \code{
 
 \item{relationshipId}{string of a relationship concept}
 
-\item{forBranch}{a character name of a single branch (eg \code{"MAIN"}) for which
-to fetch code systems results. The default (\code{NULL}) will return all code systems.}
+\item{forBranch}{a character name of a single branch (eg \code{"MAIN"})
+for which to fetch code systems results. The default (\code{NULL})
+will return all code systems.}
 
 \item{shortName}{character name of a code system (eg \code{"SNOMEDCT"},
 \code{"SNOMEDCT-UK"})}
@@ -381,16 +389,18 @@ or no future code systems (\code{FALSE}, the default)}
 terminology releases (\code{NULL}), only internal releases (\code{TRUE}), or
 only external releases (\code{FALSE}, the default)}
 
-\item{referenceSet}{a string for a reference set identifier or ECL expression
-can be used to limit the reference sets searched. Example: \code{"<723564002"}}
+\item{referenceSet}{a string for a reference set identifier or ECL
+expression can be used to limit the reference sets searched.
+Example: \code{"<723564002"}}
 
-\item{referenceSetModule}{a string identifier for a SNOMED CT module containing
-the reference sets to include. An ECL expression can be used to limit
-the modules searched, for example: \code{"<900000000000445007"}}
+\item{referenceSetModule}{a string identifier for a SNOMED CT module
+containing the reference sets to include. An ECL expression can be used to
+limit the modules searched, for example: \code{"<900000000000445007"}}
 
 \item{referencedComponentId}{a character vector of identifiers of
 SNOMED CT components to be included. For Map Reference Sets, this refers
-to the SNOMED CT concept that is mapped to the other terminology or code system}
+to the SNOMED CT concept that is mapped to the other terminology or code
+system}
 
 \item{targetComponent}{string identifier the target code
 (concept or description) in an Association Reference Set. Consult the
@@ -398,16 +408,17 @@ to the SNOMED CT concept that is mapped to the other terminology or code system}
 for detail.}
 
 \item{mapTarget}{target code to which the SNOMED CT concept represented the
-\code{referencedComponentId} is mapped in the target code system, classification,
-or terminology (eg ICD-10). This is only used for Map Reference Sets}
+\code{referencedComponentId} is mapped in the target code system,
+classification, or terminology (eg ICD-10). This is only used for Map
+Reference Sets}
 
 \item{owlExpression.conceptId}{a string for a concept identifier within an
 owlExpression. Consult the
 \href{http://snomed.org/owl}{SNOMED CT OWL Guide} for detail.}
 
-\item{owlExpression.gci}{a boolean indicating whether to return axiom members
-with a GCI owlExpression (\code{TRUE}), without (\code{FALSE}), or all members
-(\code{NULL}, the default). Consult the
+\item{owlExpression.gci}{a boolean indicating whether to return axiom
+memberswith a GCI owlExpression (\code{TRUE}), without (\code{FALSE}), or
+all members (\code{NULL}, the default). Consult the
 \href{http://snomed.org/owl}{SNOMED CT OWL Guide} for detail.}
 }
 \value{
@@ -415,12 +426,14 @@ An \code{httr} \code{\link[httr]{response}()} object.
 }
 \description{
 Low-level wrapper functions based on \link{httr} for interfacing
-with the operations built in the \href{https://github.com/IHTSDO/snowstorm}{Snowstorm API}
+with the operations built in the
+\href{https://github.com/IHTSDO/snowstorm}{Snowstorm API}
 }
 \section{Disclaimer}{
 
-In order to use SNOMED CT, a licence is required which depends both on the country you are
-based in, and the purpose of your work. See details on \link{snomedizer}.
+In order to use SNOMED CT, a licence is required which depends both on
+the country you are based in, and the purpose of your work.
+See details on \link{snomedizer}.
 }
 
 \examples{

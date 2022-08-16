@@ -2,19 +2,22 @@
 #' SNOMED CT Terminology Server REST API operations
 #'
 #' @description Low-level wrapper functions based on \link{httr} for interfacing
-#' with the operations built in the \href{https://github.com/IHTSDO/snowstorm}{Snowstorm API}
+#' with the operations built in the
+#' \href{https://github.com/IHTSDO/snowstorm}{Snowstorm API}
 #' @param acceptableIn character vector of description language reference sets
 #' (example: \code{"900000000000509007"}).
 #' The description must be acceptable in at least one of these to match.
 #' @param active optional boolean: \itemize{
 #'     \item \code{TRUE} returns only active terminology
 #'     \item \code{FALSE} returns only inactive terminology
-#'     \item \code{NULL} (the default) returns both active and inactive terminology
+#'     \item \code{NULL} (the default) returns both active and inactive
+#'     terminology
 #' }
 #' @param activeFilter optional boolean: \itemize{
 #'     \item \code{TRUE} returns only active terminology
 #'     \item \code{FALSE} returns only inactive terminology
-#'     \item \code{NULL} (the default) returns both active and inactive terminology
+#'     \item \code{NULL} (the default) returns both active and inactive
+#'     terminology
 #' }
 #' @param branch a string for the name of the API endpoint branch to use (most
 #' commonly \code{"MAIN"}). See \code{\link{snomedizer_options}}.
@@ -30,10 +33,10 @@
 #' }
 #' This parameter corresponds to \code{
 #' 900000000000449001 | Characteristic type (core metadata concept)}
-#' @param conceptId character string of a SNOMED CT concept identifier (for example:
-#' \code{"233604007"})
-#' @param conceptIds a character vector of SNOMED CT concept identifiers (for example:
-#' \code{c("233604007", "68566005")})
+#' @param conceptId character string of a SNOMED CT concept identifier
+#' (for example: \code{"233604007"})
+#' @param conceptIds a character vector of SNOMED CT concept identifiers
+#' (for example: \code{c("233604007", "68566005")})
 #' @param conceptActive optional boolean: \itemize{
 #'     \item \code{TRUE} returns only active concepts
 #'     \item \code{FALSE} returns only inactive concepts
@@ -49,19 +52,23 @@
 #' Default is \code{NULL} for no descendant count reported.
 #' @param destination concept character string restricting the range of the
 #' relationships to be included in results
-#' @param ecl a character expression constraint query (with full relationship inference).
-#' Consult the \href{http://snomed.org/ecl}{Expression Constraint Language guide}
+#' @param ecl a character expression constraint query
+#' (with full relationship inference). Consult the
+#'  \href{http://snomed.org/ecl}{Expression Constraint Language guide}
 #' for more detail.
-#' @param eclStated a character expression constraint query (limited to stated relationships).
-#' Consult the \href{http://snomed.org/ecl}{Expression Constraint Language guide}
+#' @param eclStated a character expression constraint query
+#' (limited to stated relationships). Consult the
+#' \href{http://snomed.org/ecl}{Expression Constraint Language guide}
 #' for more detail.
 #' @param endpoint URL of a SNOMED CT Terminology Server REST API endpoint.
 #'  See \code{\link{snomedizer_options}}.
 #' @param form a character string indicating which ancestors/parents or
 #' descendants/children to extract based on stated or inferred relationships.
-#' Must be one of \code{"inferred"} (default), \code{"stated"}, or \code{"additional"}.
-#' @param forBranch a character name of a single branch (eg \code{"MAIN"}) for which
-#' to fetch code systems results. The default (\code{NULL}) will return all code systems.
+#' Must be one of \code{"inferred"} (default), \code{"stated"}, or
+#' \code{"additional"}.
+#' @param forBranch a character name of a single branch (eg \code{"MAIN"})
+#' for which to fetch code systems results. The default (\code{NULL})
+#' will return all code systems.
 #' @param groupByConcept a boolean indicating whether to group descriptions
 #' by concept. Default is \code{FALSE}.
 #' @param includeDescendantCount a boolean indicating whether a number of
@@ -72,35 +79,39 @@
 #' See \code{\link{snomedizer_options}}. The maximum limit on public endpoints
 #' is 10,000.
 #' @param mapTarget target code to which the SNOMED CT concept represented the
-#' \code{referencedComponentId} is mapped in the target code system, classification,
-#' or terminology (eg ICD-10). This is only used for Map Reference Sets
+#' \code{referencedComponentId} is mapped in the target code system,
+#' classification, or terminology (eg ICD-10). This is only used for Map
+#' Reference Sets
 #' @param module character vector of SNOMED CT modules to include (example:
 #' \code{"900000000000207008"})
 #' @param offset an integer indicating the number of results to skip
 #' @param owlExpression.conceptId a string for a concept identifier within an
 #' owlExpression. Consult the
 #' \href{http://snomed.org/owl}{SNOMED CT OWL Guide} for detail.
-#' @param owlExpression.gci a boolean indicating whether to return axiom members
-#' with a GCI owlExpression (\code{TRUE}), without (\code{FALSE}), or all members
-#' (\code{NULL}, the default). Consult the
+#' @param owlExpression.gci a boolean indicating whether to return axiom
+#' memberswith a GCI owlExpression (\code{TRUE}), without (\code{FALSE}), or
+#' all members (\code{NULL}, the default). Consult the
 #' \href{http://snomed.org/owl}{SNOMED CT OWL Guide} for detail.
 #' @param preferredIn character vector of description language reference sets
 #' (example: \code{"900000000000509007"}).
 #' The description must be preferred in at least one of these to match.
-#' @param preferredOrAcceptableIn character vector of description language reference sets
-#' (example: \code{"900000000000509007"}).
-#' The description must be preferred OR acceptable in at least one of these to match.
-#' @param referenceSet a string for a reference set identifier or ECL expression
-#' can be used to limit the reference sets searched. Example: \code{"<723564002"}
-#' @param referenceSetModule a string identifier for a SNOMED CT module containing
-#' the reference sets to include. An ECL expression can be used to limit
-#' the modules searched, for example: \code{"<900000000000445007"}
+#' @param preferredOrAcceptableIn character vector of description language
+#' reference sets (example: \code{"900000000000509007"}). The description
+#' must be preferred OR acceptable in at least one of these to match.
+#' @param referenceSet a string for a reference set identifier or ECL
+#' expression can be used to limit the reference sets searched.
+#' Example: \code{"<723564002"}
+#' @param referenceSetModule a string identifier for a SNOMED CT module
+#' containing the reference sets to include. An ECL expression can be used to
+#' limit the modules searched, for example: \code{"<900000000000445007"}
 #' @param referencedComponentId a character vector of identifiers of
 #' SNOMED CT components to be included. For Map Reference Sets, this refers
-#' to the SNOMED CT concept that is mapped to the other terminology or code system
+#' to the SNOMED CT concept that is mapped to the other terminology or code
+#' system
 #' @param relationshipId string of a relationship concept
-#' @param searchAfter integer for the number of results to skip. May be used for
-#' for querying more that 10,000 records (current \code{limit} on results returned)
+#' @param searchAfter integer for the number of results to skip. May be used
+#' for querying more that 10,000 records (current \code{limit} on
+#' results returned)
 #' @param searchMode a character string for the search mode. Must be either
 #' \code{"STANDARD"} (default) or \code{"REGEX"}.
 #' @param semanticTag character string of a description semantic tag
@@ -128,8 +139,9 @@
 #' \href{https://confluence.ihtsdotools.org/display/DOCRELFMT/5.2.5+Association+Reference+Set}{Association Reference Set data structure}
 #' for detail.
 #' @param term character vector of terms to search
-#' @param type character vector of concept codes defining the type of description or
-#' the type of attribute/relationship to include, depending on the function:
+#' @param type character vector of concept codes defining the type of
+#' description or the type of attribute/relationship to include, depending
+#' on the function:
 #' \itemize{
 #'    \item see \code{api_concept_descendants("900000000000446008")} for valid
 #'    description type concepts.
@@ -142,8 +154,9 @@
 #' @name api_operations
 #' @family api_operations
 #' @section Disclaimer:
-#' In order to use SNOMED CT, a licence is required which depends both on the country you are
-#' based in, and the purpose of your work. See details on \link{snomedizer}.
+#' In order to use SNOMED CT, a licence is required which depends both on
+#' the country you are based in, and the purpose of your work.
+#' See details on \link{snomedizer}.
 #' @examples
 #' # look up the pneumonia concept
 #' api_concept(conceptId = "233604007")
@@ -174,7 +187,7 @@ api_concept <- function(conceptId,
   rest_url <- httr::build_url(rest_url)
   rest_result <- GET(rest_url, .snomedizer_rest_user_agent())
 
-  if(catch404) {
+  if (catch404) {
     .catch_http_error(rest_result)
   }
 
@@ -228,7 +241,7 @@ api_concepts <- function(
   rest_url <- httr::build_url(rest_url)
   rest_result <- GET(rest_url, .snomedizer_rest_user_agent())
 
-  if(catch404){
+  if (catch404) {
     .catch_http_error(rest_result)
   }
 
@@ -269,7 +282,7 @@ api_concept_descendants <- function(
 
   rest_result <- GET(rest_url, .snomedizer_rest_user_agent())
 
-  if(catch404) {
+  if (catch404) {
     .catch_http_error(rest_result)
   }
 
@@ -299,7 +312,7 @@ api_concept_descriptions <- function(
 
   rest_result <- GET(rest_url, .snomedizer_rest_user_agent())
 
-  if(catch404) {
+  if (catch404) {
     .catch_http_error(rest_result)
   }
 
@@ -317,7 +330,7 @@ api_all_branches <- function(endpoint = snomedizer_options_get("endpoint"),
                      "branches")
   rest_result <- GET(rest_url, .snomedizer_rest_user_agent())
 
-  if(catch404){
+  if (catch404) {
     .catch_http_error(rest_result)
   }
 
@@ -342,7 +355,7 @@ api_branch <- function(endpoint = snomedizer_options_get("endpoint"),
   rest_url <- httr::build_url(rest_url)
   rest_result <- GET(rest_url, .snomedizer_rest_user_agent())
 
-  if(catch404){
+  if (catch404) {
     .catch_http_error(rest_result)
   }
 
@@ -369,7 +382,7 @@ api_branch_descendants <- function(
   rest_url <- httr::build_url(rest_url)
   rest_result <- GET(rest_url, .snomedizer_rest_user_agent())
 
-  if(catch404){
+  if (catch404) {
     .catch_http_error(rest_result)
   }
 
@@ -407,7 +420,7 @@ api_descriptions <- function(
   rest_url <- httr::build_url(rest_url)
   rest_result <- GET(rest_url, .snomedizer_rest_user_agent())
 
-  if(catch404){
+  if (catch404) {
     .catch_http_error(rest_result)
   }
 
@@ -427,7 +440,7 @@ api_version <- function(
 
   rest_result <- GET(rest_url, .snomedizer_rest_user_agent())
 
-  if(catch404){
+  if (catch404) {
     .catch_http_error(rest_result)
   }
 
@@ -448,7 +461,7 @@ api_browser_concepts <- function(
   stopifnot(is.character(conceptId))
   stopifnot(length(conceptId) == 1)
   descendantCountForm <- descendantCountForm[1]
-  if(!is.null(descendantCountForm)) {
+  if (!is.null(descendantCountForm)) {
     stopifnot(descendantCountForm %in% c("inferred", "stated", "additional"))
   }
 
@@ -466,7 +479,7 @@ api_browser_concepts <- function(
   rest_url <- httr::build_url(rest_url)
   rest_result <- GET(rest_url, .snomedizer_rest_user_agent())
 
-  if(catch404){
+  if (catch404) {
     .catch_http_error(rest_result)
   }
 
@@ -506,7 +519,7 @@ api_browser_concept_ancestors <- function(
   rest_url <- httr::build_url(rest_url)
   rest_result <- GET(rest_url, .snomedizer_rest_user_agent())
 
-  if(catch404){
+  if (catch404) {
     .catch_http_error(rest_result)
   }
 
@@ -552,7 +565,7 @@ api_browser_concept_children <- function(
   rest_url <- httr::build_url(rest_url)
   rest_result <- GET(rest_url, .snomedizer_rest_user_agent())
 
-  if(catch404){
+  if (catch404) {
     .catch_http_error(rest_result)
   }
 
@@ -606,7 +619,7 @@ api_browser_concept_parents <- function(
   rest_url <- httr::build_url(rest_url)
   rest_result <- GET(rest_url, .snomedizer_rest_user_agent())
 
-  if(catch404){
+  if (catch404) {
     .catch_http_error(rest_result)
   }
 
@@ -650,7 +663,8 @@ api_browser_concept_descriptions <- function(
   semanticTags <- .concatenate_array_parameter(semanticTags)
   preferredIn <- .concatenate_array_parameter(preferredIn)
   acceptableIn <- .concatenate_array_parameter(acceptableIn)
-  preferredOrAcceptableIn <- .concatenate_array_parameter(preferredOrAcceptableIn)
+  preferredOrAcceptableIn <- .concatenate_array_parameter(
+    preferredOrAcceptableIn)
   stopifnot(is.null(conceptActive) | (
     is.logical(conceptActive) & !is.na(conceptActive)
   ))
@@ -690,7 +704,7 @@ api_browser_concept_descriptions <- function(
   rest_url <- httr::build_url(rest_url)
   rest_result <- GET(rest_url, .snomedizer_rest_user_agent())
 
-  if(catch404){
+  if (catch404) {
     .catch_http_error(rest_result)
   }
 
@@ -711,7 +725,8 @@ api_descriptions_semantic_tags <- function(
                      "descriptions",
                      "semantictags")
   rest_result <- GET(rest_url, .snomedizer_rest_user_agent())
-  if(catch404){
+
+  if (catch404) {
     .catch_http_error(rest_result)
   }
 
@@ -769,7 +784,7 @@ api_relationships <- function(
   rest_url <- httr::build_url(rest_url)
   rest_result <- GET(rest_url, .snomedizer_rest_user_agent())
 
-  if(catch404){
+  if (catch404) {
     .catch_http_error(rest_result)
   }
 
@@ -799,7 +814,7 @@ api_relationship <- function(
   rest_url <- httr::build_url(rest_url)
   rest_result <- GET(rest_url, .snomedizer_rest_user_agent())
 
-  if(catch404){
+  if (catch404) {
     .catch_http_error(rest_result)
   }
 
@@ -814,7 +829,7 @@ api_all_code_systems <- function(endpoint = snomedizer_options_get("endpoint"),
                                  catch404 = TRUE) {
   # GET /codesystems
 
-  if( !is.null(forBranch) ) {
+  if (!is.null(forBranch)) {
     stopifnot(length(forBranch) == 1)
     stopifnot(is.character(forBranch))
   }
@@ -828,7 +843,7 @@ api_all_code_systems <- function(endpoint = snomedizer_options_get("endpoint"),
   rest_url <- httr::build_url(rest_url)
   rest_result <- GET(rest_url, .snomedizer_rest_user_agent())
 
-  if(catch404){
+  if (catch404) {
     .catch_http_error(rest_result)
   }
 
@@ -853,7 +868,7 @@ api_code_system <- function(endpoint = snomedizer_options_get("endpoint"),
   rest_url <- httr::build_url(rest_url)
   rest_result <- GET(rest_url, .snomedizer_rest_user_agent())
 
-  if(catch404){
+  if (catch404) {
     .catch_http_error(rest_result)
   }
 
@@ -863,22 +878,23 @@ api_code_system <- function(endpoint = snomedizer_options_get("endpoint"),
 
 #' @rdname api_operations
 #' @export
-api_code_system_all_versions <- function(endpoint = snomedizer_options_get("endpoint"),
-                                         shortName,
-                                         showFutureVersions = FALSE,
-                                         showInternalReleases = FALSE,
-                                         catch404 = TRUE) {
+api_code_system_all_versions <- function(
+    endpoint = snomedizer_options_get("endpoint"),
+    shortName,
+    showFutureVersions = FALSE,
+    showInternalReleases = FALSE,
+    catch404 = TRUE) {
   # GET /codesystems/{shortName}/versions
 
   stopifnot(length(shortName) == 1)
   stopifnot(is.character(shortName))
 
-  if( !is.null(showFutureVersions) ) {
+  if (!is.null(showFutureVersions)) {
     stopifnot(length(showFutureVersions)==1)
     stopifnot(is.logical(showFutureVersions))
   }
 
-  if( !is.null(showInternalReleases) ) {
+  if (!is.null(showInternalReleases)) {
     stopifnot(length(showInternalReleases)==1)
     stopifnot(is.logical(showInternalReleases))
   }
@@ -894,7 +910,7 @@ api_code_system_all_versions <- function(endpoint = snomedizer_options_get("endp
   rest_url <- httr::build_url(rest_url)
   rest_result <- GET(rest_url, .snomedizer_rest_user_agent())
 
-  if(catch404){
+  if (catch404) {
     .catch_http_error(rest_result)
   }
 
@@ -947,7 +963,7 @@ api_browser_refset_members <- function(
   rest_url <- httr::build_url(rest_url)
   rest_result <- GET(rest_url, .snomedizer_rest_user_agent())
 
-  if(catch404){
+  if (catch404) {
     .catch_http_error(rest_result)
   }
 
@@ -1010,11 +1026,9 @@ api_refset_members <- function(
   rest_url <- httr::build_url(rest_url)
   rest_result <- GET(rest_url, .snomedizer_rest_user_agent())
 
-  if(catch404){
+  if (catch404) {
     .catch_http_error(rest_result)
   }
 
   rest_result
 }
-
-

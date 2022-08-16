@@ -25,7 +25,8 @@ the other terminology or code system}
 \item{map_refset_id}{character identifier of a SNOMED CT Map Reference Set.
 The default is \code{"447562003"} for the ICD-10 Map Reference Set.}
 
-\item{active}{whether to restrict results to active concepts. Default is \code{TRUE}.}
+\item{active}{whether to restrict results to active concepts.
+Default is \code{TRUE}.}
 
 \item{encoding}{HTTP charset parameter to use (default is \code{"UTF-8"})}
 
@@ -35,19 +36,21 @@ The default is \code{"447562003"} for the ICD-10 Map Reference Set.}
 See \code{\link{snomedizer_options}}. The maximum limit on public endpoints
 is 10,000.}
 
-\item{...}{other optional arguments listed in \code{\link{api_operations}}, such as
-\code{endpoint}, \code{branch} or \code{limit}}
+\item{...}{other optional arguments listed in \code{\link{api_operations}},
+such as \code{endpoint}, \code{branch} or \code{limit}}
 }
 \value{
 a data frame of SNOMED CT concepts mapped to another code system
 }
 \description{
-A wrapper function for the \code{\link{api_refset_members}()} function
-to query Map Reference Sets, in particular the map to the World Health Organisation
-International Classification of Diseases 10th Revision (ICD-10).
+A wrapper function for the \code{\link{api_refset_members}()}
+function to query Map Reference Sets, in particular the map to the World
+Health Organisation International Classification of Diseases
+10th Revision (ICD-10).
 }
 \examples{
-# find SNOMED CT codes corresponding to ICD-10 code N39.0 urinary tract infections
+# find SNOMED CT codes corresponding to ICD-10 code
+# N39.0 urinary tract infections
 uti_concepts <- concept_map(target_code = "N39.0")
 str(dplyr::select(uti_concepts,
                   referencedComponentId,
@@ -56,7 +59,9 @@ str(dplyr::select(uti_concepts,
                   additionalFields.mapAdvice))
 
 # map SNOMED CT codes to ICD-10
-map_icd10 <- concept_map(concept_ids = c("431308006", "312124009", "53084003"))
+map_icd10 <- concept_map(
+  concept_ids = c("431308006", "312124009", "53084003")
+)
 dplyr::select(map_icd10,
               referencedComponentId,
               referencedComponent.pt.term,
