@@ -176,8 +176,7 @@ api_relationship(
   endpoint = snomedizer_options_get("endpoint"),
   branch = snomedizer_options_get("branch"),
   relationshipId,
-  catch404 = TRUE,
-  ...
+  catch404 = TRUE
 )
 
 api_all_code_systems(
