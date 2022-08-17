@@ -10,6 +10,10 @@ on:
       - master
       - develop
 
+
+env:
+  SNOMEDIZER_ENDPOINT: https://snowstorm.test-nictiz.nl/
+
 jobs:
   pkgcheck:
     runs-on: ubuntu-latest
