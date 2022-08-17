@@ -1,4 +1,10 @@
 
+
+# snomedizer 0.4.0-beta (2022-08-20)
+
+* Compatible with snowstorm releases 7.6.0-7.9.3
+* Fix bug generating empty results in some endpoints #37
+
 # snomedizer 0.3.0-beta (2022-07-08)
 
 * Compatible with snowstorm releases 7.6.0-7.9.3

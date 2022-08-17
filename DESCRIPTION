@@ -1,8 +1,8 @@
 Package: snomedizer
 Type: Package
 Title: R Interface to the SNOMED CT Terminology Server REST API
-Version: 0.3.0
-Date: 2022-07-08
+Version: 0.4.0
+Date: 2022-08-20
 Authors@R: c(
     person(given = "Peter",
            family = "Dutey-Magni",
@@ -42,7 +42,7 @@ Suggests:
     pkgdown (>= 2.0.0),
     R.utils,
     oysteR
-RoxygenNote: 7.1.1
+RoxygenNote: 7.2.0
 VignetteBuilder: knitr
 RdMacros: Rdpack
 Config/testthat/edition: 2
