@@ -148,7 +148,7 @@ snomed_public_endpoint_suggest <- function() {
     snomed_public_endpoint_list()
   )
 
-  for(i in seq_along(snomed_public_endpoints)) {
+  for (i in seq_along(snomed_public_endpoints)) {
     endpoint_answers <- try(
       httr::http_error(
         httr::GET(snomed_public_endpoints[[i]],
@@ -417,7 +417,7 @@ result_completeness <- function(x, silent = FALSE) {
 #' @keywords internal
 #' @noRd
 .concatenate_array_parameter <- function(param) {
-  if (length(param>1)) {
+  if (length(param > 1)) {
     # `AsIs` used to prevent URL encoding of the ampersand
     # by httr:::compose_query (curl::curl_escape)
     param <- I(
@@ -518,7 +518,10 @@ result_completeness <- function(x, silent = FALSE) {
   } else {
     progress_bar <- progress::progress_bar$new(
       format = "  [:bar] :percent :eta",
-      total = trunc(length(x)/chunk_size) + as.integer(length(x) %% chunk_size > 0)
+      total = trunc(
+        length(x) / chunk_size) +
+        as.integer(length(x) %% chunk_size > 0
+      )
     )
     progress_bar$tick(0)
 
@@ -531,11 +534,10 @@ result_completeness <- function(x, silent = FALSE) {
 #'
 #' @param x a vector to split
 #' @param max_length the maximum length of vectors to return
-#'
 #' @return a list of vector of length between 1 and \code{max_length}
 #' @noRd
-.split_into_chunks <- function(x, max_length){
-  split(x, sort(trunc((seq_len(length(x)) - 1)/max_length)))
+.split_into_chunks <- function(x, max_length) {
+  split(x, sort(trunc((seq_len(length(x)) - 1) / max_length)))
 }
 
 

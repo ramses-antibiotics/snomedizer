@@ -889,12 +889,12 @@ api_code_system_all_versions <- function(
   stopifnot(is.character(shortName))
 
   if (!is.null(showFutureVersions)) {
-    stopifnot(length(showFutureVersions)==1)
+    stopifnot(length(showFutureVersions) == 1)
     stopifnot(is.logical(showFutureVersions))
   }
 
   if (!is.null(showInternalReleases)) {
-    stopifnot(length(showInternalReleases)==1)
+    stopifnot(length(showInternalReleases) == 1)
     stopifnot(is.logical(showInternalReleases))
   }
 

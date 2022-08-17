@@ -106,10 +106,10 @@ First, load and set up `snomedizer`.
 library(dplyr)
 library(snomedizer)
 
-# Connect to the SNOMED International endpoint 
+# Connect to the SNOMED International endpoint
 # (see licence conditions in `vignette("snomedizer")`).
 snomedizer_options_set(
-  endpoint = "https://snowstorm.ihtsdotools.org/snowstorm/snomed-ct", 
+  endpoint = "https://snowstorm.ihtsdotools.org/snowstorm/snomed-ct",
   branch = "MAIN/2021-07-31"
 )
 ```
@@ -133,7 +133,7 @@ First, we need to query descendant concepts. There are two ways to accomplish th
 All the expressions below are equivalent.
 
 ```{r demo_urine_1}
-urine_specimens <- concept_descendants(conceptIds = "122575003", 
+urine_specimens <- concept_descendants(conceptIds = "122575003",
                                        include_self = TRUE)
 urine_specimens <- concept_find(ecl = "<<122575003")
 urine_specimens <- concept_find(ecl = "<<122575003 | Urine specimen (specimen) |")
@@ -143,8 +143,8 @@ glimpse(urine_specimens[, c("conceptId", "pt.term")])
 We obtain 40 concepts. But these include some samples obtained from catheters:
 
 ```{r demo_urine_2}
-urine_specimens %>% 
-  filter(grepl("catheter", pt.term)) %>% 
+urine_specimens %>%
+  filter(grepl("catheter", pt.term)) %>%
   select(pt.term)
 ```
 
@@ -177,10 +177,10 @@ Let's assume you have electronic prescription records referenced to SNOMED CT me
 
 
 ```{r look_med_prod}
-med_product <- concept_find(conceptIds = "374646004", 
-                            branch="MAIN/SNOMEDCT-US/2021-03-01")
-med_product %>% 
-  select(conceptId, fsn.term, pt.term) %>% 
+med_product <- concept_find(conceptIds = "374646004",
+                            branch = "MAIN/SNOMEDCT-US/2021-03-01")
+med_product %>%
+  select(conceptId, fsn.term, pt.term) %>%
   glimpse()
 ```
 
@@ -191,8 +191,8 @@ We want to extract *attributes*, which are SNOMED CT relationships giving charac
 First, let's look at the drug type, which is expressed by attribute `762949000 | Has precise active ingredient (attribute) |`.
 
 ```{r find_amox_drug}
-concept_find(ecl="374646004.(<<762949000 | Has precise active ingredient (attribute) |) ", 
-             branch="MAIN/SNOMEDCT-US") %>% 
+concept_find(ecl = "374646004.(<<762949000 | Has precise active ingredient (attribute) |)",
+             branch = "MAIN/SNOMEDCT-US") %>%
   select(conceptId, fsn.term)
 ```
 
@@ -200,8 +200,8 @@ We could query other attributes sequentially (or chain them with `OR` operators 
 
 ```{r find_antibiotic_type}
 med_substance <- concept_find(
-  ecl="374646004.(<<762705008 | Concept model object attribute (attribute) |) ", 
-  branch="MAIN/SNOMEDCT-US/2021-03-01"
+  ecl = "374646004.(<<762705008 | Concept model object attribute (attribute) |)",
+  branch = "MAIN/SNOMEDCT-US/2021-03-01"
 )
 med_substance$fsn.term
 ```
@@ -212,15 +212,15 @@ A more complex, but effective approach involves a special REST endpoint in Snows
 
 ```{r drug_attributes}
 drug_attributes <- api_relationships(
-  source = "374646004", 
-  active = TRUE, 
-  branch="MAIN/SNOMEDCT-US/2021-03-01"
-) %>% 
+  source = "374646004",
+  active = TRUE,
+  branch = "MAIN/SNOMEDCT-US/2021-03-01"
+) %>%
   snomedizer::result_flatten()
 
-drug_attributes %>% 
-  filter(type.pt.term != "Is a") %>% 
-  select(type.fsn.term, target.pt.term) %>% 
+drug_attributes %>%
+  filter(type.pt.term != "Is a") %>%
+  select(type.fsn.term, target.pt.term) %>%
   arrange(type.fsn.term)
 ```
 
@@ -232,12 +232,12 @@ To do this, we use the `:` operator, known as 'refine' operator.
 
 ```{r find_enterobac_infections}
 enterobac_infections <- concept_find(
-  ecl="<<40733004 | Infectious disease (disorder) | :  
+  ecl = "<<40733004 | Infectious disease (disorder) | :
              246075003 |Causative agent|  =  <<106544002",
   limit = 5000
 )
 
-enterobac_infections %>% 
+enterobac_infections %>%
   select(pt.term)
 ``` 
 
@@ -264,9 +264,9 @@ Some concepts may have many different names.
 Let's extract synonyms of 'candidiasis':
 
 ```{r syn_78048006}
-concept_descriptions(conceptIds = "78048006") %>% 
-  .[["78048006"]] %>% 
-  filter(type == "SYNONYM") %>% 
+concept_descriptions(conceptIds = "78048006") %>%
+  .[["78048006"]] %>%
+  filter(type == "SYNONYM") %>%
   select(term)
 ```
 
@@ -275,9 +275,9 @@ Condition `type == "SYNONYM"` is there to remove the redundant fully specified n
 We can also search for those terms in, say, Spanish, by querying the branch containing the Spanish Edition.
 
 ```{r syn_78048006_fr}
-concept_descriptions(conceptIds = "78048006", branch = "MAIN/SNOMEDCT-ES/2021-04-30") %>% 
-  .[["78048006"]] %>% 
-  filter(type == "SYNONYM" & lang == "es") %>% 
+concept_descriptions(conceptIds = "78048006", branch = "MAIN/SNOMEDCT-ES/2021-04-30") %>%
+  .[["78048006"]] %>%
+  filter(type == "SYNONYM" & lang == "es") %>%
   select(term)
 ```
 
@@ -297,7 +297,7 @@ For more information, please consult the [ICD-10 Mapping Technical Guide](http:/
 For example, let's extract the ICD-10 code corresponding to `721104000 | Sepsis due to urinary tract infection (disorder) |`:
 
 ```{r map_urosepsis}
-concept_map(map_refset_id = "447562003", concept_ids = "721104000") %>% 
+concept_map(map_refset_id = "447562003", concept_ids = "721104000") %>%
   select(additionalFields.mapTarget, additionalFields.mapAdvice)
 ```
 
@@ -309,8 +309,8 @@ This points us to two ICD-10 codes:
 Conversely, let's find all SNOMED CT concepts mapped to ICD-10 code `N39.0`:
 
 ```{r concepts_within_n390}
-concept_map(map_refset_id = "447562003", target_code = "N39.0") %>% 
-  select(referencedComponent.id, 
+concept_map(map_refset_id = "447562003", target_code = "N39.0") %>%
+  select(referencedComponent.id,
          referencedComponent.pt.term,
          additionalFields.mapAdvice)
 ```

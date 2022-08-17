@@ -161,7 +161,7 @@ test_that("api_browser_concept_ancestors", {
                                              form = NULL))
   expect_equal(
     httr::content(api_browser_concept_ancestors(conceptId = "233604007",
-                                                form = "inferred") ),
+                                                form = "inferred")),
     httr::content(api_browser_concept_ancestors(conceptId = "233604007"))
   )
   expect_error(api_browser_concept_ancestors(conceptId = "233604007",
