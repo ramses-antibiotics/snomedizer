@@ -255,15 +255,28 @@ test_that("api_browser_concept_parents", {
 test_that("api_browser_concept_descriptions", {
   expect_error(api_browser_concept_descriptions(term = c("a", "b")))
   expect_error(api_browser_concept_descriptions(term = "a", active = "blah"))
-  pneumo <- httr::content(api_browser_concept_descriptions("pneumonia"))
-  expect_equal(pneumo$items[[1]]$concept$conceptId, "60363000")
+  pneumo <- httr::content(api_browser_concept_descriptions(
+    term = "pneumonia",
+    conceptActive = TRUE,
+    active = TRUE,
+    branch = "MAIN/2022-01-31"
+  ))
+  expect_equal(pneumo$items[[1]]$concept$conceptId, "233604007")
   expect_equal(
-    pneumo$totalElements,
+    httr::content(api_browser_concept_descriptions(
+      term = "pneumonia",
+      conceptActive = TRUE,
+      branch = "MAIN/2022-01-31"
+    ))$totalElements,
     httr::content(
       api_browser_concept_descriptions("pneumonia",
+                                       branch = "MAIN/2022-01-31",
+                                       conceptActive = TRUE,
                                        active = TRUE))$totalElements +
       httr::content(
         api_browser_concept_descriptions("pneumonia",
+                                         branch = "MAIN/2022-01-31",
+                                         conceptActive = TRUE,
                                          active = FALSE))$totalElements
   )
 })
