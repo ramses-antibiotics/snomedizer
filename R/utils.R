@@ -79,7 +79,7 @@ snomedizer_options_set <- function(endpoint = NULL,
                                    branch = NULL,
                                    limit = NULL) {
 
-  if (all(sapply(list(endpoint, branch, limit), is.null))) {
+  if (all(vapply(list(endpoint, branch, limit), is.null, logical(1)))) {
     stop("Please provide at least one input.")
   }
 
@@ -333,7 +333,7 @@ release_version <- function(endpoint = snomedizer_options_get("endpoint"),
 result_flatten <- function(x, encoding = "UTF-8") {
   x <- httr::content(x, as = "text", encoding = encoding)
   x <- jsonlite::fromJSON(x, flatten = TRUE)
-  empty_index <- sapply(x, length) == 0
+  empty_index <- vapply(x, length, numeric(1)) == 0
   if (any(empty_index)) {
     x[empty_index] <- NA
   }
@@ -399,7 +399,7 @@ result_completeness <- function(x, silent = FALSE) {
 #' @keywords internal
 #' @noRd
 .check_rest_query_length1 <- function(rest_url) {
-  if (any(sapply(rest_url$query, length) > 1)) {
+  if (any(vapply(rest_url$query, length, numeric(1)) > 1)) {
     stop(
       "The following arguments must have length <= 1: `",
       paste(names(rest_url$query)[length(rest_url$query) > 1],
