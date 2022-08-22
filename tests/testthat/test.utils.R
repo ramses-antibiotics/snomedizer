@@ -8,8 +8,10 @@ test_that("default options load", {
   expect_equal(snomedizer_options_get()$branch, "MAIN")
   expect_equal(snomedizer_options_get("branch"), "MAIN")
   onLoadendpoint <- snomedizer_options_get("endpoint")
+  print(onLoadendpoint)
   expect_true(onLoadendpoint == "https://snowstorm.ihtsdotools.org/snowstorm/snomed-ct" |
-                onLoadendpoint == "https://browser.ihtsdotools.org/snowstorm/snomed-ct")
+                onLoadendpoint == "https://browser.ihtsdotools.org/snowstorm/snomed-ct" |
+                onLoadendpoint == "https://snowstorm.test-nictiz.nl")
   expect_error(snomedizer_options_get("Kaiserschmarren"))
 })
 
