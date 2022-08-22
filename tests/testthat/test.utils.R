@@ -7,7 +7,6 @@ test_that("default options load", {
   expect_equal(snomedizer_options_get()$limit, 50)
   expect_equal(snomedizer_options_get()$branch, "MAIN")
   expect_equal(snomedizer_options_get("branch"), "MAIN")
-  # snomedizer::snomedizer_options_set(endpoint="https://snowstorm.test-nictiz.nl/")
   onLoadendpoint <- snomedizer_options_get("endpoint")
   print(onLoadendpoint)
   expect_true(onLoadendpoint == "https://snowstorm.ihtsdotools.org/snowstorm/snomed-ct" |
